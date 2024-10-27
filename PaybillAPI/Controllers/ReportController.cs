@@ -8,7 +8,7 @@ namespace PaybillAPI.Controllers
     [Authorize(Roles = "admin,user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public class ReportController : ControllerBase
     {
     }
 }

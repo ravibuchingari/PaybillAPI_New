@@ -7,7 +7,6 @@ namespace PaybillAPI.Controllers
 {
     [Authorize(Roles = "admin,user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
-    [Route("api/[controller]")]
     [ApiController]
     public class SalesController : ControllerBase
     {
