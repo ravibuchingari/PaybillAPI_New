@@ -1,0 +1,6 @@
+@PaybillAPI_HostAddress = http://localhost:5111
+
+GET {{PaybillAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
