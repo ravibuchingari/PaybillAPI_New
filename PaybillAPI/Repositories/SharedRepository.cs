@@ -10,7 +10,7 @@ using System.Text;
 
 namespace PaybillAPI.Repositories
 {
-    public class SharedRepository(ILogger<SharedRepository> logger, AppDBContext dbContext) : ISharedRepository
+    public class SharedRepository(AppDBContext dbContext) : ISharedRepository
     {
         private static void DetachedEntries(DbUpdateException ex)
         {
@@ -27,7 +27,6 @@ namespace PaybillAPI.Repositories
             catch (DbUpdateException ex)
             {
                 DetachedEntries(ex);
-                logger.LogError(ex.InnerException != null ? ex.InnerException : ex, ex.InnerException != null ? ex.InnerException.Message : ex.Message);
                 SharedMethod.ThrowError(ex);
             }
         }
@@ -36,6 +35,12 @@ namespace PaybillAPI.Repositories
         {
             return await dbContext.Clients.Where(col => col.ClientUniqueId == ClientUniqueId && col.ClientId == clientId).AnyAsync();
         }
+
+        public async Task<bool> IsValidUser(int userRowId, string securityKey)
+        {
+            return await dbContext.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey,AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
+        }
+
 
         public async Task<string> CreateUserIfNotExists(UserVM userVM)
         {
@@ -143,15 +148,11 @@ namespace PaybillAPI.Repositories
                     Mobile = user.Mobile,
                     Address = user.Address ?? string.Empty,
                     IsAdmin = user.IsAdmin == 1,
-                    SecurityKey = user.SecurityKey
+                    SecurityKey = DataProtection.UrlEncode(user.SecurityKey, AppConstants.API_AES_KEY_AND_IV)
                 },
                 Setting = setting
             };
         }
-
-        /*public async Task<IEnumerable<Setting>> GetSettings()
-        {
-
-        }*/
+        
     }
 }

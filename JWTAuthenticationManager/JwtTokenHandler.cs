@@ -24,7 +24,6 @@ namespace Authentication.JWTAuthenticationManager
                 new(ClaimTypes.Role, authenticationResponse.UserRole),
                 new("UserId", authenticationResponse.UserId),
                 new("SecurityKey", authenticationResponse.SecurityKey),
-                new("UserType", authenticationResponse.UserRole),
                 new("Origin", jwtTokenParameter.Origin)
             ]);
 

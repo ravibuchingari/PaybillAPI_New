@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 
 namespace PaybillAPI.Models
 {
@@ -31,6 +32,11 @@ namespace PaybillAPI.Models
             byte[] bytesPlainText = cryptoTransform.TransformFinalBlock(bytesCipherText, 0, bytesCipherText.Length);
             return Encoding.UTF8.GetString(bytesPlainText);
         }
+
+        public static string UrlEncode(string plainText, string[] keys) => HttpUtility.UrlEncode(Convert.ToBase64String(Encoding.ASCII.GetBytes(EncryptWithIV(plainText, keys))), Encoding.UTF8);
+
+        public static string UrlDecode(string encryptedText, string[] keys) => DecryptWithIV(Encoding.ASCII.GetString(Convert.FromBase64String(HttpUtility.UrlDecode(encryptedText, Encoding.UTF8))), keys);
+
 
         internal static byte[] GetSaltHasPassword(byte[] password, byte[] salt)
         {
