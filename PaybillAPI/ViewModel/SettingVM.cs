@@ -15,11 +15,11 @@ namespace PaybillAPI.ViewModel
 
         public string? EmailPassword { get; set; }
 
-        public int IsAutoEmail { get; set; }
+        public bool IsAutoEmail { get; set; }
 
-        public int IsBackupOnExit { get; set; }
+        public bool IsBackupOnExit { get; set; }
 
-        public int IsDiscountEnabled { get; set; }
+        public bool IsDiscountEnabled { get; set; }
 
         public string? CompanyName { get; set; }
 
@@ -35,19 +35,19 @@ namespace PaybillAPI.ViewModel
 
         public int GstslabRequired { get; set; }
 
-        public int AddItemOnSelected { get; set; }
+        public bool AddItemOnSelected { get; set; }
 
         public string? InvoicePrefix { get; set; }
 
-        public int IsCreateContactOnParty { get; set; }
+        public bool IsCreateContactOnParty { get; set; }
 
-        public int IsCompressBackup { get; set; }
+        public bool IsCompressBackup { get; set; }
 
-        public int IsShadowMenuButton { get; set; }
+        public bool IsShadowMenuButton { get; set; }
 
-        public int IsBiometricAuthEnabled { get; set; }
+        public bool IsBiometricAuthEnabled { get; set; }
 
-        public int IsAlertOnMinimumStock { get; set; }
+        public bool IsAlertOnMinimumStock { get; set; }
         public bool IsSettingsUpdated { get; set; }
     }
 }

@@ -31,5 +31,37 @@ namespace PaybillAPI.Models
             byte[] bytesPlainText = cryptoTransform.TransformFinalBlock(bytesCipherText, 0, bytesCipherText.Length);
             return Encoding.UTF8.GetString(bytesPlainText);
         }
+
+        internal static byte[] GetSaltHasPassword(byte[] password, byte[] salt)
+        {
+            HashAlgorithm algorithm = new SHA256Managed();
+            int passwordLength = password.Length;
+            int saltLength = salt.Length;
+            byte[] saltPasswordBytes = new byte[passwordLength + saltLength];
+
+            for (int i = 0; i < passwordLength; i++)
+                saltPasswordBytes[i] = password[i];
+
+            for (int i = 0; i < saltLength; i++)
+                saltPasswordBytes[passwordLength + i] = salt[i];
+
+            return algorithm.ComputeHash(saltPasswordBytes);
+        }
+
+        public static byte[] GenerateRandomNumber(int length)
+        {
+            using var rng = RandomNumberGenerator.Create();
+            byte[] randomNumber = new byte[length];
+            rng.GetBytes(randomNumber);
+            return randomNumber;
+        }
+
+        /*internal static byte[] GetRandomSalt(int length)
+        {
+            var random = new RNGCryptoServiceProvider();
+            byte[] salt = new byte[length];
+            random.GetNonZeroBytes(salt);
+            return salt;
+        }*/
     }
 }

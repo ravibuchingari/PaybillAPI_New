@@ -9,5 +9,6 @@ namespace PaybillAPI.Repositories
         Task<string> CreateUserIfNotExists(UserVM userVM);
         Task<IEnumerable<UserVM>> GetUsers();
         Task<bool> IsValidAccount(string ClientUniqueId, string clientId);
+        Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest);
     }
 }

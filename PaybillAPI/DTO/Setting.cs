@@ -8,6 +8,8 @@ namespace PaybillAPI.DTO;
 
 [Keyless]
 [Table("settings")]
+[Index("CreatedBy", Name = "fk_settings_created_by_idx")]
+[Index("UpdatedBy", Name = "fk_settings_updated_by_idx")]
 public partial class Setting
 {
     [StringLength(100)]
@@ -67,4 +69,20 @@ public partial class Setting
     public int IsBiometricAuthEnabled { get; set; }
 
     public int IsAlertOnMinimumStock { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime CreatedDate { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime UpdatedDate { get; set; }
+
+    public int CreatedBy { get; set; }
+
+    public int UpdatedBy { get; set; }
+
+    [ForeignKey("CreatedBy")]
+    public virtual User CreatedByNavigation { get; set; } = null!;
+
+    [ForeignKey("UpdatedBy")]
+    public virtual User UpdatedByNavigation { get; set; } = null!;
 }

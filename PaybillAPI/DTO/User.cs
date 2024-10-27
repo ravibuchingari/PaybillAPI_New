@@ -32,6 +32,9 @@ public partial class User
     [StringLength(100)]
     public string Password { get; set; } = null!;
 
+    [StringLength(100)]
+    public string? UserSaltKey { get; set; }
+
     public int IsAdmin { get; set; }
 
     public int IsActive { get; set; }
