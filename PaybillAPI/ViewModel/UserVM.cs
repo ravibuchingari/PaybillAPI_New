@@ -5,7 +5,7 @@ namespace PaybillAPI.ViewModel
 {
     public class UserVM
     {
-        public string? UserRowId { get; set; }
+        public int UserRowId { get; set; }
         public string UserId { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string FirstName { get; set; } = null!;

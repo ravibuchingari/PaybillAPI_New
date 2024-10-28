@@ -4,14 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace PaybillAPI.DTO;
+namespace PaybillAPI.DTOTemp;
 
-[Keyless]
 [Table("settings")]
 [Index("CreatedBy", Name = "fk_settings_created_by_idx")]
 [Index("UpdatedBy", Name = "fk_settings_updated_by_idx")]
 public partial class Setting
 {
+    [Key]
+    [StringLength(48)]
+    public string CompanyName { get; set; } = null!;
+
     [StringLength(100)]
     public string? SmtpHost { get; set; }
 
@@ -32,9 +35,6 @@ public partial class Setting
     public int IsBackupOnExit { get; set; }
 
     public int IsDiscountEnabled { get; set; }
-
-    [StringLength(48)]
-    public string? CompanyName { get; set; }
 
     [StringLength(48)]
     public string? InvoiceTitle { get; set; }
@@ -81,8 +81,10 @@ public partial class Setting
     public int UpdatedBy { get; set; }
 
     [ForeignKey("CreatedBy")]
+    [InverseProperty("SettingCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     [ForeignKey("UpdatedBy")]
+    [InverseProperty("SettingUpdatedByNavigations")]
     public virtual User UpdatedByNavigation { get; set; } = null!;
 }

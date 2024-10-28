@@ -34,7 +34,7 @@ namespace Authentication.JWTAuthenticationManager
                 Subject = claimsIdentity,
                 Issuer = jwtTokenParameter.ValidIssuer,
                 Audience = jwtTokenParameter.ValidAudience,
-                Expires = DateTime.UtcNow.AddMinutes(isTemporary == false ? jwtTokenParameter.TokenValidityInMinutes : 10),
+                Expires = DateTime.UtcNow.AddMinutes(isTemporary == false ? jwtTokenParameter.TokenValidityInMinutes : 5),
                 SigningCredentials = signingCredentials,
             };
 

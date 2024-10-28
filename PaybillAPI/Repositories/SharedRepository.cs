@@ -1,11 +1,13 @@
 ﻿using Authentication.JWTAuthenticationManager;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
 using System.Collections;
 using System.Collections.Immutable;
+using System.Reflection;
 using System.Text;
 
 namespace PaybillAPI.Repositories
@@ -40,7 +42,6 @@ namespace PaybillAPI.Repositories
         {
             return await dbContext.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey,AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
         }
-
 
         public async Task<string> CreateUserIfNotExists(UserVM userVM)
         {
@@ -95,6 +96,30 @@ namespace PaybillAPI.Repositories
                 return AppConstants.SUCCESS;
         }
 
+        public async Task<string> UpdateProfile(ClientVM clientVM)
+        {
+            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
+            if (client != null)
+            {
+                client.ClientUniqueId = clientVM.ClientUniqueId;
+                client.ClientId = clientVM.ClientId;
+                client.ClientName = clientVM.ClientName;
+                client.BusinessType = clientVM.BusinessType;
+                client.Mobile = clientVM.Mobile;
+                client.Email = clientVM.Email;
+                client.Address = clientVM.Address;
+                client.SubscriptionType = clientVM.SubscriptionType;
+                client.SubscriptionAmount = clientVM.SubscriptionAmount;
+                client.SubscriptionEndDate = DateTime.Parse(clientVM.SubscriptionEndDate);
+                client.IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode();
+                client.IsActivated = (sbyte)clientVM.IsActivated.GetHashCode();
+                await SaveChangesAsync();
+                return AppConstants.SUCCESS;
+            }
+            else
+                return "Client not found.";
+        }
+
         public async Task<IEnumerable<UserVM>> GetUsers()
         {
             return await dbContext.Users.Select(row => new UserVM { 
@@ -136,23 +161,34 @@ namespace PaybillAPI.Repositories
 
             }).FirstOrDefaultAsync() ?? new SettingVM() { IsSettingsUpdated = false };
 
+            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
+
             return new AuthResponseVM()
             {
                 IsSuccess = true,
                 User = new UserVM()
                 {
-                    UserRowId = user.UserRowId.ToString(),
+                    UserRowId = user.UserRowId,
                     UserId = user.UserId,
                     FirstName = user.FirstName,
                     LastName = user.LastName,   
                     Mobile = user.Mobile,
                     Address = user.Address ?? string.Empty,
                     IsAdmin = user.IsAdmin == 1,
-                    SecurityKey = DataProtection.UrlEncode(user.SecurityKey, AppConstants.API_AES_KEY_AND_IV)
+                    SecurityKey = user.SecurityKey,
+                    Client = new ClientVM()
+                    {
+                        ClientUniqueId = client.ClientUniqueId,
+                        ClientId = client.ClientId,
+                        IsPremiumUser = client.IsPremiumUser == 1,
+                        IsActivated = client.IsActivated == 1
+                    }
                 },
                 Setting = setting
             };
         }
+
+       
         
     }
 }

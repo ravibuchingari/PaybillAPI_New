@@ -12,41 +12,46 @@ namespace PaybillAPI.Controllers
     [ApiController]
     public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler) : ControllerBase
     {
+        [HttpGet]
+        [Route("test")]
+        public IActionResult test()
+        {
+            return Ok("success");
+        }
+
         [HttpPost]
         [Route("create/account")]
-        [AllowAnonymous]
         public async Task<IActionResult> CreateAccountIfNotExists([FromBody] ClientVM client)
         {
             client.SecurityKey = SharedMethod.GenerateUniqueID();
             await sharedRepository.CreateAccountIfNotExists(client);
             AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
             {
-                UserRowId = client.ClientUniqueId,
-                UserId = client.SecurityKey,
-                UserRole = "TempKey",
+                UserRowId = client.SecurityKey,
+                UserId = client.ClientId,
+                UserRole = "user",
                 SecurityKey = client.SecurityKey
             }, true);
 
             if (authenticationResponse.IsSuccess)
-                return Ok(new ResponseMessage(isSuccess: true, message: authenticationResponse.JwtToken));
+                return Ok(new ResponseMessage(isSuccess: true, message: authenticationResponse.JwtToken, data: client.SecurityKey));
             else
                 return BadRequest(authenticationResponse.Message);
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [Route("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthRequestVM authRequest)
         {
             if (!await sharedRepository.IsValidAccount(authRequest.ClientUniqueId, authRequest.ClientId))
-                throw new UnauthorizedAccessException(AppConstants.UNAUTHORIZED_ACCESS);
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             authRequest.Password = DataProtection.DecryptWithIV(authRequest.Password, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             AuthResponseVM authResponse = await sharedRepository.UserAuthentication(authRequest);
             if (authResponse.IsSuccess)
             {
                 AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
                 {
-                    UserRowId = authResponse.User.UserRowId!,
+                    UserRowId = authResponse.User.UserRowId.ToString()!,
                     UserId = authResponse.User.UserId,
                     UserRole = authResponse.User.IsAdmin ? "admin" : "user",
                     SecurityKey = authResponse.User.SecurityKey!
@@ -54,6 +59,7 @@ namespace PaybillAPI.Controllers
                 if (authenticationResponse.IsSuccess)
                 {
                     authResponse.User.JwtToken = authenticationResponse.JwtToken;
+                    authResponse.User.SecurityKey = DataProtection.UrlEncode(authResponse.User.SecurityKey!, AppConstants.API_AES_KEY_AND_IV);
                     return Ok(authResponse);
                 }
                 else

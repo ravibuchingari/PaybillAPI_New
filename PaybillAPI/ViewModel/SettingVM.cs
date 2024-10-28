@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using PaybillAPI.Models;
 
 namespace PaybillAPI.ViewModel
 {
@@ -21,20 +22,6 @@ namespace PaybillAPI.ViewModel
 
         public bool IsDiscountEnabled { get; set; }
 
-        public string? CompanyName { get; set; }
-
-        public string? InvoiceTitle { get; set; }
-
-        public string? Header1 { get; set; }
-
-        public string? Header2 { get; set; }
-
-        public string? Header3 { get; set; }
-
-        public string? Gstin { get; set; }
-
-        public int GstslabRequired { get; set; }
-
         public bool AddItemOnSelected { get; set; }
 
         public string? InvoicePrefix { get; set; }
@@ -49,5 +36,8 @@ namespace PaybillAPI.ViewModel
 
         public bool IsAlertOnMinimumStock { get; set; }
         public bool IsSettingsUpdated { get; set; }
+
+        public ReceiptHeader? HeaderModel { get; set; }
+
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace PaybillAPI.DTO;
+namespace PaybillAPI.DTOTemp;
 
 [Table("users")]
 [Index("SecurityKey", Name = "SecurityKey_UNIQUE", IsUnique = true)]
@@ -47,4 +47,10 @@ public partial class User
 
     [Column(TypeName = "datetime")]
     public DateTime UpdatedDate { get; set; }
+
+    [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<Setting> SettingCreatedByNavigations { get; set; } = new List<Setting>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<Setting> SettingUpdatedByNavigations { get; set; } = new List<Setting>();
 }

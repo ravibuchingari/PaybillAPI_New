@@ -20,6 +20,7 @@ var jwtParameters = new JwtTokenParameter()
 };
 
 builder.Services.AddScoped<ISharedRepository, SharedRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 builder.Services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>(option => ActivatorUtilities.CreateInstance<JwtTokenHandler>(option, jwtParameters));
 builder.Services.AddDbContext<AppDBContext>(options => options.UseMySQL(builder.Configuration.GetConnectionString("SqlConnection")!));
@@ -65,6 +66,7 @@ if (!app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseGlobalExceptionMiddleware();
+//app.UseJwtMiddleware();
 app.MapControllers();
 
 app.Run();
