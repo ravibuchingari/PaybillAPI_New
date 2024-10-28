@@ -12,43 +12,24 @@ using System.Text;
 
 namespace PaybillAPI.Repositories
 {
-    public class SharedRepository(AppDBContext dbContext) : ISharedRepository
+    public class SharedRepository(AppDBContext context) : RootRepository(context ?? null), ISharedRepository
     {
-        private static void DetachedEntries(DbUpdateException ex)
-        {
-            foreach (var entry in ex.Entries)
-                entry.State = EntityState.Detached;
-        }
-
-        private async Task SaveChangesAsync()
-        {
-            try
-            {
-                await dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                DetachedEntries(ex);
-                SharedMethod.ThrowError(ex);
-            }
-        }
-
         public async Task<bool> IsValidAccount(string ClientUniqueId, string clientId)
         {
-            return await dbContext.Clients.Where(col => col.ClientUniqueId == ClientUniqueId && col.ClientId == clientId).AnyAsync();
+            return await context.Clients.Where(col => col.ClientUniqueId == ClientUniqueId && col.ClientId == clientId).AnyAsync();
         }
 
         public async Task<bool> IsValidUser(int userRowId, string securityKey)
         {
-            return await dbContext.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey,AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
+            return await context.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey,AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
         }
 
         public async Task<string> CreateUserIfNotExists(UserVM userVM)
         {
-            User? user = await dbContext.Users.Where(col => col.UserId == userVM.UserId).FirstOrDefaultAsync();
+            User? user = await context.Users.Where(col => col.UserId == userVM.UserId).FirstOrDefaultAsync();
             if (user == null)
             {
-                await dbContext.Users.AddAsync(new User()
+                await context.Users.AddAsync(new User()
                 {
                     UserId = userVM.UserId,
                     Password = userVM.Password,
@@ -69,7 +50,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<string> CreateAccountIfNotExists(ClientVM clientVM)
         {
-            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
+            Client? client = await context.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
             if (client == null)
             {
                 client = new Client { 
@@ -87,7 +68,7 @@ namespace PaybillAPI.Repositories
                     IsActivated = (sbyte)clientVM.IsActivated.GetHashCode(),
                     SecurityKey = clientVM.SecurityKey,
                 };
-                await dbContext.Clients.AddAsync(client);
+                await context.Clients.AddAsync(client);
                 await SaveChangesAsync();
                 clientVM.SecurityKey = client.SecurityKey;
                 return AppConstants.SUCCESS;
@@ -98,7 +79,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<string> UpdateProfile(ClientVM clientVM)
         {
-            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
+            Client? client = await context.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
             if (client != null)
             {
                 client.ClientUniqueId = clientVM.ClientUniqueId;
@@ -122,7 +103,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<UserVM>> GetUsers()
         {
-            return await dbContext.Users.Select(row => new UserVM { 
+            return await context.Users.Select(row => new UserVM { 
                 UserId = row.UserId,
                 FirstName = row.FirstName,
                 LastName = row.LastName,
@@ -134,7 +115,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest)
         {
-            User? user = await dbContext.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1).FirstOrDefaultAsync();
+            User? user = await context.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1).FirstOrDefaultAsync();
             if(user == null)
                 return new AuthResponseVM() { IsSuccess = false, Message = "Security information failed!" };
 
@@ -148,7 +129,7 @@ namespace PaybillAPI.Repositories
             user.SecurityKey = securityKey;
             user.UpdatedDate = DateTime.Now;
             await SaveChangesAsync();
-            SettingVM setting = await dbContext.Settings.Select(row => new SettingVM()
+            DashboardPref dashboardPref = await context.Settings.Select(row => new DashboardPref()
             {
                 IsAutoEmail = row.IsAutoEmail == 1,
                 IsBackupOnExit = row.IsBackupOnExit == 1,
@@ -159,9 +140,9 @@ namespace PaybillAPI.Repositories
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
                 IsSettingsUpdated = true
 
-            }).FirstOrDefaultAsync() ?? new SettingVM() { IsSettingsUpdated = false };
+            }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
 
-            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
+            Client client = await context.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
 
             return new AuthResponseVM()
             {
@@ -184,7 +165,7 @@ namespace PaybillAPI.Repositories
                         IsActivated = client.IsActivated == 1
                     }
                 },
-                Setting = setting
+                Pref = dashboardPref
             };
         }
 

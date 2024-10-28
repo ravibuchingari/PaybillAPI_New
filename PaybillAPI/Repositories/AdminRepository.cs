@@ -3,30 +3,12 @@ using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
+using System;
 
 namespace PaybillAPI.Repositories
 {
-    public class AdminRepository(AppDBContext dbContext) : IAdminRepository
+    public class AdminRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), IAdminRepository
     {
-        private static void DetachedEntries(DbUpdateException ex)
-        {
-            foreach (var entry in ex.Entries)
-                entry.State = EntityState.Detached;
-        }
-
-        private async Task SaveChangesAsync()
-        {
-            try
-            {
-                await dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                DetachedEntries(ex);
-                SharedMethod.ThrowError(ex);
-            }
-        }
-
         public async Task<SettingVM?> GetSettings()
         {
             return await dbContext.Settings.Select(row => new SettingVM()
@@ -62,9 +44,9 @@ namespace PaybillAPI.Repositories
             }).FirstOrDefaultAsync();
         }
 
-        private Setting PrepareSettings(SettingVM settingVM, Setting setting)
+        private static Setting PrepareSettings(SettingVM settingVM, Setting setting)
         {
-            setting.CompanyName = settingVM.HeaderModel.CompanyName;
+            setting.CompanyName = settingVM.HeaderModel?.CompanyName!;
             setting.SmtpHost = settingVM.SmtpHost;
             setting.SmtpPort = settingVM.SmtpPort;
             setting.EmailFrom = settingVM.EmailFrom;
@@ -78,7 +60,7 @@ namespace PaybillAPI.Repositories
             setting.Header2 = settingVM.HeaderModel.Header2;
             setting.Header3 = settingVM.HeaderModel.Header3;
             setting.Gstin = settingVM.HeaderModel.GSTIN;
-            setting.GstslabRequired = settingVM.HeaderModel.GSTSlabRequired.GetHashCode();
+            setting.GstslabRequired = settingVM.HeaderModel.GSTSlabRequired.GetHashCode()!;
             setting.AddItemOnSelected = settingVM.AddItemOnSelected.GetHashCode();
             setting.InvoicePrefix = settingVM.InvoicePrefix;
             setting.IsCreateContactOnParty = settingVM.IsCreateContactOnParty.GetHashCode();
@@ -92,7 +74,7 @@ namespace PaybillAPI.Repositories
         public async Task<ResponseMessage> UpdateSettings(int userRowId, SettingVM settingVM)
         {
             Setting? setting = await dbContext.Settings.FirstOrDefaultAsync();
-            if(setting != null)
+            if (setting != null)
             {
                 setting = PrepareSettings(settingVM, setting);
                 setting.UpdatedDate = DateTime.Now;
@@ -108,7 +90,8 @@ namespace PaybillAPI.Repositories
                 await dbContext.Settings.AddAsync(setting);
             }
             await SaveChangesAsync();
-            return await Task.FromResult(new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS));
+            return new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS);
         }
+
     }
 }

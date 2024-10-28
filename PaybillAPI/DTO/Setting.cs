@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace PaybillAPI.DTOTemp;
+namespace PaybillAPI.DTO;
 
 [Table("settings")]
 [Index("CreatedBy", Name = "fk_settings_created_by_idx")]

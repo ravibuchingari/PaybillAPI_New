@@ -36,8 +36,7 @@ namespace PaybillAPI.ViewModel
 
         public bool IsAlertOnMinimumStock { get; set; }
         public bool IsSettingsUpdated { get; set; }
-
-        public ReceiptHeader? HeaderModel { get; set; }
+        public ReceiptHeader HeaderModel { get; set; } = new ReceiptHeader();
 
     }
 }
