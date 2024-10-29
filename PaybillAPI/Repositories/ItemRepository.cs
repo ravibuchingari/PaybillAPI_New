@@ -5,23 +5,15 @@ using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
+using System;
+using System.Runtime.CompilerServices;
+using static Google.Protobuf.Compiler.CodeGeneratorResponse.Types;
 
 namespace PaybillAPI.Repositories
 {
     public class ItemRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), IItemRepository
     {
-        public async Task<IEnumerable<ItemVM>> GetMinStockItems()
-        {
-            return await dbContext.Items.Where(col => col.IsActive == 1 && (col.OpeningStock + col.ClosingStock) < col.MinimumStock).Select(row => new ItemVM()
-            {
-                ItemCode = row.ItemCode,
-                ItemName = row.ItemName,
-                Mrp = row.Mrp,
-                SalesPrice = row.SalesPrice,
-                ClosingStock = row.ClosingStock,
-                Measure = row.Measure
-            }).ToListAsync();
-        }
+        
 
 
         #region "Category"
@@ -83,7 +75,6 @@ namespace PaybillAPI.Repositories
         }
 
         #endregion
-
 
         #region "GST"
 
@@ -164,6 +155,115 @@ namespace PaybillAPI.Repositories
             }
             else
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "GST"));
+        }
+
+        #endregion
+
+        #region "Item"
+
+        private static Item PrepareItem(ItemVM itemVM, Item item)
+        {
+            item.CategoryId = itemVM.CategoryId;
+            item.GstId = itemVM.GstId;
+            item.ItemCode = itemVM.ItemCode;
+            item.ItemName = itemVM.ItemName;
+            item.AliasName = itemVM.AliasName;
+            item.Mrp = itemVM.Mrp;
+            item.SalesPrice = itemVM.SalesPrice;
+            item.PurchasePrice = itemVM.PurchasePrice;
+            item.HSncode = itemVM.HSncode;
+            item.Measure = itemVM.Measure;
+            item.OpeningStock = itemVM.OpeningStock;
+            item.MinimumStock = itemVM.MinimumStock;
+            item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
+            return item;
+        }
+        private static ItemVM ApplyItem(Item row)
+        {
+            return new ItemVM()
+            {
+                ItemId = row.ItemId,
+                CategoryId = row.CategoryId,
+                GstId = row.GstId,
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                AliasName = row.AliasName,
+                Mrp = row.Mrp,
+                SalesPrice = row.SalesPrice,
+                PurchasePrice = row.PurchasePrice,
+                HSncode = row.HSncode,
+                Measure = row.Measure,
+                OpeningStock = row.OpeningStock,
+                ClosingStock = row.OpeningStock + row.ClosingStock,
+                IsActive = row.IsActive == 1
+            };
+        }
+
+        public async Task<ResponseMessage> UpsertItem(ItemVM itemVM, int userRowId)
+        {
+            if(itemVM.ItemId == 0)
+            {
+                Item item = PrepareItem(itemVM, new Item());
+                item.CreatedDate = DateTime.Now;
+                item.CreatedBy = userRowId;
+                item.UpdatedDate = DateTime.Now;
+                item.UpdatedBy = userRowId;
+                await dbContext.Items.AddAsync(item);
+            }
+            else
+            {
+                Item? item = await dbContext.Items.Where(col => col.ItemId == itemVM.ItemId).FirstOrDefaultAsync();
+                if(item == null)
+                    return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
+                item = PrepareItem(itemVM, item);
+                item.UpdatedDate = DateTime.Now;
+                item.UpdatedBy = userRowId;
+            }
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: $"{(itemVM.ItemId == 0 ? "Item created successfully" : "Item updated successfully")}");
+        }
+
+        public async Task<IEnumerable<ItemVM>> GetItems(bool isActive)
+        {
+            if (isActive)
+                return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => ApplyItem(row)).ToListAsync();
+            else
+                return await dbContext.Items.Select(row => ApplyItem(row)).ToListAsync();
+        }
+
+        public async Task<ItemVM> GetItemDetails(int itemId)
+        {
+            Item? item = await dbContext.Items.FirstOrDefaultAsync(col => col.ItemId == itemId);
+            if (item != null)
+                return ApplyItem(item);
+            else
+                throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
+        }
+
+        public async Task<ResponseMessage> DeleteItem(int itemId)
+        {
+            Item? item = await dbContext.Items.FirstOrDefaultAsync(col => col.ItemId == itemId);
+            if (item != null)
+            {
+                dbContext.Items.Remove(item);
+                await SaveChangesAsync();
+                return new ResponseMessage(isSuccess: true, message: string.Format(AppConstants.ITEM_DELETED, "item"));
+            }
+            else
+                throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
+        }
+
+        public async Task<IEnumerable<ItemVM>> GetMinStockItems()
+        {
+            return await dbContext.Items.Where(col => col.IsActive == 1 && (col.OpeningStock + col.ClosingStock) < col.MinimumStock).Select(row => new ItemVM()
+            {
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                Mrp = row.Mrp,
+                SalesPrice = row.SalesPrice,
+                ClosingStock = row.ClosingStock + row.OpeningStock,
+                Measure = row.Measure
+            }).ToListAsync();
         }
 
         #endregion
