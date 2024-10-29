@@ -7,57 +7,47 @@ using Microsoft.EntityFrameworkCore;
 namespace PaybillAPI.DTO;
 
 [Table("items")]
+[Index("CategoryId", Name = "fk_items_category_id_idx")]
+[Index("CreatedBy", Name = "fk_items_created_by_idx")]
+[Index("GstId", Name = "fk_items_gst_id_idx")]
+[Index("UpdatedBy", Name = "fk_items_updated_by_idx")]
 public partial class Item
 {
     [Key]
-    [Column("itemId")]
     public int ItemId { get; set; }
 
-    [Column("categoryId")]
     public int CategoryId { get; set; }
 
-    [Column("gstId")]
     public int? GstId { get; set; }
 
-    [Column("itemCode")]
     [StringLength(50)]
     public string ItemCode { get; set; } = null!;
 
-    [Column("itemName")]
     [StringLength(100)]
     public string ItemName { get; set; } = null!;
 
-    [Column("aliasName")]
     [StringLength(250)]
     public string? AliasName { get; set; }
 
-    [Column("mrp")]
     public float Mrp { get; set; }
 
-    [Column("salesPrice")]
     public float SalesPrice { get; set; }
 
-    [Column("purchasePrice")]
     public float PurchasePrice { get; set; }
 
-    [Column("hSNCode")]
+    [Column("HSNCode")]
     [StringLength(20)]
-    public string? HSncode { get; set; }
+    public string? Hsncode { get; set; }
 
-    [Column("measure")]
     [StringLength(20)]
     public string Measure { get; set; } = null!;
 
-    [Column("openingStock")]
     public double OpeningStock { get; set; }
 
-    [Column("closingStock")]
     public double ClosingStock { get; set; }
 
-    [Column("minimumStock")]
     public double MinimumStock { get; set; }
 
-    [Column("isActive")]
     public sbyte IsActive { get; set; }
 
     [Column(TypeName = "datetime")]
@@ -69,4 +59,20 @@ public partial class Item
     public int CreatedBy { get; set; }
 
     public int UpdatedBy { get; set; }
+
+    [ForeignKey("CategoryId")]
+    [InverseProperty("Items")]
+    public virtual Category Category { get; set; } = null!;
+
+    [ForeignKey("CreatedBy")]
+    [InverseProperty("ItemCreatedByNavigations")]
+    public virtual User CreatedByNavigation { get; set; } = null!;
+
+    [ForeignKey("GstId")]
+    [InverseProperty("Items")]
+    public virtual Gst? Gst { get; set; }
+
+    [ForeignKey("UpdatedBy")]
+    [InverseProperty("ItemUpdatedByNavigations")]
+    public virtual User UpdatedByNavigation { get; set; } = null!;
 }

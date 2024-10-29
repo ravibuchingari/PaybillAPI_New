@@ -26,4 +26,7 @@ public partial class Category
     public int CreatedBy { get; set; }
 
     public int UpdatedBy { get; set; }
+
+    [InverseProperty("Category")]
+    public virtual ICollection<Item> Items { get; set; } = new List<Item>();
 }

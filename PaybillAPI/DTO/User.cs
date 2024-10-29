@@ -49,6 +49,12 @@ public partial class User
     public DateTime UpdatedDate { get; set; }
 
     [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<Item> ItemCreatedByNavigations { get; set; } = new List<Item>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<Item> ItemUpdatedByNavigations { get; set; } = new List<Item>();
+
+    [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Setting> SettingCreatedByNavigations { get; set; } = new List<Setting>();
 
     [InverseProperty("UpdatedByNavigation")]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -163,47 +164,49 @@ namespace PaybillAPI.Repositories
 
         private static Item PrepareItem(ItemVM itemVM, Item item)
         {
-            item.CategoryId = itemVM.CategoryId;
-            item.GstId = itemVM.GstId;
+            item.CategoryId = itemVM.CategoryModel!.CategoryId;
+            if(itemVM.GstModel != null)
+                item.GstId = itemVM.GstModel.GstId;
             item.ItemCode = itemVM.ItemCode;
             item.ItemName = itemVM.ItemName;
             item.AliasName = itemVM.AliasName;
             item.Mrp = itemVM.Mrp;
             item.SalesPrice = itemVM.SalesPrice;
             item.PurchasePrice = itemVM.PurchasePrice;
-            item.HSncode = itemVM.HSncode;
+            item.Hsncode = itemVM.HSncode;
             item.Measure = itemVM.Measure;
             item.OpeningStock = itemVM.OpeningStock;
             item.MinimumStock = itemVM.MinimumStock;
             item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
             return item;
         }
-        private static ItemVM ApplyItem(Item row)
+        /*private static ItemVM ApplyItem(Item row)
         {
             return new ItemVM()
             {
                 ItemId = row.ItemId,
-                CategoryId = row.CategoryId,
-                GstId = row.GstId,
                 ItemCode = row.ItemCode,
                 ItemName = row.ItemName,
                 AliasName = row.AliasName,
                 Mrp = row.Mrp,
                 SalesPrice = row.SalesPrice,
                 PurchasePrice = row.PurchasePrice,
-                HSncode = row.HSncode,
+                HSncode = row.Hsncode,
                 Measure = row.Measure,
                 OpeningStock = row.OpeningStock,
                 ClosingStock = row.OpeningStock + row.ClosingStock,
-                IsActive = row.IsActive == 1
+                IsActive = row.IsActive == 1,
+                CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                GstModel = row.GstId != null ? new GstVM() { GstId = Convert.ToInt32(row.GstId) } : null
             };
-        }
+        }*/
 
         public async Task<ResponseMessage> UpsertItem(ItemVM itemVM, int userRowId)
         {
+            Item? item;
             if(itemVM.ItemId == 0)
             {
-                Item item = PrepareItem(itemVM, new Item());
+                item = PrepareItem(itemVM, new Item());
                 item.CreatedDate = DateTime.Now;
                 item.CreatedBy = userRowId;
                 item.UpdatedDate = DateTime.Now;
@@ -212,7 +215,7 @@ namespace PaybillAPI.Repositories
             }
             else
             {
-                Item? item = await dbContext.Items.Where(col => col.ItemId == itemVM.ItemId).FirstOrDefaultAsync();
+                item = await dbContext.Items.Where(col => col.ItemId == itemVM.ItemId).FirstOrDefaultAsync();
                 if(item == null)
                     return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
                 item = PrepareItem(itemVM, item);
@@ -220,22 +223,88 @@ namespace PaybillAPI.Repositories
                 item.UpdatedBy = userRowId;
             }
             await SaveChangesAsync();
-            return new ResponseMessage(isSuccess: true, message: $"{(itemVM.ItemId == 0 ? "Item created successfully" : "Item updated successfully")}");
+            return new ResponseMessage(isSuccess: true, message: $"{(itemVM.ItemId == 0 ? "Item created successfully" : "Item updated successfully")}", data: item.ItemId.ToString());
         }
 
-        public async Task<IEnumerable<ItemVM>> GetItems(bool isActive)
+        public async Task<IEnumerable<ItemVM>> GetItems(string filter)
         {
-            if (isActive)
-                return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => ApplyItem(row)).ToListAsync();
+            if (filter.Trim().IsNullOrEmpty())
+                return await dbContext.Items.Select(row => new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    AliasName = row.AliasName,
+                    Mrp = row.Mrp,
+                    SalesPrice = row.SalesPrice,
+                    PurchasePrice = row.PurchasePrice,
+                    HSncode = row.Hsncode,
+                    Measure = row.Measure,
+                    OpeningStock = row.OpeningStock,
+                    ClosingStock = row.OpeningStock + row.ClosingStock,
+                    IsActive = row.IsActive == 1,
+                    CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                    GstModel = row.GstId != null ? new GstVM() { 
+                        GstId = row.Gst!.GstId,
+                        SgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.SgstPer,
+                        IgstPer = row.Gst.IgstPer
+                    } : null
+                }).ToListAsync();
             else
-                return await dbContext.Items.Select(row => ApplyItem(row)).ToListAsync();
+                return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter) || col.ItemName.StartsWith(filter)).Select(row => new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    AliasName = row.AliasName,
+                    Mrp = row.Mrp,
+                    SalesPrice = row.SalesPrice,
+                    PurchasePrice = row.PurchasePrice,
+                    HSncode = row.Hsncode,
+                    Measure = row.Measure,
+                    OpeningStock = row.OpeningStock,
+                    ClosingStock = row.OpeningStock + row.ClosingStock,
+                    IsActive = row.IsActive == 1,
+                    CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                    GstModel = row.GstId != null ? new GstVM()
+                    {
+                        GstId = row.Gst!.GstId,
+                        SgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.SgstPer,
+                        IgstPer = row.Gst.IgstPer
+                    } : null
+                }).ToListAsync();
         }
 
         public async Task<ItemVM> GetItemDetails(int itemId)
         {
-            Item? item = await dbContext.Items.FirstOrDefaultAsync(col => col.ItemId == itemId);
-            if (item != null)
-                return ApplyItem(item);
+            ItemVM? itemVM = await dbContext.Items.Select(row => new ItemVM()
+            {
+                ItemId = row.ItemId,
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                AliasName = row.AliasName,
+                Mrp = row.Mrp,
+                SalesPrice = row.SalesPrice,
+                PurchasePrice = row.PurchasePrice,
+                HSncode = row.Hsncode,
+                Measure = row.Measure,
+                OpeningStock = row.OpeningStock,
+                ClosingStock = row.OpeningStock + row.ClosingStock,
+                IsActive = row.IsActive == 1,
+                CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                GstModel = row.GstId != null ? new GstVM()
+                {
+                    GstId = row.Gst!.GstId,
+                    SgstPer = row.Gst.SgstPer,
+                    CgstPer = row.Gst.SgstPer,
+                    IgstPer = row.Gst.IgstPer
+                } : null
+            }).FirstOrDefaultAsync(col => col.ItemId == itemId);
+
+            if (itemVM != null)
+                return itemVM;
             else
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
         }

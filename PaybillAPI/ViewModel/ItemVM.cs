@@ -7,10 +7,6 @@ namespace PaybillAPI.ViewModel
     {
         public int ItemId { get; set; }
 
-        public int CategoryId { get; set; }
-
-        public int? GstId { get; set; }
-
         public string ItemCode { get; set; } = null!;
 
         public string ItemName { get; set; } = null!;
@@ -34,6 +30,9 @@ namespace PaybillAPI.ViewModel
         public double MinimumStock { get; set; }
 
         public bool IsActive { get; set; }
+
+        public CategoryVM? CategoryModel { get; set; }
+        public GstVM? GstModel { get; set; }
 
     }
 }

@@ -10,19 +10,14 @@ namespace PaybillAPI.DTO;
 public partial class Gst
 {
     [Key]
-    [Column("gstId")]
     public int GstId { get; set; }
 
-    [Column("cgstPer")]
     public float CgstPer { get; set; }
 
-    [Column("sgstPer")]
     public float SgstPer { get; set; }
 
-    [Column("igstPer")]
     public float IgstPer { get; set; }
 
-    [Column("isActive")]
     public sbyte IsActive { get; set; }
 
     [Column(TypeName = "datetime")]
@@ -34,4 +29,7 @@ public partial class Gst
     public int CreatedBy { get; set; }
 
     public int UpdatedBy { get; set; }
+
+    [InverseProperty("Gst")]
+    public virtual ICollection<Item> Items { get; set; } = new List<Item>();
 }

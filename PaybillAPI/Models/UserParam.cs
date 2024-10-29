@@ -10,6 +10,7 @@ namespace PaybillAPI.Models
         public string ClientId { get; set; } = null!;
         public SettingVM? SettingModel { get; set; }
         public CategoryVM? CategoryModel { get; set; }
-        public GstVM? gstModel { get; set; }
+        public GstVM? GstModel { get; set; }
+        public ItemVM? ItemModel { get; set; }
     }
 }
