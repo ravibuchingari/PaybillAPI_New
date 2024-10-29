@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
-using PaybillAPI.Repositories;
+using PaybillAPI.Repositories.Service;
 
 namespace PaybillAPI.Controllers
 {
@@ -27,7 +27,7 @@ namespace PaybillAPI.Controllers
         {
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
-            return Ok(await adminRepository.UpdateSettings(Convert.ToInt32(User.Identity?.Name), userParam.Setting!));
+            return Ok(await adminRepository.UpdateSettings(Convert.ToInt32(User.Identity?.Name), userParam.SettingModel!));
         }
     }
 }

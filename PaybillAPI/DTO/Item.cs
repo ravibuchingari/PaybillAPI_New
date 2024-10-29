@@ -58,7 +58,7 @@ public partial class Item
     public double MinimumStock { get; set; }
 
     [Column("isActive")]
-    public int IsActive { get; set; }
+    public sbyte IsActive { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }

@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
+using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
 using System.Collections;
 using System.Collections.Immutable;
@@ -42,7 +43,7 @@ namespace PaybillAPI.Repositories
                     IsActive = (sbyte)userVM.IsActive.GetHashCode(),
                 });
                 await SaveChangesAsync();
-                return AppConstants.SUCCESS;
+                return AppConstants.RESPONSE_SUCCESS;
             }
             else
                 return "User account has already been created with the same Id.";
@@ -71,13 +72,13 @@ namespace PaybillAPI.Repositories
                 await context.Clients.AddAsync(client);
                 await SaveChangesAsync();
                 clientVM.SecurityKey = client.SecurityKey;
-                return AppConstants.SUCCESS;
+                return AppConstants.RESPONSE_SUCCESS;
             }
             else
-                return AppConstants.SUCCESS;
+                return AppConstants.RESPONSE_SUCCESS;
         }
 
-        public async Task<string> UpdateProfile(ClientVM clientVM)
+        public async Task<ResponseMessage> UpdateProfile(ClientVM clientVM)
         {
             Client? client = await context.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
             if (client != null)
@@ -95,10 +96,10 @@ namespace PaybillAPI.Repositories
                 client.IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode();
                 client.IsActivated = (sbyte)clientVM.IsActivated.GetHashCode();
                 await SaveChangesAsync();
-                return AppConstants.SUCCESS;
+                return new ResponseMessage(isSuccess: true, message: "Profile has been updated successfully");
             }
             else
-                return "Client not found.";
+                return new ResponseMessage(isSuccess: false, message: "Client not found");
         }
 
         public async Task<IEnumerable<UserVM>> GetUsers()
@@ -138,6 +139,7 @@ namespace PaybillAPI.Repositories
                 IsCreateContactOnParty = row.IsCreateContactOnParty == 1,
                 IsCompressBackup = row.IsCompressBackup == 1,
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
+                IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };

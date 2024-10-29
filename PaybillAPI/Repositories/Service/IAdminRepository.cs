@@ -1,7 +1,7 @@
 ﻿using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
 
-namespace PaybillAPI.Repositories
+namespace PaybillAPI.Repositories.Service
 {
     public interface IAdminRepository
     {

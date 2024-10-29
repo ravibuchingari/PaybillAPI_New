@@ -1,7 +1,7 @@
-﻿
+﻿using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
 
-namespace PaybillAPI.Repositories
+namespace PaybillAPI.Repositories.Service
 {
     public interface ISharedRepository
     {
@@ -10,7 +10,7 @@ namespace PaybillAPI.Repositories
         Task<IEnumerable<UserVM>> GetUsers();
         Task<bool> IsValidAccount(string ClientUniqueId, string clientId);
         Task<bool> IsValidUser(int userRowId, string securityKey);
-        Task<string> UpdateProfile(ClientVM clientVM);
+        Task<ResponseMessage> UpdateProfile(ClientVM clientVM);
         Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest);
     }
 }

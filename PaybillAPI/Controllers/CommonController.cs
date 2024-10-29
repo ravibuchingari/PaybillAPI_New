@@ -8,7 +8,7 @@ using MySqlX.XDevAPI;
 using Org.BouncyCastle.Security;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
-using PaybillAPI.Repositories;
+using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
 using System.Text;
 
@@ -24,8 +24,8 @@ namespace PaybillAPI.Controllers
         [Route("client/profile/update")]
         public async Task<IActionResult> UpdateProfile([FromBody] ClientVM client)
         {
-            string response = await sharedRepository.UpdateProfile(client);
-            return response.Equals(AppConstants.SUCCESS) ? Ok(new ResponseMessage(isSuccess: true, message: "Profile has been updated successfully")) : BadRequest(response);
+            ResponseMessage response = await sharedRepository.UpdateProfile(client);
+            return response.IsSuccess ? Ok(response) : BadRequest(response.Message);
         }
 
         [HttpPost]
@@ -42,7 +42,7 @@ namespace PaybillAPI.Controllers
             user.Password = DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV);
             user.SaltKey = DataProtection.EncryptWithIV(saltKey, AppConstants.API_AES_KEY_AND_IV);
             string response = await sharedRepository.CreateUserIfNotExists(user);
-            return response.Equals(AppConstants.SUCCESS) ? Ok(new ResponseMessage(isSuccess: true, message: "User created successfully")) : BadRequest(response);
+            return response.Equals(AppConstants.RESPONSE_SUCCESS) ? Ok(new ResponseMessage(isSuccess: true, message: "User created successfully")) : BadRequest(response);
         }
 
        

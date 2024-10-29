@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.Middlewares;
 using PaybillAPI.Repositories;
+using PaybillAPI.Repositories.Service;
 using Serilog;
 using System.Text.Json;
 

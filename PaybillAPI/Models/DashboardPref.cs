@@ -10,5 +10,6 @@
         public bool IsCompressBackup { get; set; }
         public bool IsShadowMenuButton { get; set; }
         public bool IsSettingsUpdated { get; set; }
+        public bool IsAlertOnMinimumStock { get; set; }
     }
 }

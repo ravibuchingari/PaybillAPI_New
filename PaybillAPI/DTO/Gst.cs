@@ -23,7 +23,7 @@ public partial class Gst
     public float IgstPer { get; set; }
 
     [Column("isActive")]
-    public int IsActive { get; set; }
+    public sbyte IsActive { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }

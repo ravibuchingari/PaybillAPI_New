@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
-using PaybillAPI.Repositories;
+using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Controllers
