@@ -1,6 +1,4 @@
 ﻿using Authentication.JWTAuthenticationManager;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;

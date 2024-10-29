@@ -1,20 +1,16 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
-using System;
-using System.Runtime.CompilerServices;
-using static Google.Protobuf.Compiler.CodeGeneratorResponse.Types;
 
 namespace PaybillAPI.Repositories
 {
     public class ItemRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), IItemRepository
     {
-        
+
 
 
         #region "Category"
@@ -165,7 +161,7 @@ namespace PaybillAPI.Repositories
         private static Item PrepareItem(ItemVM itemVM, Item item)
         {
             item.CategoryId = itemVM.CategoryModel!.CategoryId;
-            if(itemVM.GstModel != null)
+            if (itemVM.GstModel != null)
                 item.GstId = itemVM.GstModel.GstId;
             item.ItemCode = itemVM.ItemCode;
             item.ItemName = itemVM.ItemName;
@@ -204,7 +200,7 @@ namespace PaybillAPI.Repositories
         public async Task<ResponseMessage> UpsertItem(ItemVM itemVM, int userRowId)
         {
             Item? item;
-            if(itemVM.ItemId == 0)
+            if (itemVM.ItemId == 0)
             {
                 item = PrepareItem(itemVM, new Item());
                 item.CreatedDate = DateTime.Now;
@@ -216,7 +212,7 @@ namespace PaybillAPI.Repositories
             else
             {
                 item = await dbContext.Items.Where(col => col.ItemId == itemVM.ItemId).FirstOrDefaultAsync();
-                if(item == null)
+                if (item == null)
                     return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
                 item = PrepareItem(itemVM, item);
                 item.UpdatedDate = DateTime.Now;
@@ -244,7 +240,8 @@ namespace PaybillAPI.Repositories
                     ClosingStock = row.OpeningStock + row.ClosingStock,
                     IsActive = row.IsActive == 1,
                     CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                    GstModel = row.GstId != null ? new GstVM() { 
+                    GstModel = row.GstId != null ? new GstVM()
+                    {
                         GstId = row.Gst!.GstId,
                         SgstPer = row.Gst.SgstPer,
                         CgstPer = row.Gst.SgstPer,

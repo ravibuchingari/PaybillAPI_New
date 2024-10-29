@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using PaybillAPI.Models;
+﻿using PaybillAPI.Models;
 
 namespace PaybillAPI.ViewModel
 {

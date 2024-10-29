@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace PaybillAPI.ViewModel
+﻿namespace PaybillAPI.ViewModel
 {
     public class CategoryVM
     {

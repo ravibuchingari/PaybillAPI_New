@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace PaybillAPI.DTO;
 
@@ -71,6 +69,12 @@ public partial class Item
     [ForeignKey("GstId")]
     [InverseProperty("Items")]
     public virtual Gst? Gst { get; set; }
+
+    [InverseProperty("Item")]
+    public virtual ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
+
+    [InverseProperty("Item")]
+    public virtual ICollection<SalesItem> SalesItems { get; set; } = new List<SalesItem>();
 
     [ForeignKey("UpdatedBy")]
     [InverseProperty("ItemUpdatedByNavigations")]

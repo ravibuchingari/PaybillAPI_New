@@ -16,7 +16,7 @@ namespace PaybillAPI.Repositories
         {
             try
             {
-                if(dbContext !=  null)
+                if (dbContext != null)
                     await dbContext.SaveChangesAsync();
             }
             catch (DbUpdateException ex)

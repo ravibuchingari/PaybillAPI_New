@@ -1,14 +1,9 @@
-﻿using Authentication.JWTAuthenticationManager;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
-using System.Collections;
-using System.Collections.Immutable;
-using System.Reflection;
 using System.Text;
 
 namespace PaybillAPI.Repositories
@@ -22,7 +17,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<bool> IsValidUser(int userRowId, string securityKey)
         {
-            return await context.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey,AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
+            return await context.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey, AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
         }
 
         public async Task<string> CreateUserIfNotExists(UserVM userVM)
@@ -54,8 +49,9 @@ namespace PaybillAPI.Repositories
             Client? client = await context.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
             if (client == null)
             {
-                client = new Client { 
-                    ClientUniqueId = clientVM.ClientUniqueId ,
+                client = new Client
+                {
+                    ClientUniqueId = clientVM.ClientUniqueId,
                     ClientId = clientVM.ClientId,
                     ClientName = clientVM.ClientName,
                     BusinessType = clientVM.BusinessType,
@@ -104,7 +100,8 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<UserVM>> GetUsers()
         {
-            return await context.Users.Select(row => new UserVM { 
+            return await context.Users.Select(row => new UserVM
+            {
                 UserId = row.UserId,
                 FirstName = row.FirstName,
                 LastName = row.LastName,
@@ -117,7 +114,7 @@ namespace PaybillAPI.Repositories
         public async Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest)
         {
             User? user = await context.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1).FirstOrDefaultAsync();
-            if(user == null)
+            if (user == null)
                 return new AuthResponseVM() { IsSuccess = false, Message = "Security information failed!" };
 
             byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(authRequest.Password), Convert.FromBase64String(DataProtection.DecryptWithIV(user.UserSaltKey, AppConstants.API_AES_KEY_AND_IV)));
@@ -154,7 +151,7 @@ namespace PaybillAPI.Repositories
                     UserRowId = user.UserRowId,
                     UserId = user.UserId,
                     FirstName = user.FirstName,
-                    LastName = user.LastName,   
+                    LastName = user.LastName,
                     Mobile = user.Mobile,
                     Address = user.Address ?? string.Empty,
                     IsAdmin = user.IsAdmin == 1,
@@ -171,7 +168,7 @@ namespace PaybillAPI.Repositories
             };
         }
 
-       
-        
+
+
     }
 }

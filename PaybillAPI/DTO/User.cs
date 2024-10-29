@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace PaybillAPI.DTO;
 
@@ -55,8 +53,29 @@ public partial class User
     public virtual ICollection<Item> ItemUpdatedByNavigations { get; set; } = new List<Item>();
 
     [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<Party> PartyCreatedByNavigations { get; set; } = new List<Party>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<Party> PartyUpdatedByNavigations { get; set; } = new List<Party>();
+
+    [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<Purchase> PurchaseCreatedByNavigations { get; set; } = new List<Purchase>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<Purchase> PurchaseUpdatedByNavigations { get; set; } = new List<Purchase>();
+
+    [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
+
+    [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Setting> SettingCreatedByNavigations { get; set; } = new List<Setting>();
 
     [InverseProperty("UpdatedByNavigation")]
     public virtual ICollection<Setting> SettingUpdatedByNavigations { get; set; } = new List<Setting>();
+
+    [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<Transaction> TransactionCreatedByNavigations { get; set; } = new List<Transaction>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<Transaction> TransactionUpdatedByNavigations { get; set; } = new List<Transaction>();
 }
