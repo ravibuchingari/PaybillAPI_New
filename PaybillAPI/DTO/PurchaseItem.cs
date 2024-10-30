@@ -32,6 +32,18 @@ public partial class PurchaseItem
 
     public double TotalAmount { get; set; }
 
+    public float CgstPer { get; set; }
+
+    public float SgstPer { get; set; }
+
+    public float IgstPer { get; set; }
+
+    public double CgstRs { get; set; }
+
+    public double SgstRs { get; set; }
+
+    public double IgstRs { get; set; }
+
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 

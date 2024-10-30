@@ -49,4 +49,7 @@ public partial class SalesItemsDeleted
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime DeletedDate { get; set; }
 }

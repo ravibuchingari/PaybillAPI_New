@@ -5,5 +5,6 @@ namespace PaybillAPI.Repositories
 {
     public class PurchaseRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), IPurchaseRepository
     {
+
     }
 }

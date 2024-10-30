@@ -46,6 +46,9 @@ public partial class SalesItem
 
     public double IgstRs { get; set; }
 
+    [Column(TypeName = "datetime")]
+    public DateTime CreatedDate { get; set; }
+
     [ForeignKey("ItemId")]
     [InverseProperty("SalesItems")]
     public virtual Item Item { get; set; } = null!;
