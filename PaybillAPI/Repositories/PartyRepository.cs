@@ -98,5 +98,19 @@ namespace PaybillAPI.Repositories
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, isVendor ? "Vendor" : "Party"));
         }
 
+        public async Task<IEnumerable<PartyVM>> GetActiveParties(bool isVendor, bool isAll)
+        {
+            return await dbContext.Parties.Where(col => col.IsActive == 1 && col.IsVendor == (isAll ? col.IsVendor : isVendor.GetHashCode())).Select(row => new PartyVM()
+            {
+                PartyId = row.PartyId,
+                PartyName = row.PartyName,
+                PartyAddress = row.PartyAddress,
+                PartyMobile = row.PartyMobile,
+                PartyEmail = row.PartyEmail,
+                PartyGstNo = row.PartyGstNo,
+                PartyRemarks = row.PartyRemarks
+            }).ToListAsync();
+        }
+
     }
 }

@@ -48,5 +48,12 @@ namespace PaybillAPI.Controllers
             return Ok(await partyRepository.DeleteParty(int.Parse(partyId), isVendor));
         }
 
+        [HttpGet]
+        [Route("party/active/list/{isVendor}/{isAll}")]
+        public async Task<IActionResult> GetActiveParties([FromRoute] bool isVendor, [FromRoute] bool isAll)
+        {
+            return Ok(await partyRepository.GetActiveParties(isVendor, isAll));
+        }
+
     }
 }

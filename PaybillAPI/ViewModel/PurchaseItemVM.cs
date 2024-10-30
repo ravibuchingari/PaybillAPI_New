@@ -14,7 +14,19 @@
 
         public double DiscountInRs { get; set; }
 
+        public float CgstPer { get; set; }
+
+        public float SgstPer { get; set; }
+
+        public float IgstPer { get; set; }
+
         public float GstPer { get; set; }
+
+        public double CgstRs { get; set; }
+
+        public double SgstRs { get; set; }
+
+        public double IgstRs { get; set; }
 
         public double GstAmount { get; set; }
 

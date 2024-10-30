@@ -112,12 +112,19 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.GetItems(filter ?? string.Empty));
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("item/{itemId}/details")]
         public async Task<IActionResult> GetItemDetails([FromRoute] string itemId)
         {
             itemId = DataProtection.UrlDecode(itemId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await itemRepository.GetItemDetails(int.Parse(itemId)));
+        }
+
+        [HttpGet]
+        [Route("item/details/{itemCode}")]
+        public async Task<IActionResult> GetItemDetailsOnCode([FromRoute] string itemCode)
+        {
+            return Ok(await itemRepository.GetItemDetailsOnCode(itemCode));
         }
 
         [HttpPost]
@@ -138,6 +145,13 @@ namespace PaybillAPI.Controllers
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.GetMinStockItems());
+        }
+
+        [HttpGet]
+        [Route("item/search")]
+        public async Task<IActionResult> SearchItems([FromQuery] string? filter)
+        {
+            return Ok(await itemRepository.SearchItems());
         }
 
 

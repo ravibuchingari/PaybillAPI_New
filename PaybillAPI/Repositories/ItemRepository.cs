@@ -284,6 +284,34 @@ namespace PaybillAPI.Repositories
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
         }
 
+        public async Task<ItemVM?> GetItemDetailsOnCode(string itemCode)
+        {
+            return await dbContext.Items.Select(row => new ItemVM()
+            {
+                ItemId = row.ItemId,
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                AliasName = row.AliasName,
+                Mrp = row.Mrp,
+                SalesPrice = row.SalesPrice,
+                PurchasePrice = row.PurchasePrice,
+                HSncode = row.Hsncode,
+                Measure = row.Measure,
+                OpeningStock = row.OpeningStock,
+                ClosingStock = row.OpeningStock + row.ClosingStock,
+                IsActive = row.IsActive == 1,
+                CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                GstModel = row.GstId != null ? new GstVM()
+                {
+                    GstId = row.Gst!.GstId,
+                    SgstPer = row.Gst.SgstPer,
+                    CgstPer = row.Gst.SgstPer,
+                    IgstPer = row.Gst.IgstPer
+                } : null
+            }).FirstOrDefaultAsync(col => col.ItemCode == itemCode);
+
+        }
+
         public async Task<ResponseMessage> DeleteItem(int itemId)
         {
             Item? item = await dbContext.Items.FirstOrDefaultAsync(col => col.ItemId == itemId);
@@ -307,6 +335,21 @@ namespace PaybillAPI.Repositories
                 SalesPrice = row.SalesPrice,
                 ClosingStock = row.ClosingStock + row.OpeningStock,
                 Measure = row.Measure
+            }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<ItemVM>> SearchItems()
+        {
+            return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
+            {
+                ItemId = row.ItemId,
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                Mrp = row.Mrp,
+                SalesPrice = row.SalesPrice,
+                PurchasePrice = row.PurchasePrice,
+                Measure = row.Measure,
+                ClosingStock = row.OpeningStock + row.ClosingStock
             }).ToListAsync();
         }
 

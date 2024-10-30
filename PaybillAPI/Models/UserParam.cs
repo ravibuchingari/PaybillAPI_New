@@ -13,5 +13,6 @@ namespace PaybillAPI.Models
         public GstVM? GstModel { get; set; }
         public ItemVM? ItemModel { get; set; }
         public PartyVM? PartyModel { get; set; }
+        public PurchaseVM? PurchaseModel { get; set; }
     }
 }
