@@ -11,8 +11,6 @@ namespace PaybillAPI.Repositories
     public class ItemRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), IItemRepository
     {
 
-
-
         #region "Category"
 
         public async Task<ResponseMessage> UpsertCategory(CategoryVM categoryVM, int userRowId)
@@ -158,7 +156,7 @@ namespace PaybillAPI.Repositories
 
         #region "Item"
 
-        private static Item PrepareItem(ItemVM itemVM, Item item)
+        private static Item MapItem(ItemVM itemVM, Item item)
         {
             item.CategoryId = itemVM.CategoryModel!.CategoryId;
             if (itemVM.GstModel != null)
@@ -176,33 +174,13 @@ namespace PaybillAPI.Repositories
             item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
             return item;
         }
-        /*private static ItemVM ApplyItem(Item row)
-        {
-            return new ItemVM()
-            {
-                ItemId = row.ItemId,
-                ItemCode = row.ItemCode,
-                ItemName = row.ItemName,
-                AliasName = row.AliasName,
-                Mrp = row.Mrp,
-                SalesPrice = row.SalesPrice,
-                PurchasePrice = row.PurchasePrice,
-                HSncode = row.Hsncode,
-                Measure = row.Measure,
-                OpeningStock = row.OpeningStock,
-                ClosingStock = row.OpeningStock + row.ClosingStock,
-                IsActive = row.IsActive == 1,
-                CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                GstModel = row.GstId != null ? new GstVM() { GstId = Convert.ToInt32(row.GstId) } : null
-            };
-        }*/
 
         public async Task<ResponseMessage> UpsertItem(ItemVM itemVM, int userRowId)
         {
             Item? item;
             if (itemVM.ItemId == 0)
             {
-                item = PrepareItem(itemVM, new Item());
+                item = MapItem(itemVM, new Item());
                 item.CreatedDate = DateTime.Now;
                 item.CreatedBy = userRowId;
                 item.UpdatedDate = DateTime.Now;
@@ -214,7 +192,7 @@ namespace PaybillAPI.Repositories
                 item = await dbContext.Items.Where(col => col.ItemId == itemVM.ItemId).FirstOrDefaultAsync();
                 if (item == null)
                     return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
-                item = PrepareItem(itemVM, item);
+                item = MapItem(itemVM, item);
                 item.UpdatedDate = DateTime.Now;
                 item.UpdatedBy = userRowId;
             }

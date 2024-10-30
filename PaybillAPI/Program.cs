@@ -23,6 +23,7 @@ var jwtParameters = new JwtTokenParameter()
 builder.Services.AddScoped<ISharedRepository, SharedRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IPartyRepository, PartyRepository>();
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<ISalesRepository, SalesRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
