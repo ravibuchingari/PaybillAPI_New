@@ -6,7 +6,7 @@ namespace PaybillAPI.Repositories
 {
     public class RootRepository(AppDBContext? dbContext)
     {
-        private static void DetachedEntries(DbUpdateException ex)
+        public void DetachedEntries(DbUpdateException ex)
         {
             foreach (var entry in ex.Entries)
                 entry.State = EntityState.Detached;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
+using System.Net;
 
 namespace PaybillAPI.Controllers
 {
@@ -12,9 +13,15 @@ namespace PaybillAPI.Controllers
     {
         [HttpGet]
         [Route("test")]
-        public IActionResult test()
+        public async Task<ContentResult> Test()
         {
-            return Ok("success");
+            string message = await sharedRepository.CheckDatabase();
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                ContentType = "text/html",
+                Content = $"<html><body style='background-color: black;'>{message}</body></html>"
+            };
         }
 
         [HttpPost]
