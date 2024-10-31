@@ -15,7 +15,7 @@ namespace PaybillAPI.Controllers
         [Route("settings/view")]
         public async Task<IActionResult> GetSettings([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await adminRepository.GetSettings());
         }
@@ -24,7 +24,7 @@ namespace PaybillAPI.Controllers
         [Route("settings/update")]
         public async Task<IActionResult> UpdateSettings([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await adminRepository.UpdateSettings(Convert.ToInt32(User.Identity?.Name), userParam.SettingModel!));
         }

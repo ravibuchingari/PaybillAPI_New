@@ -36,7 +36,7 @@ namespace PaybillAPI.Repositories
             {
                 return ex.Message;
             }
-           
+
         }
 
         public async Task<bool> IsValidAccount(string ClientUniqueId, string clientId)
@@ -44,9 +44,14 @@ namespace PaybillAPI.Repositories
             return await dbContext.Clients.Where(col => col.ClientUniqueId == ClientUniqueId && col.ClientId == clientId).AnyAsync();
         }
 
-        public async Task<bool> IsValidUser(int userRowId, string securityKey)
+        public async Task<bool> IsValidUser(int userRowId, string securityKey, int identityId)
         {
-            return await dbContext.Users.Where(col => col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey, AppConstants.API_AES_KEY_AND_IV)).AnyAsync();
+            return await dbContext.Users.Where(col => col.IsActive == 1 && col.UserRowId == userRowId && col.SecurityKey == DataProtection.UrlDecode(securityKey, AppConstants.API_AES_KEY_AND_IV)).AnyAsync() && userRowId == identityId;
+        }
+
+        public async Task<bool> IsValidAdminUser(int userRowId, string securityKey, int identityId)
+        {
+            return await dbContext.Users.Where(col => col.IsActive == 1 && col.UserRowId == userRowId && col.IsAdmin == 1 && col.SecurityKey == DataProtection.UrlDecode(securityKey, AppConstants.API_AES_KEY_AND_IV)).AnyAsync() && userRowId == identityId;
         }
 
         public async Task<string> CreateUserIfNotExists(UserVM userVM)

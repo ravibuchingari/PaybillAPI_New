@@ -23,6 +23,7 @@ public partial class Purchase
 
     [StringLength(20)]
     public string PurchaseType { get; set; } = null!;
+
     [StringLength(20)]
     public string PaymentMode { get; set; } = null!;
 

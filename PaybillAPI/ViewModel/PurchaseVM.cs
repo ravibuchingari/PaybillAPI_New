@@ -1,5 +1,4 @@
 ﻿using PaybillAPI.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace PaybillAPI.ViewModel
 {
@@ -7,7 +6,7 @@ namespace PaybillAPI.ViewModel
     {
         public int PurchaseId { get; set; }
         public string InvoiceNo { get; set; } = null!;
-        public DateTime InvoiceDate { get; set; }
+        public string InvoiceDate { get; set; } = null!;
         public string PurchaseType { get; set; } = null!;
         public string PaymentMode { get; set; } = null!;
         public string? UpiType { get; set; }

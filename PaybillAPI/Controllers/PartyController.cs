@@ -16,7 +16,7 @@ namespace PaybillAPI.Controllers
         [Route("party/upsert")]
         public async Task<IActionResult> UpsertParty([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await partyRepository.UpsertParty(userParam.PartyModel!, Convert.ToInt32(User.Identity?.Name)));
         }
@@ -25,7 +25,7 @@ namespace PaybillAPI.Controllers
         [Route("party/list/{isVendor}")]
         public async Task<IActionResult> GetParties([FromBody] UserParam userParam, [FromRoute] bool isVendor)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await partyRepository.GetParties(isVendor));
         }
@@ -42,7 +42,7 @@ namespace PaybillAPI.Controllers
         [Route("party/{partyId}/delete/{isVendor}")]
         public async Task<IActionResult> DeleteParty([FromBody] UserParam userParam, [FromRoute] string partyId, [FromRoute] bool isVendor)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             partyId = DataProtection.UrlDecode(partyId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await partyRepository.DeleteParty(int.Parse(partyId), isVendor));

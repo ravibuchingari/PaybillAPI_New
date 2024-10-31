@@ -284,7 +284,7 @@ namespace PaybillAPI.Repositories
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
         }
 
-        public async Task<ItemVM?> GetItemDetailsOnCode(string itemCode)
+        /*public async Task<ItemVM?> GetItemDetailsOnCode(string itemCode)
         {
             return await dbContext.Items.Select(row => new ItemVM()
             {
@@ -310,7 +310,7 @@ namespace PaybillAPI.Repositories
                 } : null
             }).FirstOrDefaultAsync(col => col.ItemCode == itemCode);
 
-        }
+        }*/
 
         public async Task<ResponseMessage> DeleteItem(int itemId)
         {
@@ -338,20 +338,42 @@ namespace PaybillAPI.Repositories
             }).ToListAsync();
         }
 
-        public async Task<IEnumerable<ItemVM>> SearchItems()
+        public async Task<IEnumerable<ItemVM>> GetItemsForOffline(bool isAllItems, string? lastUpdatedTime)
         {
-            return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
+            if (isAllItems || lastUpdatedTime.IsNullOrEmpty())
             {
-                ItemId = row.ItemId,
-                ItemCode = row.ItemCode,
-                ItemName = row.ItemName,
-                Mrp = row.Mrp,
-                SalesPrice = row.SalesPrice,
-                PurchasePrice = row.PurchasePrice,
-                Measure = row.Measure,
-                ClosingStock = row.OpeningStock + row.ClosingStock
-            }).ToListAsync();
+                return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    AliasName = row.AliasName,
+                    Mrp = row.Mrp,
+                    SalesPrice = row.SalesPrice,
+                    PurchasePrice = row.PurchasePrice,
+                    Measure = row.Measure
+                }).ToListAsync();
+            }
+            else
+            {
+                DateTime updatedDate = DateTime.Parse(lastUpdatedTime);
+
+                return await dbContext.Items.Where(col => col.IsActive == 1 && col.UpdatedDate >= updatedDate).Select(row => new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    Mrp = row.Mrp,
+                    SalesPrice = row.SalesPrice,
+                    PurchasePrice = row.PurchasePrice,
+                    Measure = row.Measure,
+                    ClosingStock = row.OpeningStock + row.ClosingStock
+                }).ToListAsync();
+            }
+
         }
+
+
 
         #endregion
     }

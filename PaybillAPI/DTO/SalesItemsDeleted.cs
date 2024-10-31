@@ -52,4 +52,9 @@ public partial class SalesItemsDeleted
 
     [Column(TypeName = "datetime")]
     public DateTime DeletedDate { get; set; }
+
+    public int? DeletedBy { get; set; }
+
+    [StringLength(250)]
+    public string? DeletedRemarks { get; set; }
 }

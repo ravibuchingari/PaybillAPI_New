@@ -17,7 +17,7 @@ namespace PaybillAPI.Controllers
         [Route("category/upsert")]
         public async Task<IActionResult> UpsertCategory([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.UpsertCategory(userParam.CategoryModel!, Convert.ToInt32(User.Identity?.Name)));
         }
@@ -26,7 +26,7 @@ namespace PaybillAPI.Controllers
         [Route("category/list")]
         public async Task<IActionResult> GetCategories([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.GetCategories());
         }
@@ -43,7 +43,7 @@ namespace PaybillAPI.Controllers
         [Route("category/{categoryId}/delete")]
         public async Task<IActionResult> DeleteCategory([FromBody] UserParam userParam, [FromRoute] string categoryId)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             categoryId = DataProtection.UrlDecode(categoryId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await itemRepository.DeleteCategory(int.Parse(categoryId)));
@@ -57,7 +57,7 @@ namespace PaybillAPI.Controllers
         [Route("gst/upsert")]
         public async Task<IActionResult> UpsertGst([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.UpsertGst(userParam.GstModel!, Convert.ToInt32(User.Identity?.Name)));
         }
@@ -66,7 +66,7 @@ namespace PaybillAPI.Controllers
         [Route("gst/list/{isActive}")]
         public async Task<IActionResult> GetGsts([FromBody] UserParam userParam, [FromRoute] bool isActive)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.GetGsts(isActive));
         }
@@ -83,7 +83,7 @@ namespace PaybillAPI.Controllers
         [Route("gst/{gstId}/delete")]
         public async Task<IActionResult> DeleteGST([FromBody] UserParam userParam, [FromRoute] string gstId)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             gstId = DataProtection.UrlDecode(gstId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await itemRepository.DeleteGST(int.Parse(gstId)));
@@ -98,7 +98,7 @@ namespace PaybillAPI.Controllers
         [Route("item/upsert")]
         public async Task<IActionResult> UpsertItem([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.UpsertItem(userParam.ItemModel!, Convert.ToInt32(User.Identity?.Name)));
         }
@@ -107,7 +107,7 @@ namespace PaybillAPI.Controllers
         [Route("item/list/{filter?}")]
         public async Task<IActionResult> GetItems([FromBody] UserParam userParam, [FromRoute] string? filter)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.GetItems(filter ?? string.Empty));
         }
@@ -120,18 +120,11 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.GetItemDetails(int.Parse(itemId)));
         }
 
-        [HttpGet]
-        [Route("item/details/{itemCode}")]
-        public async Task<IActionResult> GetItemDetailsOnCode([FromRoute] string itemCode)
-        {
-            return Ok(await itemRepository.GetItemDetailsOnCode(itemCode));
-        }
-
         [HttpPost]
         [Route("item/{itemId}/delete")]
         public async Task<IActionResult> DeleteItem([FromBody] UserParam userParam, [FromRoute] string itemId)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             itemId = DataProtection.UrlDecode(itemId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await itemRepository.DeleteItem(int.Parse(itemId)));
@@ -142,16 +135,16 @@ namespace PaybillAPI.Controllers
         [Route("min/stock/list")]
         public async Task<IActionResult> GetMinStockItems([FromBody] UserParam userParam)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey))
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.GetMinStockItems());
         }
 
         [HttpGet]
-        [Route("item/search")]
-        public async Task<IActionResult> SearchItems([FromQuery] string? filter)
+        [Route("items/for/offline/{isAllItems}/{lastUpdatedTime?}")]
+        public async Task<IActionResult> GetItemsForOffline([FromRoute] bool isAllItems, [FromRoute] string? lastUpdatedTime)
         {
-            return Ok(await itemRepository.SearchItems());
+            return Ok(await itemRepository.GetItemsForOffline(isAllItems, lastUpdatedTime));
         }
 
 

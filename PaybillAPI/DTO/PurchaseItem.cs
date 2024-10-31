@@ -47,6 +47,11 @@ public partial class PurchaseItem
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 
+    public int? DeletedBy { get; set; }
+
+    [StringLength(250)]
+    public string? DeletedRemarks { get; set; }
+
     [ForeignKey("ItemId")]
     [InverseProperty("PurchaseItems")]
     public virtual Item Item { get; set; } = null!;

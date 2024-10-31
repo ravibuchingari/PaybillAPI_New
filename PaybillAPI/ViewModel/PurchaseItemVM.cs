@@ -35,5 +35,6 @@
         public double TotalAmount { get; set; }
 
         public ItemVM? ItemModel { get; set; }
+        public string CreatedDate { get; set; }
     }
 }

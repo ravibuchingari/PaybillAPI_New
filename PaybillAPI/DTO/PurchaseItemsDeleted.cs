@@ -42,12 +42,14 @@ public partial class PurchaseItemsDeleted
 
     public double IgstRs { get; set; }
 
-    [StringLength(250)]
-    public string Remarks { get; set; } = null!;
-
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime DeletedDate { get; set; }
+
+    public int DeletedBy { get; set; }
+
+    [StringLength(250)]
+    public string? DeletedRemarks { get; set; }
 }

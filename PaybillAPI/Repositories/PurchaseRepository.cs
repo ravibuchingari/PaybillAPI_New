@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -27,8 +26,10 @@ namespace PaybillAPI.Repositories
 
                 purchase.PartyId = purchaseVM.PartyModel.PartyId;
                 purchase.InvoiceNo = purchaseVM.InvoiceNo;
-                purchase.InvoiceDate = purchaseVM.InvoiceDate;
+                purchase.InvoiceDate = DateTime.Parse(purchaseVM.InvoiceDate);
                 purchase.PurchaseType = purchaseVM.PurchaseType;
+                purchase.PaymentMode = purchaseVM.PaymentMode;
+                purchase.UpiType = purchaseVM.UpiType;
                 purchase.Remarks = purchaseVM.Remarks;
                 purchase.UpdatedDate = DateTime.Now;
                 purchase.UpdatedBy = userRowId;
@@ -39,7 +40,7 @@ namespace PaybillAPI.Repositories
                     purchase.CreatedBy = userRowId;
                     await dbContext.Purchases.AddAsync(purchase);
                 }
-                
+
                 await SaveChangesAsync();
                 double totalPurchaseAmount = 0.0;
 
@@ -73,24 +74,25 @@ namespace PaybillAPI.Repositories
 
                 if (purchaseVM.PurchaseId > 0)
                     transaction = await dbContext.Transactions.Where(col => col.PurchaseId == purchaseVM.PurchaseId).FirstOrDefaultAsync();
-                   
-                if(transaction == null)
+
+                if (transaction == null)
                 {
                     isNewTransaction = true;
-                    transaction = new Transaction()
-                    {
-                        PartyId = purchaseVM.PartyModel.PartyId,
-                        TransactionDate = DateTime.Now.Date,
-                        ReceiptAmount = totalPurchaseAmount,
-                        PaymentMode = purchaseVM.PaymentMode,
-                        UpiType = purchaseVM.UpiType,
-                        Remarks = purchaseVM.Remarks,
-                        PurchaseId = purchase.PurchaseId
-                    };
+                    transaction = new Transaction();
                 }
-                
 
-                if (purchaseVM.PurchaseType.ToLower().Equals("cash")) 
+                transaction.PartyId = purchaseVM.PartyModel.PartyId;
+                transaction.TransactionDate = DateTime.Now.Date;
+                transaction.ReceiptAmount = totalPurchaseAmount;
+                transaction.PaymentMode = purchaseVM.PaymentMode;
+                transaction.UpiType = purchaseVM.UpiType;
+                transaction.Remarks = purchaseVM.Remarks;
+                transaction.PurchaseId = purchase.PurchaseId;
+                transaction.UpdatedBy = userRowId;
+                transaction.UpdatedDate = DateTime.Now;
+
+
+                if (purchaseVM.PurchaseType.ToLower().Equals("cash"))
                 {
                     transaction.PaymentMode = PaymentMode.Cash.ToString();
                     transaction.PaymentAmount = totalPurchaseAmount;
@@ -104,7 +106,12 @@ namespace PaybillAPI.Repositories
                 }
 
                 if (isNewTransaction)
+                {
+                    transaction.CreatedBy = userRowId;
+                    transaction.CreatedDate = DateTime.Now;
                     await dbContext.AddAsync(transaction);
+                }
+
 
                 await SaveChangesAsync();
                 await dbTrans.CommitAsync();
@@ -122,8 +129,126 @@ namespace PaybillAPI.Repositories
                 throw new Exception(ex.Message);
             }
 
-            
+
         }
+
+        public async Task<ResponseMessage> DeletePurchaseItem(int purchaseItemId, string remarks, int userRowId)
+        {
+            PurchaseItem? purchaseItem = await dbContext.PurchaseItems.FirstOrDefaultAsync(col => col.PurchaseItemId == purchaseItemId);
+            if (purchaseItem != null)
+            {
+                purchaseItem.DeletedBy = userRowId;
+                purchaseItem.DeletedRemarks = remarks;
+                await SaveChangesAsync();
+                dbContext.PurchaseItems.Remove(purchaseItem);
+                await SaveChangesAsync();
+                return new ResponseMessage(isSuccess: true, message: string.Format(AppConstants.ITEM_DELETED, "purchase item"));
+            }
+            else
+                return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Purchase item"));
+        }
+
+        public async Task<IEnumerable<PurchaseVM>> GetPurchaseInvoices(DateTime fromDate, DateTime toDate)
+        {
+            return await dbContext.Purchases.Include(itm => itm.PurchaseItems).Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).Select(row => new PurchaseVM()
+            {
+                PurchaseId = row.PurchaseId,
+                InvoiceNo = row.InvoiceNo,
+                InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
+                PurchaseType = row.PurchaseType,
+                Summary = new PurchaseSummary()
+                {
+                    TotalAmount = row.PurchaseItems.Sum(sm => sm.Amount),
+                    TotalDiscount = row.PurchaseItems.Sum(sm => sm.DiscountInRs),
+                    TotalTaxableAmount = row.PurchaseItems.Sum(sm => sm.TaxableAmount),
+                    TotalGSTAmount = row.PurchaseItems.Sum(sm => sm.GstAmount),
+                    TotalPurchaseAmount = row.PurchaseItems.Sum(sm => sm.TotalAmount)
+                },
+                PartyModel = new PartyVM()
+                {
+                    PartyId = row.PartyId,
+                    PartyName = row.Party.PartyName
+                }
+            }).ToListAsync();
+        }
+
+        public async Task<ResponseMessage> DeletePurchaseInvoice(int purchaseId)
+        {
+            Purchase? purchase = await dbContext.Purchases.Include(itm => itm.PurchaseItems).FirstOrDefaultAsync(col => col.PurchaseId == purchaseId);
+            if (purchase != null)
+            {
+                if (purchase.PurchaseItems.Count > 0)
+                    return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.SQL_DELETE_REFERENCE_MESSAGE, "purchase invoice"));
+
+                try
+                {
+                    dbContext.Purchases.Remove(purchase);
+                    await SaveChangesAsync();
+                    return new ResponseMessage(isSuccess: true, message: string.Format(AppConstants.ITEM_DELETED, "purchase invoice"));
+                }
+                catch (DbUpdateException ex)
+                {
+                    DetachedEntries(ex);
+                    return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.SQL_DELETE_REFERENCE_MESSAGE, "purchase invoice"));
+                }
+
+            }
+            else
+                return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Purchase invoice"));
+        }
+
+        public async Task<PurchaseVM> GetPurchaseInvoiceDetails(int purchaseId)
+        {
+            PurchaseVM purchaseVM = await dbContext.Purchases.Where(col => col.PurchaseId == purchaseId).Select(row => new PurchaseVM()
+            {
+                PurchaseId = row.PurchaseId,
+                InvoiceNo = row.InvoiceNo,
+                InvoiceDate = row.InvoiceDate.ToString("yyyy-MM-dd"),
+                PurchaseType = row.PurchaseType,
+                Summary = new PurchaseSummary()
+                {
+                    TotalAmount = row.PurchaseItems.Sum(sm => sm.Amount),
+                    TotalDiscount = row.PurchaseItems.Sum(sm => sm.DiscountInRs),
+                    TotalTaxableAmount = row.PurchaseItems.Sum(sm => sm.TaxableAmount),
+                    TotalGSTAmount = row.PurchaseItems.Sum(sm => sm.GstAmount),
+                    TotalPurchaseAmount = row.PurchaseItems.Sum(sm => sm.TotalAmount)
+                },
+                PartyModel = new PartyVM()
+                {
+                    PartyId = row.PartyId,
+                    PartyName = row.Party.PartyName,
+                    PartyAddress = row.Party.PartyAddress
+                }
+
+            }).FirstOrDefaultAsync() ?? throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Purchase invoice"));
+
+            List<PurchaseItemVM> list = await dbContext.PurchaseItems.Where(col => col.PurchaseId == purchaseId).Select(row => new PurchaseItemVM()
+            {
+                PurchaseItemId = row.PurchaseItemId,
+                ItemModel = new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.Item.ItemCode,
+                    ItemName = row.Item.ItemName,
+                    Measure = row.Item.Measure
+                },
+                Quantity = row.Quantity,
+                Rate = row.Rate,
+                Amount = row.Amount,
+                DiscountInRs = row.DiscountInRs,
+                TaxableAmount = row.TaxableAmount,
+                GstPer = row.GstPer,
+                GstAmount = row.GstAmount,
+                TotalAmount = row.TotalAmount,
+                CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy")
+            }).ToListAsync();
+
+            purchaseVM.PurchaseItems = list;
+
+            return purchaseVM;
+
+        }
+
 
     }
 }
