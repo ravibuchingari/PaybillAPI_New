@@ -128,8 +128,6 @@ namespace PaybillAPI.Repositories
                 await dbTrans.RollbackAsync();
                 throw new Exception(ex.Message);
             }
-
-
         }
 
         public async Task<ResponseMessage> DeletePurchaseItem(int purchaseItemId, string remarks, int userRowId)
@@ -158,11 +156,11 @@ namespace PaybillAPI.Repositories
                 PurchaseType = row.PurchaseType,
                 Summary = new PurchaseSummary()
                 {
-                    TotalAmount = row.PurchaseItems.Sum(sm => sm.Amount),
-                    TotalDiscount = row.PurchaseItems.Sum(sm => sm.DiscountInRs),
-                    TotalTaxableAmount = row.PurchaseItems.Sum(sm => sm.TaxableAmount),
-                    TotalGSTAmount = row.PurchaseItems.Sum(sm => sm.GstAmount),
-                    TotalPurchaseAmount = row.PurchaseItems.Sum(sm => sm.TotalAmount)
+                    TotalAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.Amount),
+                    TotalDiscount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.DiscountInRs),
+                    TotalTaxableAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TaxableAmount),
+                    TotalGSTAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.GstAmount),
+                    TotalPurchaseAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TotalAmount)
                 },
                 PartyModel = new PartyVM()
                 {
@@ -174,22 +172,32 @@ namespace PaybillAPI.Repositories
 
         public async Task<ResponseMessage> DeletePurchaseInvoice(int purchaseId)
         {
-            Purchase? purchase = await dbContext.Purchases.Include(itm => itm.PurchaseItems).FirstOrDefaultAsync(col => col.PurchaseId == purchaseId);
+            Purchase? purchase = await dbContext.Purchases.Include(itm => itm.PurchaseItems).Include(trn => trn.Transactions).FirstOrDefaultAsync(col => col.PurchaseId == purchaseId);
             if (purchase != null)
             {
                 if (purchase.PurchaseItems.Count > 0)
                     return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.SQL_DELETE_REFERENCE_MESSAGE, "purchase invoice"));
 
+                using var dbTrans = await dbContext.Database.BeginTransactionAsync();
+
                 try
                 {
+                    dbContext.Transactions.RemoveRange(purchase.Transactions);
                     dbContext.Purchases.Remove(purchase);
                     await SaveChangesAsync();
+                    await dbTrans.CommitAsync();
                     return new ResponseMessage(isSuccess: true, message: string.Format(AppConstants.ITEM_DELETED, "purchase invoice"));
                 }
                 catch (DbUpdateException ex)
                 {
+                    await dbTrans.RollbackAsync();
                     DetachedEntries(ex);
                     return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.SQL_DELETE_REFERENCE_MESSAGE, "purchase invoice"));
+                }
+                catch (Exception ex)
+                {
+                    await dbTrans.RollbackAsync();
+                    throw new Exception(ex.Message);
                 }
 
             }

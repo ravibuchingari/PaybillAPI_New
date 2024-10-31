@@ -163,7 +163,7 @@ namespace PaybillAPI.Repositories
                 item.GstId = itemVM.GstModel.GstId;
             item.ItemCode = itemVM.ItemCode;
             item.ItemName = itemVM.ItemName;
-            item.AliasName = itemVM.AliasName;
+            item.AliasName = itemVM.AliasName ?? "";
             item.Mrp = itemVM.Mrp;
             item.SalesPrice = itemVM.SalesPrice;
             item.PurchasePrice = itemVM.PurchasePrice;
@@ -284,33 +284,6 @@ namespace PaybillAPI.Repositories
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
         }
 
-        /*public async Task<ItemVM?> GetItemDetailsOnCode(string itemCode)
-        {
-            return await dbContext.Items.Select(row => new ItemVM()
-            {
-                ItemId = row.ItemId,
-                ItemCode = row.ItemCode,
-                ItemName = row.ItemName,
-                AliasName = row.AliasName,
-                Mrp = row.Mrp,
-                SalesPrice = row.SalesPrice,
-                PurchasePrice = row.PurchasePrice,
-                HSncode = row.Hsncode,
-                Measure = row.Measure,
-                OpeningStock = row.OpeningStock,
-                ClosingStock = row.OpeningStock + row.ClosingStock,
-                IsActive = row.IsActive == 1,
-                CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                GstModel = row.GstId != null ? new GstVM()
-                {
-                    GstId = row.Gst!.GstId,
-                    SgstPer = row.Gst.SgstPer,
-                    CgstPer = row.Gst.SgstPer,
-                    IgstPer = row.Gst.IgstPer
-                } : null
-            }).FirstOrDefaultAsync(col => col.ItemCode == itemCode);
-
-        }*/
 
         public async Task<ResponseMessage> DeleteItem(int itemId)
         {
@@ -351,28 +324,59 @@ namespace PaybillAPI.Repositories
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
-                    Measure = row.Measure
+                    Measure = row.Measure,
+                    UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss")
                 }).ToListAsync();
             }
             else
             {
-                DateTime updatedDate = DateTime.Parse(lastUpdatedTime);
+                DateTime updatedDate = DateTime.Parse(lastUpdatedTime!);
 
-                return await dbContext.Items.Where(col => col.IsActive == 1 && col.UpdatedDate >= updatedDate).Select(row => new ItemVM()
+                return await dbContext.Items.Where(col => col.IsActive == 1 && col.UpdatedDate > updatedDate).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    AliasName = row.AliasName,
+                    Mrp = row.Mrp,
+                    SalesPrice = row.SalesPrice,
+                    PurchasePrice = row.PurchasePrice,
+                    Measure = row.Measure,
+                    UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss")
+                }).ToListAsync();
+            }
+
+        }
+
+        public async Task<IEnumerable<ItemVM>> SearchItems(string filter)
+        {
+            if (filter.Trim().IsNullOrEmpty())
+                return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
                     ClosingStock = row.OpeningStock + row.ClosingStock
                 }).ToListAsync();
-            }
-
+            else
+                return await dbContext.Items.Where(col => col.IsActive == 1 && (col.ItemCode.StartsWith(filter) || col.ItemName.StartsWith(filter) || col.AliasName!.StartsWith(filter))).Select(row => new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    AliasName = row.AliasName,
+                    Mrp = row.Mrp,
+                    SalesPrice = row.SalesPrice,
+                    PurchasePrice = row.PurchasePrice,
+                    Measure = row.Measure,
+                    ClosingStock = row.OpeningStock + row.ClosingStock
+                }).ToListAsync();
         }
-
 
 
         #endregion

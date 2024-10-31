@@ -147,6 +147,13 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.GetItemsForOffline(isAllItems, lastUpdatedTime));
         }
 
+        [HttpGet]
+        [Route("item/search")]
+        public async Task<IActionResult> SearchItems([FromQuery] string filter)
+        {
+            return Ok(await itemRepository.SearchItems(filter ?? string.Empty));
+        }
+
 
         #endregion
 
