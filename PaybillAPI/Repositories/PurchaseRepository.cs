@@ -154,13 +154,13 @@ namespace PaybillAPI.Repositories
                 InvoiceNo = row.InvoiceNo,
                 InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 PurchaseType = row.PurchaseType,
-                Summary = new PurchaseSummary()
+                Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.Amount),
                     TotalDiscount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.DiscountInRs),
                     TotalTaxableAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TaxableAmount),
                     TotalGSTAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.GstAmount),
-                    TotalPurchaseAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TotalAmount)
+                    TotalInvoiceAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TotalAmount)
                 },
                 PartyModel = new PartyVM()
                 {
@@ -213,13 +213,13 @@ namespace PaybillAPI.Repositories
                 InvoiceNo = row.InvoiceNo,
                 InvoiceDate = row.InvoiceDate.ToString("yyyy-MM-dd"),
                 PurchaseType = row.PurchaseType,
-                Summary = new PurchaseSummary()
+                Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.PurchaseItems.Sum(sm => sm.Amount),
                     TotalDiscount = row.PurchaseItems.Sum(sm => sm.DiscountInRs),
                     TotalTaxableAmount = row.PurchaseItems.Sum(sm => sm.TaxableAmount),
                     TotalGSTAmount = row.PurchaseItems.Sum(sm => sm.GstAmount),
-                    TotalPurchaseAmount = row.PurchaseItems.Sum(sm => sm.TotalAmount)
+                    TotalInvoiceAmount = row.PurchaseItems.Sum(sm => sm.TotalAmount)
                 },
                 PartyModel = new PartyVM()
                 {

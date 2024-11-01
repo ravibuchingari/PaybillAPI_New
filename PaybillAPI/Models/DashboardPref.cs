@@ -11,5 +11,6 @@
         public bool IsShadowMenuButton { get; set; }
         public bool IsSettingsUpdated { get; set; }
         public bool IsAlertOnMinimumStock { get; set; }
+        public bool IsAlertOnNegativeBalance { get; set; } = true;
     }
 }

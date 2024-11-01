@@ -242,9 +242,9 @@ namespace PaybillAPI.Repositories
                     ClosingStock = row.OpeningStock + row.ClosingStock,
                     IsActive = row.IsActive == 1,
                     CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                    GstModel = row.GstId != null ? new GstVM()
+                    GstModel = row.Gst != null ? new GstVM()
                     {
-                        GstId = row.Gst!.GstId,
+                        GstId = row.Gst.GstId,
                         SgstPer = row.Gst.SgstPer,
                         CgstPer = row.Gst.SgstPer,
                         IgstPer = row.Gst.IgstPer
@@ -283,7 +283,6 @@ namespace PaybillAPI.Repositories
             else
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
         }
-
 
         public async Task<ResponseMessage> DeleteItem(int itemId)
         {
@@ -332,7 +331,7 @@ namespace PaybillAPI.Repositories
             {
                 DateTime updatedDate = DateTime.Parse(lastUpdatedTime!);
 
-                return await dbContext.Items.Where(col => col.IsActive == 1 && col.UpdatedDate > updatedDate).Select(row => new ItemVM()
+                var result = await dbContext.Items.Where(col => col.IsActive == 1 && col.UpdatedDate > updatedDate).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
@@ -344,6 +343,8 @@ namespace PaybillAPI.Repositories
                     Measure = row.Measure,
                     UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss")
                 }).ToListAsync();
+
+                return result;
             }
 
         }
@@ -376,6 +377,34 @@ namespace PaybillAPI.Repositories
                     Measure = row.Measure,
                     ClosingStock = row.OpeningStock + row.ClosingStock
                 }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode)
+            {
+            return await dbContext.Items.Where(col => col.IsActive == 1 && col.ItemCode == itemCode).Select(row => new ItemVM()
+            {
+                ItemId = row.ItemId,
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                AliasName = row.AliasName,
+                Mrp = row.Mrp,
+                SalesPrice = row.SalesPrice,
+                PurchasePrice = row.PurchasePrice,
+                HSncode = row.Hsncode,
+                Measure = row.Measure,
+                OpeningStock = row.OpeningStock,
+                ClosingStock = row.OpeningStock + row.ClosingStock,
+                IsActive = row.IsActive == 1,
+                CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                GstModel = row.Gst != null ? new GstVM()
+                {
+                    GstId = row.Gst.GstId,
+                    SgstPer = row.Gst.SgstPer,
+                    CgstPer = row.Gst.SgstPer,
+                    IgstPer = row.Gst.IgstPer
+                } : null
+            }).ToListAsync();
+
         }
 
 

@@ -154,6 +154,13 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.SearchItems(filter ?? string.Empty));
         }
 
+        [HttpGet]
+        [Route("items/code/{itemCode}")]
+        public async Task<IActionResult> GetItemsOnCode([FromRoute] string itemCode)
+        {
+            return Ok(await itemRepository.GetItemsOnCode(itemCode));
+        }
+
 
         #endregion
 

@@ -57,6 +57,7 @@ public partial class Setting
 
     [StringLength(8)]
     public string? InvoicePrefix { get; set; }
+    public sbyte InvoiceLength { get; set; }
 
     public int IsCreateContactOnParty { get; set; }
 

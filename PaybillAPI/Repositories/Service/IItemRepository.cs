@@ -21,5 +21,6 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> UpsertGst(GstVM gstVM, int userRowId);
         Task<ResponseMessage> UpsertItem(ItemVM itemVM, int userRowId);
         Task<IEnumerable<ItemVM>> SearchItems(string filter);
+        Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode);
     }
 }

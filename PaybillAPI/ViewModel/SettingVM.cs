@@ -23,6 +23,7 @@ namespace PaybillAPI.ViewModel
         public bool AddItemOnSelected { get; set; }
 
         public string? InvoicePrefix { get; set; }
+        public sbyte InvoiceLength { get; set; }
 
         public bool IsCreateContactOnParty { get; set; }
 

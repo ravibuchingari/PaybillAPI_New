@@ -24,6 +24,7 @@ namespace PaybillAPI.Repositories
 
                 AddItemOnSelected = row.AddItemOnSelected == 1,
                 InvoicePrefix = row.InvoicePrefix,
+                InvoiceLength = row.InvoiceLength,
                 IsCreateContactOnParty = row.IsCreateContactOnParty == 1,
                 IsCompressBackup = row.IsCompressBackup == 1,
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
@@ -55,7 +56,7 @@ namespace PaybillAPI.Repositories
             setting.IsAutoEmail = settingVM.IsAutoEmail.GetHashCode();
             setting.IsBackupOnExit = settingVM.IsBackupOnExit.GetHashCode();
             setting.IsDiscountEnabled = settingVM.IsDiscountEnabled.GetHashCode();
-            setting.InvoiceTitle = settingVM.HeaderModel.InvoiceTitle;
+            setting.InvoiceTitle = settingVM.HeaderModel!.InvoiceTitle;
             setting.Header1 = settingVM.HeaderModel.Header1;
             setting.Header2 = settingVM.HeaderModel.Header2;
             setting.Header3 = settingVM.HeaderModel.Header3;
@@ -63,6 +64,7 @@ namespace PaybillAPI.Repositories
             setting.GstslabRequired = settingVM.HeaderModel.GSTSlabRequired.GetHashCode()!;
             setting.AddItemOnSelected = settingVM.AddItemOnSelected.GetHashCode();
             setting.InvoicePrefix = settingVM.InvoicePrefix;
+            setting.InvoiceLength = settingVM.InvoiceLength;
             setting.IsCreateContactOnParty = settingVM.IsCreateContactOnParty.GetHashCode();
             setting.IsCompressBackup = settingVM.IsCompressBackup.GetHashCode();
             setting.IsShadowMenuButton = settingVM.IsShadowMenuButton.GetHashCode();
