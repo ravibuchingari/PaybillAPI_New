@@ -27,8 +27,10 @@ namespace PaybillAPI.Controllers
         {
             if (!await sharedRepository.IsValidAdminUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            if(string.IsNullOrWhiteSpace(userParam.remarks))
+                return BadRequest("Remarks cannot be empty.");
             salesItemId = DataProtection.UrlDecode(salesItemId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await salesRepository.DeleteSalesItem(int.Parse(salesItemId), userParam.remarks, Convert.ToInt32(User.Identity?.Name)));
+            return Ok(await salesRepository.DeleteSalesItem(int.Parse(salesItemId), userParam.remarks ?? "", Convert.ToInt32(User.Identity?.Name)));
         }
 
         [HttpPost]
@@ -58,6 +60,13 @@ namespace PaybillAPI.Controllers
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             salesId = DataProtection.UrlDecode(salesId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await salesRepository.DeleteSalesInvoice(int.Parse(salesId)));
+        }
+
+        [HttpGet]
+        [Route("print/header")]
+        public async Task<IActionResult> GetPrintHeader()
+        {
+            return Ok(await salesRepository.GetPrintHeader());
         }
     }
 }

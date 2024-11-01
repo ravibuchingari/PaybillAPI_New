@@ -225,7 +225,7 @@ namespace PaybillAPI.Repositories
                         CgstPer = row.Gst.SgstPer,
                         IgstPer = row.Gst.IgstPer
                     } : null
-                }).ToListAsync();
+                }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
                 return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter) || col.ItemName.StartsWith(filter)).Select(row => new ItemVM()
                 {
@@ -249,7 +249,7 @@ namespace PaybillAPI.Repositories
                         CgstPer = row.Gst.SgstPer,
                         IgstPer = row.Gst.IgstPer
                     } : null
-                }).ToListAsync();
+                }).OrderBy(ord => ord.ItemName).ToListAsync();
         }
 
         public async Task<ItemVM> GetItemDetails(int itemId)
@@ -363,7 +363,7 @@ namespace PaybillAPI.Repositories
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
                     ClosingStock = row.OpeningStock + row.ClosingStock
-                }).ToListAsync();
+                }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
                 return await dbContext.Items.Where(col => col.IsActive == 1 && (col.ItemCode.StartsWith(filter) || col.ItemName.StartsWith(filter) || col.AliasName!.StartsWith(filter))).Select(row => new ItemVM()
                 {
@@ -376,7 +376,7 @@ namespace PaybillAPI.Repositories
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
                     ClosingStock = row.OpeningStock + row.ClosingStock
-                }).ToListAsync();
+                }).OrderBy(ord => ord.ItemName).ToListAsync();
         }
 
         public async Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode)

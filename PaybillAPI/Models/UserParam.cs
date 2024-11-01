@@ -8,7 +8,7 @@ namespace PaybillAPI.Models
         public string SecurityKey { get; set; } = null!;
         public string ClientUniqueId { get; set; } = null!;
         public string ClientId { get; set; } = null!;
-        public string remarks { get; set; } = string.Empty;
+        public string? remarks { get; set; } = string.Empty;
         public SettingVM? SettingModel { get; set; }
         public CategoryVM? CategoryModel { get; set; }
         public GstVM? GstModel { get; set; }

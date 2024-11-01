@@ -149,7 +149,7 @@ namespace PaybillAPI.Controllers
 
         [HttpGet]
         [Route("item/search")]
-        public async Task<IActionResult> SearchItems([FromQuery] string filter)
+        public async Task<IActionResult> SearchItems([FromQuery] string? filter)
         {
             return Ok(await itemRepository.SearchItems(filter ?? string.Empty));
         }
