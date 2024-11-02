@@ -1,5 +1,6 @@
 ﻿using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
+using System.Data;
 
 namespace PaybillAPI.Repositories.Service
 {
@@ -7,6 +8,8 @@ namespace PaybillAPI.Repositories.Service
     {
         Task<ResponseMessage> DeleteSalesInvoice(int salesId);
         Task<ResponseMessage> DeleteSalesItem(int salesItemId, string remarks, int userRowId);
+        Task<List<GSTReturnModel>> GetGSTReturns(DateTime fromDate, DateTime toDate);
+        Task<DataTable> GetGSTSummary(DateTime fromDate, DateTime toDate);
         Task<PrintHeader> GetPrintHeader();
         Task<SalesVM> GetSalesInvoiceDetails(int salesId);
         Task<IEnumerable<SalesVM>> GetSalesInvoices(DateTime fromDate, DateTime toDate);

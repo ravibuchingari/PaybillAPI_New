@@ -4,6 +4,7 @@ using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
+using System.Data;
 
 namespace PaybillAPI.Repositories
 {
@@ -254,6 +255,85 @@ namespace PaybillAPI.Repositories
                 GSTSlabRequired = setting.GstslabRequired == 1
 
             };
+        }
+
+        private async Task<double> GetPurchasePrice(int itemId, DateTime salesDate)
+        {
+            var result = await (from pur in dbContext.Purchases
+                   join pur_itm in dbContext.PurchaseItems on pur.PurchaseId equals pur_itm.PurchaseId
+                   where pur.InvoiceDate <= salesDate && pur_itm.ItemId == itemId select new
+                   {
+                       PurchaseDate = pur.InvoiceDate,
+                       PurchasePrice = pur_itm.Rate
+                   }).OrderByDescending(ord => ord.PurchaseDate).FirstOrDefaultAsync();
+
+            return result?.PurchasePrice ?? 0;
+        }
+
+        public async Task<List<GSTReturnModel>> GetGSTReturns(DateTime fromDate, DateTime toDate)
+        {
+            List<SalesItem> listSales = await dbContext.SalesItems.Include(itm => itm.Item).Include(sls => sls.Sales).Where(col => col.Sales.InvoiceDate.Date >= fromDate.Date && col.Sales.InvoiceDate.Date <= toDate.Date).ToListAsync();
+
+            List<GSTReturnModel> gstReturns = [];
+            double purchasePrice, taxableAmount;
+            foreach (SalesItem item in listSales)
+            {
+                purchasePrice = await GetPurchasePrice(item.ItemId, item.Sales.InvoiceDate);
+                taxableAmount = item.Rate - purchasePrice;
+                gstReturns.Add(new GSTReturnModel()
+                {
+                    ItemId = item.ItemId,
+                    InvoiceDate = item.Sales.InvoiceDate,
+                    ItemName = item.Item.ItemName,
+                    HSNcode = item.Item.Hsncode,
+                    PurchasePrice = purchasePrice,
+                    SalesPrice = item.Rate,
+                    TaxableAmount = taxableAmount,
+                    GSTPer = item.GstPer,
+                    GSTValue = item.GstPer * taxableAmount/100
+                });
+            }
+
+            return gstReturns;
+        }
+
+        public async Task<DataTable> GetGSTSummary(DateTime fromDate, DateTime toDate)
+        {
+            List<Gst> gstList = await dbContext.Gsts.ToListAsync();
+            DataTable dataTable = new();
+            dataTable.Columns.Add("InvoiceDate", typeof(string));
+            foreach (Gst gst in gstList)
+            {
+                dataTable.Columns.Add($"{gst.SgstPer + gst.CgstPer}%", typeof(double));
+            }
+            List<GSTReturnModel> gSTReturnModels = await GetGSTReturns(fromDate, toDate);
+
+            var dates = gSTReturnModels.Select(r => r.InvoiceDate ).Distinct().ToList();
+
+            DataRow dataRow;
+
+            foreach (var date in dates)
+            {
+                dataRow = dataTable.NewRow();
+
+                var list = gSTReturnModels.Where(x => x.InvoiceDate == date).ToList();
+
+                var groupValues = list.GroupBy(g => g.GSTPer).Select(x => new
+                                    {
+                                        GSTPer = x.Key,
+                                        Total = x.Sum(x => x.GSTValue)
+                                    }).ToList();
+
+                dataRow["InvoiceDate"] = date.ToString("dd-MMM-yyyy");
+                foreach (var grp in groupValues)
+                {
+                    dataRow[grp.GSTPer.ToString()+"%"] = Math.Round(grp.Total, 2);
+                }
+                
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
         }
 
     }

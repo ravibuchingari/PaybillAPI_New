@@ -1,21 +1,24 @@
 ﻿using Authentication.JWTAuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
+using System.Data;
 using System.Net;
 
 namespace PaybillAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler) : ControllerBase
+    public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler, ISalesRepository salesRepository) : ControllerBase
     {
         [HttpGet]
         [Route("test")]
         public async Task<ContentResult> Test()
         {
             string message = await sharedRepository.CheckDatabase();
+
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.OK,
