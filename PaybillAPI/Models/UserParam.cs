@@ -16,5 +16,6 @@ namespace PaybillAPI.Models
         public PartyVM? PartyModel { get; set; }
         public PurchaseVM? PurchaseModel { get; set; }
         public SalesVM? SalesModel { get; set; }
+        public TransactionVM? TransactionModel { get; set; }
     }
 }

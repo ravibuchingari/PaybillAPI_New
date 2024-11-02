@@ -407,6 +407,21 @@ namespace PaybillAPI.Repositories
 
         }
 
+        public async Task<ResponseMessage> ResetStock()
+        {
+            double purchaseQty = 0.0, salesQty = 0.0;
+
+            List<Item> list = await dbContext.Items.Where(col => col.IsActive == 1).ToListAsync();
+            foreach (var item in list)
+            {
+                purchaseQty = await dbContext.PurchaseItems.Where(col => col.ItemId == item.ItemId).SumAsync(sm => sm.Quantity);
+                salesQty = await dbContext.SalesItems.Where(col => col.ItemId == item.ItemId).SumAsync(sm => sm.Quantity);
+                item.ClosingStock = purchaseQty - salesQty;
+            }
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: "Stock balance was successfully reset.");
+        }
+
 
         #endregion
     }

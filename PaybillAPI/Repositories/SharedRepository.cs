@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -151,7 +152,7 @@ namespace PaybillAPI.Repositories
             if (user == null)
                 return new AuthResponseVM() { IsSuccess = false, Message = "Security information failed!" };
 
-            byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(authRequest.Password), Convert.FromBase64String(DataProtection.DecryptWithIV(user.UserSaltKey, AppConstants.API_AES_KEY_AND_IV)));
+            byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(authRequest.Password), Convert.FromBase64String(DataProtection.DecryptWithIV(user.UserSaltKey!, AppConstants.API_AES_KEY_AND_IV)));
 
             if (!user.Password.Equals(DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV)))
                 return new AuthResponseVM() { IsSuccess = false, Message = "Security information failed!" };
@@ -200,6 +201,26 @@ namespace PaybillAPI.Repositories
                 },
                 Pref = dashboardPref
             };
+        }
+
+        public async Task<ResponseMessage> ChangePassword(int userRowId, string oldPassword, string newPassword)
+        {
+            User? user = await dbContext.Users.FindAsync(userRowId);
+            if (user == null)
+                return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "User"));
+
+            byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(oldPassword), Convert.FromBase64String(DataProtection.DecryptWithIV(user.UserSaltKey!, AppConstants.API_AES_KEY_AND_IV)));
+
+            if (!user.Password.Equals(DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV)))
+                return new ResponseMessage(isSuccess: false, message: "The old password cannot be matched.");
+
+            byte[] saltBytes = DataProtection.GenerateRandomNumber(20);
+            hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(newPassword), saltBytes);
+            user.Password = DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV);
+            user.UserSaltKey = DataProtection.EncryptWithIV(Convert.ToBase64String(saltBytes), AppConstants.API_AES_KEY_AND_IV);
+            user.UpdatedDate = DateTime.Now;
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS);
         }
 
         

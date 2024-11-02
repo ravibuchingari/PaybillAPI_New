@@ -14,5 +14,6 @@ namespace PaybillAPI.Repositories.Service
         Task<bool> IsValidAdminUser(int userRowId, string securityKey, int identityId);
         Task<ResponseMessage> UpdateProfile(ClientVM clientVM);
         Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest);
+        Task<ResponseMessage> ChangePassword(int userRowId, string oldPassword, string newPassword);
     }
 }

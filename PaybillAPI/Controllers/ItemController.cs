@@ -161,6 +161,14 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.GetItemsOnCode(itemCode));
         }
 
+        [HttpPost]
+        [Route("items/reset")]
+        public async Task<IActionResult> ResetStock()
+        {
+            return Ok(await itemRepository.ResetStock());
+        }
+
+        
 
         #endregion
 

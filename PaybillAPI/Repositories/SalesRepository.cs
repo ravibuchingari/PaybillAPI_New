@@ -157,7 +157,7 @@ namespace PaybillAPI.Repositories
             {
                 SalesId = row.SalesId,
                 InvoiceNo = row.InvoiceNo,
-                InvoiceDate = row.InvoiceDate.ToString("yyyy-MM-dd"),
+                InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 SalesType = row.SalesType,
                 PaymentMode = row.PaymentMode,
                 UpiType = row.UpiType,

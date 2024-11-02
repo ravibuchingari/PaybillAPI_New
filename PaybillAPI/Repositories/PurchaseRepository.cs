@@ -211,7 +211,7 @@ namespace PaybillAPI.Repositories
             {
                 PurchaseId = row.PurchaseId,
                 InvoiceNo = row.InvoiceNo,
-                InvoiceDate = row.InvoiceDate.ToString("yyyy-MM-dd"),
+                InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 PurchaseType = row.PurchaseType,
                 Summary = new InvoiceSummary()
                 {
