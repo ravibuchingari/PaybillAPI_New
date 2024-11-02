@@ -5,8 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PaybillAPI.DTO;
 
 [Table("users")]
+[Index("Mobile", Name = "Mobile_UNIQUE", IsUnique = true)]
 [Index("SecurityKey", Name = "SecurityKey_UNIQUE", IsUnique = true)]
 [Index("UserId", Name = "UserId_UNIQUE", IsUnique = true)]
+[Index("CreatedBy", Name = "fk_users_createdby_idx")]
+[Index("UpdatedBy", Name = "fk_users_updated_by_idx")]
 public partial class User
 {
     [Key]
@@ -46,6 +49,20 @@ public partial class User
     [Column(TypeName = "datetime")]
     public DateTime UpdatedDate { get; set; }
 
+    public int? CreatedBy { get; set; }
+
+    public int? UpdatedBy { get; set; }
+
+    [ForeignKey("CreatedBy")]
+    [InverseProperty("InverseCreatedByNavigation")]
+    public virtual User? CreatedByNavigation { get; set; }
+
+    [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<User> InverseCreatedByNavigation { get; set; } = new List<User>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<User> InverseUpdatedByNavigation { get; set; } = new List<User>();
+
     [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Item> ItemCreatedByNavigations { get; set; } = new List<Item>();
 
@@ -78,4 +95,8 @@ public partial class User
 
     [InverseProperty("UpdatedByNavigation")]
     public virtual ICollection<Transaction> TransactionUpdatedByNavigations { get; set; } = new List<Transaction>();
+
+    [ForeignKey("UpdatedBy")]
+    [InverseProperty("InverseUpdatedByNavigation")]
+    public virtual User? UpdatedByNavigation { get; set; }
 }

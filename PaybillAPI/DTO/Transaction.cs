@@ -21,7 +21,7 @@ public partial class Transaction
     public DateTime TransactionDate { get; set; }
 
     [StringLength(20)]
-    public string? PaymentMode { get; set; }
+    public string PaymentMode { get; set; } = null!;
 
     [StringLength(12)]
     public string? UpiType { get; set; }
@@ -49,6 +49,11 @@ public partial class Transaction
     public int CreatedBy { get; set; }
 
     public int UpdatedBy { get; set; }
+
+    public int? DeletedBy { get; set; }
+
+    [StringLength(250)]
+    public string? DeletedRemarks { get; set; }
 
     [ForeignKey("CreatedBy")]
     [InverseProperty("TransactionCreatedByNavigations")]

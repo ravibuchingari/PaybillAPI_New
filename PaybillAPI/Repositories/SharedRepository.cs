@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -60,6 +59,11 @@ namespace PaybillAPI.Repositories
             User? user = await dbContext.Users.Where(col => col.UserId == userVM.UserId).FirstOrDefaultAsync();
             if (user == null)
             {
+                byte[] saltBytes = DataProtection.GenerateRandomNumber(20);
+                byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(userVM.Password), saltBytes);
+                userVM.Password = DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV);
+                userVM.SaltKey = DataProtection.EncryptWithIV(Convert.ToBase64String(saltBytes), AppConstants.API_AES_KEY_AND_IV);
+
                 await dbContext.Users.AddAsync(new User()
                 {
                     UserId = userVM.UserId,
@@ -77,6 +81,65 @@ namespace PaybillAPI.Repositories
             }
             else
                 return "User account has already been created with the same Id.";
+        }
+
+        public async Task<ResponseMessage> UpsertUser(UserVM userVM, int userRowId)
+        {
+            if (userVM.UserRowId == 0)
+            {
+                User? user = await dbContext.Users.Where(col => col.UserId == userVM.UserId).FirstOrDefaultAsync();
+                if (user != null)
+                    return new ResponseMessage(isSuccess: false, message: "User account has already been created with the same Id.");
+
+                byte[] saltBytes = DataProtection.GenerateRandomNumber(20);
+                byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(userVM.Password), saltBytes);
+                userVM.Password = DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV);
+                userVM.SaltKey = DataProtection.EncryptWithIV(Convert.ToBase64String(saltBytes), AppConstants.API_AES_KEY_AND_IV);
+
+                await dbContext.Users.AddAsync(new User()
+                {
+                    UserId = userVM.UserId,
+                    Password = userVM.Password,
+                    UserSaltKey = userVM.SaltKey!,
+                    FirstName = userVM.FirstName,
+                    LastName = userVM.LastName,
+                    Address = userVM.Address,
+                    Mobile = userVM.Mobile,
+                    IsAdmin = (sbyte)userVM.IsAdmin.GetHashCode(),
+                    IsActive = (sbyte)userVM.IsActive.GetHashCode(),
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                    CreatedBy = userRowId,
+                    UpdatedBy = userRowId
+                });
+
+            }
+            else
+            {
+                User? user = await dbContext.Users.Where(col => col.UserId == userVM.UserId).FirstOrDefaultAsync();
+                if (user == null)
+                    return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "User"));
+
+                if (!string.IsNullOrWhiteSpace(userVM.Password))
+                {
+                    byte[] saltBytes = DataProtection.GenerateRandomNumber(20);
+                    byte[] hashPassword = DataProtection.GetSaltHasPassword(Encoding.ASCII.GetBytes(userVM.Password), saltBytes);
+                    userVM.Password = DataProtection.EncryptWithIV(Convert.ToBase64String(hashPassword), AppConstants.API_AES_KEY_AND_IV);
+                    userVM.SaltKey = DataProtection.EncryptWithIV(Convert.ToBase64String(saltBytes), AppConstants.API_AES_KEY_AND_IV);
+                    user.Password = userVM.Password;
+                    user.UserSaltKey = userVM.SaltKey!;
+                }
+                user.FirstName = userVM.FirstName;
+                user.LastName = userVM.LastName;
+                user.Address = userVM.Address;
+                user.Mobile = userVM.Mobile;
+                user.IsActive = (sbyte)userVM.IsActive.GetHashCode();
+                user.UpdatedDate = DateTime.Now;
+                user.UpdatedBy = userRowId;
+            }
+
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS);
         }
 
         public async Task<string> CreateAccountIfNotExists(ClientVM clientVM)
@@ -137,10 +200,12 @@ namespace PaybillAPI.Repositories
         {
             return await dbContext.Users.Select(row => new UserVM
             {
+                UserRowId = row.UserRowId,
                 UserId = row.UserId,
                 FirstName = row.FirstName,
                 LastName = row.LastName,
                 Mobile = row.Mobile,
+                Address = row.Address ?? string.Empty,
                 IsAdmin = row.IsAdmin == 1,
                 IsActive = row.IsActive == 1
             }).OrderBy(ord => ord.FirstName).ToListAsync();
@@ -223,7 +288,7 @@ namespace PaybillAPI.Repositories
             return new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS);
         }
 
-        
+
 
     }
 }

@@ -380,7 +380,7 @@ namespace PaybillAPI.Repositories
         }
 
         public async Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode)
-            {
+        {
             return await dbContext.Items.Where(col => col.IsActive == 1 && col.ItemCode == itemCode).Select(row => new ItemVM()
             {
                 ItemId = row.ItemId,

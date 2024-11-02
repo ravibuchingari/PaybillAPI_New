@@ -24,13 +24,7 @@ public partial class PurchaseItem
 
     public double DiscountInRs { get; set; }
 
-    public float GstPer { get; set; }
-
-    public double GstAmount { get; set; }
-
     public double TaxableAmount { get; set; }
-
-    public double TotalAmount { get; set; }
 
     public float CgstPer { get; set; }
 
@@ -38,11 +32,17 @@ public partial class PurchaseItem
 
     public float IgstPer { get; set; }
 
+    public float GstPer { get; set; }
+
     public double CgstRs { get; set; }
 
     public double SgstRs { get; set; }
 
     public double IgstRs { get; set; }
+
+    public double GstAmount { get; set; }
+
+    public double TotalAmount { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }

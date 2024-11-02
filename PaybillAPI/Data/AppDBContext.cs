@@ -31,6 +31,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
+    public virtual DbSet<TransactionsDeleted> TransactionsDeleteds { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
 }

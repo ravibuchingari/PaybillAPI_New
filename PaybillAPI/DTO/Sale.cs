@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PaybillAPI.DTO;
 
 [Table("sales")]
+[Index("InvoiceNo", Name = "InvoiceNo_UNIQUE", IsUnique = true)]
 [Index("CreatedBy", Name = "fk_sales_created_by_idx")]
 [Index("PartyId", Name = "fk_sales_party_id_idx")]
 public partial class Sale

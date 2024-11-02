@@ -4,7 +4,6 @@ using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
-using System.Reflection.Metadata.Ecma335;
 
 namespace PaybillAPI.Repositories
 {
@@ -59,7 +58,7 @@ namespace PaybillAPI.Repositories
                     });
                 }
 
-                if (salesVM.PartyModel != null) 
+                if (salesVM.PartyModel != null)
                 {
                     Transaction transaction = new()
                     {
@@ -147,7 +146,7 @@ namespace PaybillAPI.Repositories
                 {
                     PartyId = row.Party.PartyId,
                     PartyName = row.Party.PartyName
-                }: null
+                } : null
             }).ToListAsync();
         }
 
@@ -217,7 +216,7 @@ namespace PaybillAPI.Repositories
 
                 try
                 {
-                    if(sale.Transactions.Count > 0)
+                    if (sale.Transactions.Count > 0)
                         dbContext.Transactions.RemoveRange(sale.Transactions);
                     dbContext.Sales.Remove(sale);
                     await SaveChangesAsync();

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
-using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
 
 namespace PaybillAPI.Controllers
@@ -27,7 +26,7 @@ namespace PaybillAPI.Controllers
         {
             if (!await sharedRepository.IsValidAdminUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
-            if(string.IsNullOrWhiteSpace(userParam.remarks))
+            if (string.IsNullOrWhiteSpace(userParam.remarks))
                 return BadRequest("Remarks cannot be empty.");
             salesItemId = DataProtection.UrlDecode(salesItemId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await salesRepository.DeleteSalesItem(int.Parse(salesItemId), userParam.remarks ?? "", Convert.ToInt32(User.Identity?.Name)));

@@ -95,5 +95,30 @@ namespace PaybillAPI.Repositories
             return new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS);
         }
 
+        public async Task<IEnumerable<UserVM>> GetUsers()
+        {
+            return await dbContext.Users.Select(row => new UserVM()
+            {
+                UserRowId = row.UserRowId,
+                UserId = row.UserId,
+                FirstName = row.FirstName,
+                LastName = row.LastName,
+                Mobile = row.Mobile,
+                Address = row.Address ?? string.Empty,
+                IsAdmin = row.IsAdmin == 1,
+                IsActive = row.IsActive == 1
+            }).ToListAsync();
+        }
+
+        public async Task<ResponseMessage> DeleteUser(int userRowId)
+        {
+            User user = await dbContext.Users.FindAsync(userRowId) ?? throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "User"));
+            if (user.IsAdmin == 1)
+                return new ResponseMessage(isSuccess: false, message: "You cannot delete the administrator account.");
+            dbContext.Users.Remove(user);
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: "User account has been deleted successfully.");
+        }
+
     }
 }

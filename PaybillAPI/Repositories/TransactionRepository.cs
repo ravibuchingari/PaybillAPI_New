@@ -1,10 +1,9 @@
-﻿using PaybillAPI.Data;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.ViewModel;
+﻿using Microsoft.EntityFrameworkCore;
+using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections;
+using PaybillAPI.Repositories.Service;
+using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Repositories
 {
@@ -44,7 +43,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<TransactionVM>> GetTodayTransactions(bool isPayment)
         {
-            if(isPayment)
+            if (isPayment)
             {
                 return await dbContext.Transactions.Where(col => col.SalesId == null && col.PurchaseId == null && col.CreatedDate.Date == DateTime.Now.Date && col.PaymentAmount > 0).Select(row => new TransactionVM()
                 {
