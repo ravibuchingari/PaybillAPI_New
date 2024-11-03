@@ -46,6 +46,8 @@ public partial class SalesItem
 
     public double TotalAmount { get; set; }
 
+    public double PurchasePrice { get; set; }
+
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 

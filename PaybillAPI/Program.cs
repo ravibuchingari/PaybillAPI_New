@@ -27,6 +27,7 @@ builder.Services.AddScoped<IPartyRepository, PartyRepository>();
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<ISalesRepository, SalesRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 builder.Services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>(option => ActivatorUtilities.CreateInstance<JwtTokenHandler>(option, jwtParameters));
 builder.Services.AddDbContext<AppDBContext>(options => options.UseMySQL(builder.Configuration.GetConnectionString("SqlConnection")!));

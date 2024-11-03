@@ -67,6 +67,13 @@ namespace PaybillAPI.Repositories
                         TotalAmount = purchaseItemVM.TotalAmount,
                         CreatedDate = DateTime.Now
                     });
+
+                    if(purchaseItemVM.Rate > 0)
+                    {
+                        var item = await dbContext.Items.Where(col => col.ItemId == purchaseItemVM.ItemModel.ItemId).FirstAsync();
+                        if(item.PurchasePrice != purchaseItemVM.Rate)
+                            item.PurchasePrice = purchaseItemVM.Rate;
+                    }
                 }
 
                 Transaction? transaction = null;
