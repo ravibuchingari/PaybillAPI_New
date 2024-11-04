@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
@@ -12,36 +13,62 @@ namespace PaybillAPI.Repositories
 {
     public class ReportRepository(AppDBContext dbContext) : IReportRepository
     {
-        public async Task<List<GSTReturnModel>> GetGSTReturns(DateTime fromDate, DateTime toDate)
+        public async Task<List<GSTReturnDetailed>> GetGSTReturnDetailed(DateTime fromDate, DateTime toDate)
         {
+            List<GSTReturnDetailed> gstReturns = [];
             List<SalesItem> listSales = await dbContext.SalesItems.Include(itm => itm.Item).Include(sls => sls.Sales).Where(col => col.Sales.InvoiceDate.Date >= fromDate.Date && col.Sales.InvoiceDate.Date <= toDate.Date).ToListAsync();
-
-            List<GSTReturnModel> gstReturns = [];
             foreach (SalesItem salesItem in listSales)
             {
-                gstReturns.Add(new GSTReturnModel()
+                gstReturns.Add(new GSTReturnDetailed()
                 {
-                    ItemId = salesItem.ItemId,
+                    SalesItemId = salesItem.SalesItemId,
                     InvoiceDate = salesItem.Sales.InvoiceDate,
+                    InvoiceNo = salesItem.Sales.InvoiceNo,  
+                    ItemId = salesItem.ItemId,
                     ItemName = salesItem.Item.ItemName,
-                    HSNcode = salesItem.Item.Hsncode,
+                    HSNCode = salesItem.Item.Hsncode,
                     PurchasePrice = salesItem.PurchasePrice,
                     SalesPrice = salesItem.Rate,
                     TaxableAmount = salesItem.Rate - salesItem.PurchasePrice,
-                    GSTPer = salesItem.GstPer,
-                    GSTValue = salesItem.GstPer * (salesItem.Rate - salesItem.PurchasePrice) / 100
+                    GstPer = salesItem.GstPer,
+                    GstValue = salesItem.GstPer * (salesItem.Rate - salesItem.PurchasePrice) / 100
                 });
             }
 
             return gstReturns;
         }
 
-        public async Task<DataTable> GetGSTSummary(DateTime fromDate, DateTime toDate)
+        public async Task<List<GSTReturnStatement>> GetGSTReturnStatement(DateTime fromDate, DateTime toDate)
         {
             List<Gst> gstList = await dbContext.Gsts.ToListAsync();
             DataTable dataTable = new();
             dataTable.Columns.Add("InvoiceDate", typeof(string));
-            foreach (Gst gst in gstList)
+
+            List<GSTReturnStatement> listSummary = [];
+            var dates = await dbContext.Sales.Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).Select(row => row.InvoiceDate.Date).Distinct().ToListAsync();
+
+            foreach (DateTime date in dates)
+            {
+                var summary = new GSTReturnStatement
+                {
+                    InvoiceDate = date.ToString("dd-MMM-yyyy"),
+                    Data = await (from itm in dbContext.SalesItems
+                                  join sls in dbContext.Sales on itm.SalesId equals sls.SalesId
+                                  where sls.InvoiceDate == date
+                                  group new { itm } by new { itm.GstPer } into grp
+                                  select new GSTData()
+                                  {
+                                      GstPer = grp.Key.GstPer,
+                                      TaxableAmount = grp.Sum(sm => sm.itm.Rate - sm.itm.PurchasePrice),
+                                      GstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.GstPer / 100),2)
+                                  }).ToListAsync()
+                };
+                listSummary.Add(summary);
+            }
+
+            return listSummary;
+
+           /* foreach (Gst gst in gstList)
             {
                 dataTable.Columns.Add($"{gst.SgstPer + gst.CgstPer}%", typeof(double));
             }
@@ -57,10 +84,10 @@ namespace PaybillAPI.Repositories
 
                 var list = gSTReturnModels.Where(x => x.InvoiceDate == date).ToList();
 
-                var groupValues = list.GroupBy(g => g.GSTPer).Select(x => new
+                var groupValues = list.GroupBy(g => g.GstPer).Select(x => new
                 {
                     GSTPer = x.Key,
-                    Total = x.Sum(x => x.GSTValue)
+                    Total = x.Sum(x => x.GstValue)
                 }).ToList();
 
                 dataRow["InvoiceDate"] = date.ToString("dd-MMM-yyyy");
@@ -70,9 +97,7 @@ namespace PaybillAPI.Repositories
                 }
 
                 dataTable.Rows.Add(dataRow);
-            }
-
-            return dataTable;
+            }*/
         }
 
         public async Task<List<SalesVM>> GetSalesDetails(ReportParam reportParam)
@@ -111,16 +136,16 @@ namespace PaybillAPI.Repositories
             List<SalesSummary> salesSummary = [];
 
             var list = await (from sls in dbContext.Sales
-                   join itm in dbContext.SalesItems on sls.SalesId equals itm.SalesId
-                   where sls.InvoiceDate.Date >= DateTime.Parse(reportParam.FromDate!).Date && sls.InvoiceDate <= DateTime.Parse(reportParam.ToDate!).Date
-                   group new { sls, itm } by new { InvoiceMonth = sls.InvoiceDate.ToString("MM-yyyy"), sls.SalesType, sls.PaymentMode } into grp
-                   select new
-                   {
-                       Month = grp.Key.InvoiceMonth,
-                       grp.Key.SalesType,
-                       grp.Key.PaymentMode,
-                       TotalAmount = grp.Sum(p => p.itm.TotalAmount)
-                   }).ToListAsync();
+                               join itm in dbContext.SalesItems on sls.SalesId equals itm.SalesId
+                               where sls.InvoiceDate.Date >= DateTime.Parse(reportParam.FromDate!).Date && sls.InvoiceDate <= DateTime.Parse(reportParam.ToDate!).Date
+                               group new { sls, itm } by new { InvoiceMonth = sls.InvoiceDate.Month, InvoiceYear = sls.InvoiceDate.Year, sls.SalesType, sls.PaymentMode } into grp
+                               select new
+                               {
+                                   Month = $"{grp.Key.InvoiceMonth}-{grp.Key.InvoiceYear}",
+                                   grp.Key.SalesType,
+                                   grp.Key.PaymentMode,
+                                   TotalAmount = grp.Sum(p => p.itm.TotalAmount)
+                               }).ToListAsync();
 
             var months = list.Select(s => s.Month).Distinct().ToList();
 
@@ -128,7 +153,7 @@ namespace PaybillAPI.Repositories
             {
                 salesSummary.Add(new SalesSummary()
                 {
-                    Month = month,
+                    Month = month.ToString(),
                     Credit = list.Where(x => x.Month == month && x.SalesType == PaymentMode.Credit.ToString()).Sum(x => x.TotalAmount),
                     Cash = list.Where(x => x.Month == month && x.SalesType == PaymentMode.Cash.ToString() && x.PaymentMode == PaymentMode.Cash.ToString()).Sum(x => x.TotalAmount),
                     Card = list.Where(x => x.Month == month && x.SalesType == PaymentMode.Cash.ToString() && x.PaymentMode == PaymentMode.Card.ToString()).Sum(x => x.TotalAmount),
