@@ -46,7 +46,6 @@ namespace PaybillAPI.Repositories
 
             List<GSTReturnStatement> listSummary = [];
             var dates = await dbContext.Sales.Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).Select(row => row.InvoiceDate.Date).Distinct().ToListAsync();
-
             foreach (DateTime date in dates)
             {
                 var summary = new GSTReturnStatement
@@ -55,12 +54,21 @@ namespace PaybillAPI.Repositories
                     Data = await (from itm in dbContext.SalesItems
                                   join sls in dbContext.Sales on itm.SalesId equals sls.SalesId
                                   where sls.InvoiceDate == date
-                                  group new { itm } by new { itm.GstPer } into grp
+                                  group new { itm } by new { itm.GstPer, itm.IgstPer, itm.CgstPer, itm.SgstPer } into grp
                                   select new GSTData()
                                   {
+                                      IgstPer = grp.Key.IgstPer,
+                                      CgstPer = grp.Key.CgstPer,
+                                      SgstPer = grp.Key.SgstPer,
                                       GstPer = grp.Key.GstPer,
+
+                                      TurnoverAmount = grp.Sum(sm => sm.itm.TotalAmount),
                                       TaxableAmount = grp.Sum(sm => sm.itm.Rate - sm.itm.PurchasePrice),
-                                      GstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.GstPer / 100),2)
+                                   
+                                      IgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.IgstPer / 100), 2),
+                                      CgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.CgstPer / 100), 2),
+                                      SgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.SgstPer / 100), 2),
+                                      GstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.GstPer / 100),2)
                                   }).ToListAsync()
                 };
                 listSummary.Add(summary);

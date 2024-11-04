@@ -70,6 +70,7 @@ public partial class Setting
 
     public int IsAlertOnMinimumStock { get; set; }
 
+
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 

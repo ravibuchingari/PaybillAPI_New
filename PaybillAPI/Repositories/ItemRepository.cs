@@ -220,9 +220,9 @@ namespace PaybillAPI.Repositories
                     CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
                     GstModel = row.GstId != null ? new GstVM()
                     {
-                        GstId = row.Gst!.GstId,
+                        GstId = row.Gst.GstId,
                         SgstPer = row.Gst.SgstPer,
-                        CgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.CgstPer,
                         IgstPer = row.Gst.IgstPer
                     } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
@@ -246,7 +246,7 @@ namespace PaybillAPI.Repositories
                     {
                         GstId = row.Gst.GstId,
                         SgstPer = row.Gst.SgstPer,
-                        CgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.CgstPer,
                         IgstPer = row.Gst.IgstPer
                     } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
@@ -269,11 +269,11 @@ namespace PaybillAPI.Repositories
                 ClosingStock = row.OpeningStock + row.ClosingStock,
                 IsActive = row.IsActive == 1,
                 CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                GstModel = row.GstId != null ? new GstVM()
+                GstModel = row.Gst != null ? new GstVM()
                 {
-                    GstId = row.Gst!.GstId,
+                    GstId = row.Gst.GstId,
                     SgstPer = row.Gst.SgstPer,
-                    CgstPer = row.Gst.SgstPer,
+                    CgstPer = row.Gst.CgstPer,
                     IgstPer = row.Gst.IgstPer
                 } : null
             }).FirstOrDefaultAsync(col => col.ItemId == itemId);
@@ -400,7 +400,7 @@ namespace PaybillAPI.Repositories
                 {
                     GstId = row.Gst.GstId,
                     SgstPer = row.Gst.SgstPer,
-                    CgstPer = row.Gst.SgstPer,
+                    CgstPer = row.Gst.CgstPer,
                     IgstPer = row.Gst.IgstPer
                 } : null
             }).ToListAsync();

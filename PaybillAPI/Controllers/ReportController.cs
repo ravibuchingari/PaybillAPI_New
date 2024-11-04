@@ -43,6 +43,7 @@ namespace PaybillAPI.Controllers
 
         [HttpGet]
         [Route("sales/gst/return/statement")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetGSTReturnStatement([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             var list = await reportRepository.GetGSTReturnStatement(DateTime.Parse(fromDate), DateTime.Parse(toDate));
