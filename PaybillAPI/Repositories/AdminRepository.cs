@@ -37,12 +37,13 @@ namespace PaybillAPI.Repositories
                     Header1 = row.Header1,
                     Header2 = row.Header2,
                     Header3 = row.Header3,
-                    GSTIN = row.Gstin,
-                    GSTSlabRequired = row.GstslabRequired == 1,
+                    Gstin = row.Gstin,
+                    GstSlabRequired = row.GstslabRequired == 1,
                 },
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync();
+
         }
 
         private static Setting PrepareSettings(SettingVM settingVM, Setting setting)
@@ -60,8 +61,8 @@ namespace PaybillAPI.Repositories
             setting.Header1 = settingVM.HeaderModel.Header1;
             setting.Header2 = settingVM.HeaderModel.Header2;
             setting.Header3 = settingVM.HeaderModel.Header3;
-            setting.Gstin = settingVM.HeaderModel.GSTIN;
-            setting.GstslabRequired = settingVM.HeaderModel.GSTSlabRequired.GetHashCode()!;
+            setting.Gstin = settingVM.HeaderModel.Gstin;
+            setting.GstslabRequired = settingVM.HeaderModel.GstSlabRequired.GetHashCode()!;
             setting.AddItemOnSelected = settingVM.AddItemOnSelected.GetHashCode();
             setting.InvoicePrefix = settingVM.InvoicePrefix;
             setting.InvoiceLength = settingVM.InvoiceLength;

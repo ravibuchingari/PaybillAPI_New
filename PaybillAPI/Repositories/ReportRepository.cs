@@ -15,27 +15,90 @@ namespace PaybillAPI.Repositories
     {
         public async Task<List<GSTReturnDetailed>> GetGSTReturnDetailed(DateTime fromDate, DateTime toDate)
         {
-            List<GSTReturnDetailed> gstReturns = [];
-            List<SalesItem> listSales = await dbContext.SalesItems.Include(itm => itm.Item).Include(sls => sls.Sales).Where(col => col.Sales.InvoiceDate.Date >= fromDate.Date && col.Sales.InvoiceDate.Date <= toDate.Date).ToListAsync();
-            foreach (SalesItem salesItem in listSales)
-            {
-                gstReturns.Add(new GSTReturnDetailed()
-                {
-                    SalesItemId = salesItem.SalesItemId,
-                    InvoiceDate = salesItem.Sales.InvoiceDate,
-                    InvoiceNo = salesItem.Sales.InvoiceNo,  
-                    ItemId = salesItem.ItemId,
-                    ItemName = salesItem.Item.ItemName,
-                    HSNCode = salesItem.Item.Hsncode,
-                    PurchasePrice = salesItem.PurchasePrice,
-                    SalesPrice = salesItem.Rate,
-                    TaxableAmount = salesItem.Rate - salesItem.PurchasePrice,
-                    GstPer = salesItem.GstPer,
-                    GstValue = salesItem.GstPer * (salesItem.Rate - salesItem.PurchasePrice) / 100
-                });
+            List<GSTReturnDetailed> registeredList = await (from sls in dbContext.Sales
+                   join prt in dbContext.Parties on sls.PartyId equals prt.PartyId
+                   where sls.InvoiceDate.Date >= fromDate.Date && sls.InvoiceDate.Date <= toDate.Date && prt.PartyGstNo != null && prt.PartyGstNo.Trim().Length > 0
+                   select new GSTReturnDetailed()
+                   {
+                       SalesId = sls.SalesId,
+                       InvoiceNo = sls.InvoiceNo,
+                       InvoiceDate = sls.InvoiceDate,
+                       PartyName = prt.PartyName,
+                       PartyGstin = prt.PartyGstNo
+                   }).ToListAsync();
+
+
+            foreach (var party in registeredList) {
+                party.Data = await(from itm in dbContext.SalesItems
+                       where itm.SalesId == party.SalesId
+                       group new { itm } by new { itm.SalesId, itm.GstPer, itm.IgstPer, itm.CgstPer, itm.SgstPer } into grp
+                       select new GSTData()
+                       {
+                           IgstPer = grp.Key.IgstPer,
+                           CgstPer = grp.Key.CgstPer,
+                           SgstPer = grp.Key.SgstPer,
+                           GstPer = grp.Key.GstPer,
+                           TaxableAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity), 2),
+                           IgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.IgstPer / 100), 2),
+                           CgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.CgstPer / 100), 2),
+                           SgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.SgstPer / 100), 2),
+                           GstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.GstPer / 100), 2)
+                       }).ToListAsync();
             }
 
-            return gstReturns;
+
+
+            List<GSTReturnDetailed> unRegistered = await dbContext.Sales.Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date && (col.Party == null || col.Party.PartyGstNo == null || col.Party.PartyGstNo.Trim().Length == 0)).Select(row => new GSTReturnDetailed()
+            {
+                InvoiceDate = row.InvoiceDate.Date
+            }).ToListAsync();
+
+            foreach (var party in unRegistered)
+            {
+                party.Data = await (from itm in dbContext.SalesItems
+                                    join sls in dbContext.Sales on itm.SalesId equals sls.SalesId
+                                    where sls.InvoiceDate.Date == party.InvoiceDate
+                                    group new { itm, sls } by new { sls.InvoiceDate, itm.GstPer, itm.IgstPer, itm.CgstPer, itm.SgstPer } into grp
+                                    select new GSTData()
+                                    {
+                                        IgstPer = grp.Key.IgstPer,
+                                        CgstPer = grp.Key.CgstPer,
+                                        SgstPer = grp.Key.SgstPer,
+                                        GstPer = grp.Key.GstPer,
+                                        TaxableAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity), 2),
+                                        IgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.IgstPer / 100), 2),
+                                        CgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.CgstPer / 100), 2),
+                                        SgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.SgstPer / 100), 2),
+                                        GstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.GstPer / 100), 2)
+                                    }).ToListAsync();
+            }
+
+            List<GSTReturnDetailed> returnsDetailed = new();
+
+            if(registeredList.Count > 0)
+            {
+                returnsDetailed.Add(new GSTReturnDetailed()
+                {
+                    IsHeader = true,
+                    PartyName = "REGISTERED INVOICES"
+                });
+
+                returnsDetailed.AddRange(registeredList);
+            }
+
+
+            if (unRegistered.Count > 0)
+            {
+                returnsDetailed.Add(new GSTReturnDetailed()
+                {
+                    IsHeader = true,
+                    PartyName = "UN REGISTERED INVOICES"
+                });
+
+                returnsDetailed.AddRange(unRegistered);
+            }
+            
+            return returnsDetailed;
         }
 
         public async Task<List<GSTReturnStatement>> GetGSTReturnStatement(DateTime fromDate, DateTime toDate)
@@ -62,7 +125,6 @@ namespace PaybillAPI.Repositories
                                       SgstPer = grp.Key.SgstPer,
                                       GstPer = grp.Key.GstPer,
 
-                                      TurnoverAmount = grp.Sum(sm => sm.itm.TotalAmount),
                                       TaxableAmount = grp.Sum(sm => sm.itm.Rate - sm.itm.PurchasePrice),
                                    
                                       IgstAmount = Math.Round(grp.Sum(sm => (sm.itm.Rate - sm.itm.PurchasePrice) * sm.itm.Quantity * sm.itm.IgstPer / 100), 2),

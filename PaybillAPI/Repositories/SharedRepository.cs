@@ -237,6 +237,7 @@ namespace PaybillAPI.Repositories
                 IsCompressBackup = row.IsCompressBackup == 1,
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
+                ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0,2) : "",
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };

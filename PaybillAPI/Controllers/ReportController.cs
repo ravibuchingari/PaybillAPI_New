@@ -25,6 +25,7 @@ namespace PaybillAPI.Controllers
 
         [HttpGet]
         [Route("sales/gst/return/detailed/download")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetGSTReturnDetailedDownload([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             var list = await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate));
@@ -50,11 +51,11 @@ namespace PaybillAPI.Controllers
             return Ok(list);
         }
 
-        [HttpGet]
+       /* [HttpGet]
         [Route("sales/gst/return/statement/download")]
         public async Task<IActionResult> GetGSTReturnStatementDownload([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            var list = await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate));
+           *//* var list = await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate));
             if (list.Count > 0)
             {
                 string[] selectedProperties = [];
@@ -63,9 +64,9 @@ namespace PaybillAPI.Controllers
                 var fileStream = File(System.IO.File.OpenRead(fileName), contentType: contentType ?? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 return fileStream;
             }
-            else
+            else*//*
                 return BadRequest("No data found");
-        }
+        }*/
 
         [HttpPost]
         [Route("sales/details")]
