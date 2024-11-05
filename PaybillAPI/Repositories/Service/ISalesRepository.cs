@@ -1,6 +1,5 @@
 ﻿using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
-using System.Data;
 
 namespace PaybillAPI.Repositories.Service
 {

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System.ComponentModel;
 using System.Data;
-using System.Reflection;
 
 namespace PaybillAPI.Models
 {
@@ -124,7 +123,7 @@ namespace PaybillAPI.Models
 
         internal static string GenerateExcel(DataTable dataTable, string destinationDir, string title, string fileName = "")
         {
-            if(!Directory.Exists(destinationDir)) Directory.CreateDirectory(destinationDir);
+            if (!Directory.Exists(destinationDir)) Directory.CreateDirectory(destinationDir);
 
             title = title.Trim();
             if (title.Length > 30)

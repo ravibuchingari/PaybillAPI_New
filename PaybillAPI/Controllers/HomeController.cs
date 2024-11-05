@@ -1,10 +1,8 @@
 ﻿using Authentication.JWTAuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
-using System.Data;
 using System.Net;
 
 namespace PaybillAPI.Controllers

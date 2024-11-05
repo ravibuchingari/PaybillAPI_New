@@ -68,10 +68,10 @@ namespace PaybillAPI.Repositories
                         CreatedDate = DateTime.Now
                     });
 
-                    if(purchaseItemVM.Rate > 0)
+                    if (purchaseItemVM.Rate > 0)
                     {
                         var item = await dbContext.Items.Where(col => col.ItemId == purchaseItemVM.ItemModel.ItemId).FirstAsync();
-                        if(item.PurchasePrice != purchaseItemVM.Rate)
+                        if (item.PurchasePrice != purchaseItemVM.Rate)
                             item.PurchasePrice = purchaseItemVM.Rate;
                     }
                 }
