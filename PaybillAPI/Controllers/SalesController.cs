@@ -61,11 +61,6 @@ namespace PaybillAPI.Controllers
             return Ok(await salesRepository.DeleteSalesInvoice(int.Parse(salesId)));
         }
 
-        [HttpGet]
-        [Route("print/header")]
-        public async Task<IActionResult> GetPrintHeader()
-        {
-            return Ok(await salesRepository.GetPrintHeader());
-        }
+        
     }
 }

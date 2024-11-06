@@ -199,5 +199,55 @@ namespace PaybillAPI.Repositories
             }
             return salesSummary;
         }
+
+        public async Task<List<PurchaseVM>> GetPurchaseDetails(ReportParam reportParam)
+        {
+
+            var list = await dbContext.Purchases.Include(itm => itm.PurchaseItems).Where(col => col.InvoiceDate.Date >= DateTime.Parse(reportParam.FromDate!).Date &&
+                                               col.InvoiceDate <= DateTime.Parse(reportParam.ToDate!).Date &&
+                                               col.PurchaseType == (reportParam.TransactionType.IsNullOrEmpty() ? col.PurchaseType : reportParam.TransactionType) &&
+                                               col.PaymentMode == (reportParam.PaymentMode.IsNullOrEmpty() ? col.PaymentMode : reportParam.PaymentMode) &&
+                                               col.UpiType == (reportParam.UpiType.IsNullOrEmpty() ? col.UpiType : reportParam.UpiType)).OrderBy(ord => ord.InvoiceDate).Select(row => new PurchaseVM
+                                               {
+                                                   PurchaseId = row.PurchaseId,
+                                                   InvoiceNo = row.InvoiceNo,
+                                                   InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
+                                                   PurchaseType = row.PurchaseType,
+                                                   PaymentMode = row.PaymentMode,
+                                                   UpiType = row.UpiType,
+                                                   Summary = new InvoiceSummary
+                                                   {
+                                                       TotalAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.Amount),
+                                                       TotalDiscount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.DiscountInRs),
+                                                       TotalTaxableAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TaxableAmount),
+                                                       TotalGSTAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.GstAmount),
+                                                       TotalInvoiceAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.TotalAmount)
+                                                   },
+                                                   PartyModel = new PartyVM
+                                                   {
+                                                       PartyId = row.Party.PartyId,
+                                                       PartyName = row.Party.PartyName
+                                                   }
+                                               }).ToListAsync();
+            return list;
+        }
+                
+        public async Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam)
+        {
+            return await dbContext.Transactions.Where(col => col.PartyId == int.Parse(reportParam.Id!) && col.TransactionDate.Date >= Convert.ToDateTime(reportParam.FromDate).Date && col.TransactionDate <= Convert.ToDateTime(reportParam.ToDate).Date).OrderBy(ord => ord.TransactionDate).Select(row => new TransactionVM()
+            {
+                TransactionId = row.TransactionId,
+                TransactionDate = row.TransactionDate.ToString("dd-MMM-yyyy"),
+                TransactionRefNo = row.Sales != null ? row.Sales.InvoiceNo : (row.Purchase != null ? row.Purchase.InvoiceNo : ""),
+                TransactionType = row.TransactionType,
+                PaymentMode = row.PaymentMode,
+                UpiType = row.UpiType,
+                ReceiptAmount = row.ReceiptAmount,
+                PaymentAmount = row.PaymentAmount,
+                Remarks = row.Remarks,
+            }).ToListAsync();
+        }
+
+
     }
 }

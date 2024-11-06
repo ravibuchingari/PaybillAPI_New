@@ -44,23 +44,6 @@ namespace PaybillAPI.Controllers
             return Ok(await reportRepository.GetGSTHSNSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
         }
 
-        /* [HttpGet]
-         [Route("sales/gst/return/statement/download")]
-         public async Task<IActionResult> GetGSTReturnStatementDownload([FromQuery] string fromDate, [FromQuery] string toDate)
-         {
-            *//* var list = await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate));
-             if (list.Count > 0)
-             {
-                 string[] selectedProperties = [];
-                 string fileName = SharedMethod.GenerateExcel(SharedMethod.ConvertToDataTable(list, selectedProperties), Path.Combine(hostEnvironment.WebRootPath, AppConstants.TEMP_DIR), $"Sales summary from {fromDate} to {toDate}", "sales_summary");
-                 new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string? contentType);
-                 var fileStream = File(System.IO.File.OpenRead(fileName), contentType: contentType ?? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                 return fileStream;
-             }
-             else*//*
-                 return BadRequest("No data found");
-         }*/
-
         [HttpPost]
         [Route("sales/details")]
         public async Task<IActionResult> GetSalesDetails([FromBody] ReportParam reportParam)
@@ -110,5 +93,20 @@ namespace PaybillAPI.Controllers
                 return BadRequest("No data found");
 
         }
+
+        [HttpPost]
+        [Route("purchase/details")]
+        public async Task<IActionResult> GetPurchaseDetails([FromBody] ReportParam reportParam)
+        {
+            return Ok(await reportRepository.GetPurchaseDetails(reportParam));
+        }
+
+        [HttpPost]
+        [Route("party/ledger")]
+        public async Task<IActionResult> GetPartyLedger([FromBody] ReportParam reportParam)
+        {
+            return Ok(await reportRepository.GetPartyLedger(reportParam));
+        }
+
     }
 }

@@ -13,5 +13,6 @@
         public bool IsAlertOnMinimumStock { get; set; }
         public bool IsAlertOnNegativeBalance { get; set; } = true;
         public string ServiceGSTCode { get; set; } = string.Empty;
+        public PrintHeader HeaderModel { get; set; } = null!;
     }
 }

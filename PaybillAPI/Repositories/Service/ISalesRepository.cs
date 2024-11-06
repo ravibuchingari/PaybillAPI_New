@@ -7,7 +7,6 @@ namespace PaybillAPI.Repositories.Service
     {
         Task<ResponseMessage> DeleteSalesInvoice(int salesId);
         Task<ResponseMessage> DeleteSalesItem(int salesItemId, string remarks, int userRowId);
-        Task<PrintHeader> GetPrintHeader();
         Task<SalesVM> GetSalesInvoiceDetails(int salesId);
         Task<IEnumerable<SalesVM>> GetSalesInvoices(DateTime fromDate, DateTime toDate);
         Task<ResponseMessage> SaveSalesInvoice(SalesVM salesVM, int userRowId);

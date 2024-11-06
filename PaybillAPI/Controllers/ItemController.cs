@@ -103,12 +103,10 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.UpsertItem(userParam.ItemModel!, Convert.ToInt32(User.Identity?.Name)));
         }
 
-        [HttpPost]
-        [Route("item/list/{filter?}")]
-        public async Task<IActionResult> GetItems([FromBody] UserParam userParam, [FromRoute] string? filter)
+        [HttpGet]
+        [Route("item/list/")]
+        public async Task<IActionResult> GetItems([FromQuery] string? filter)
         {
-            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
-                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.GetItems(filter ?? string.Empty));
         }
 

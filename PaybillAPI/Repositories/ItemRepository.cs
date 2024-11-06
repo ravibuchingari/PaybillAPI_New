@@ -218,30 +218,6 @@ namespace PaybillAPI.Repositories
                     ClosingStock = row.OpeningStock + row.ClosingStock,
                     IsActive = row.IsActive == 1,
                     CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                    GstModel = row.GstId != null ? new GstVM()
-                    {
-                        GstId = row.Gst.GstId,
-                        SgstPer = row.Gst.SgstPer,
-                        CgstPer = row.Gst.CgstPer,
-                        IgstPer = row.Gst.IgstPer
-                    } : null
-                }).OrderBy(ord => ord.ItemName).ToListAsync();
-            else
-                return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter) || col.ItemName.StartsWith(filter)).Select(row => new ItemVM()
-                {
-                    ItemId = row.ItemId,
-                    ItemCode = row.ItemCode,
-                    ItemName = row.ItemName,
-                    AliasName = row.AliasName,
-                    Mrp = row.Mrp,
-                    SalesPrice = row.SalesPrice,
-                    PurchasePrice = row.PurchasePrice,
-                    HSncode = row.Hsncode,
-                    Measure = row.Measure,
-                    OpeningStock = row.OpeningStock,
-                    ClosingStock = row.OpeningStock + row.ClosingStock,
-                    IsActive = row.IsActive == 1,
-                    CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
                     GstModel = row.Gst != null ? new GstVM()
                     {
                         GstId = row.Gst.GstId,
@@ -250,6 +226,32 @@ namespace PaybillAPI.Repositories
                         IgstPer = row.Gst.IgstPer
                     } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
+            else
+                return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
+                                                    col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
+                                                    col.Category.CategoryName.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Select(row => new ItemVM()
+                                                    {
+                                                        ItemId = row.ItemId,
+                                                        ItemCode = row.ItemCode,
+                                                        ItemName = row.ItemName,
+                                                        AliasName = row.AliasName,
+                                                        Mrp = row.Mrp,
+                                                        SalesPrice = row.SalesPrice,
+                                                        PurchasePrice = row.PurchasePrice,
+                                                        HSncode = row.Hsncode,
+                                                        Measure = row.Measure,
+                                                        OpeningStock = row.OpeningStock,
+                                                        ClosingStock = row.OpeningStock + row.ClosingStock,
+                                                        IsActive = row.IsActive == 1,
+                                                        CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                                                        GstModel = row.Gst != null ? new GstVM()
+                                                        {
+                                                            GstId = row.Gst.GstId,
+                                                            SgstPer = row.Gst.SgstPer,
+                                                            CgstPer = row.Gst.CgstPer,
+                                                            IgstPer = row.Gst.IgstPer
+                                                        } : null
+                                                    }).OrderBy(ord => ord.ItemName).ToListAsync();
         }
 
         public async Task<ItemVM> GetItemDetails(int itemId)
@@ -365,7 +367,7 @@ namespace PaybillAPI.Repositories
                     ClosingStock = row.OpeningStock + row.ClosingStock
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
-                return await dbContext.Items.Where(col => col.IsActive == 1 && (col.ItemCode.StartsWith(filter) || col.ItemName.StartsWith(filter) || col.AliasName!.StartsWith(filter))).Select(row => new ItemVM()
+                return await dbContext.Items.Where(col => col.IsActive == 1 && (col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || col.AliasName!.StartsWith(filter, StringComparison.OrdinalIgnoreCase))).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,

@@ -55,5 +55,6 @@ namespace PaybillAPI.Controllers
             return Ok(await partyRepository.GetActiveParties(isVendor, isAll));
         }
 
+
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Models;
+using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
 
@@ -75,6 +76,15 @@ namespace PaybillAPI.Controllers
             userRowId = DataProtection.UrlDecode(userRowId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await adminRepository.DeleteUser(int.Parse(userRowId)));
         }
+
+        [HttpGet]
+        [Route("print/header")]
+        public async Task<IActionResult> GetPrintHeader()
+        {
+            return Ok(await sharedRepository.GetPrintHeader());
+        }
+
+       
 
     }
 }

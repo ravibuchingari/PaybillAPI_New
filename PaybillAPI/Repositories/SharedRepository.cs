@@ -211,6 +211,23 @@ namespace PaybillAPI.Repositories
             }).OrderBy(ord => ord.FirstName).ToListAsync();
         }
 
+        public async Task<PrintHeader> GetPrintHeader()
+        {
+            PrintHeader printHeader = new();
+            Setting? setting = await dbContext.Settings.FirstOrDefaultAsync();
+            if (setting != null)
+            {
+                printHeader.InvoiceTitle = setting.InvoiceTitle ?? "Estimation";
+                printHeader.CompanyName = setting.CompanyName;
+                printHeader.Header1 = setting.Header1 ?? "";
+                printHeader.Header2 = setting.Header2 ?? "";
+                printHeader.Header3 = setting.Header3 ?? "";
+                printHeader.GSTIN = setting.Gstin ?? "";
+                printHeader.GSTSlabRequired = setting.GstslabRequired == 1;
+            }
+            return printHeader;
+        }
+
         public async Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest)
         {
             User? user = await dbContext.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1).FirstOrDefaultAsync();
@@ -227,6 +244,7 @@ namespace PaybillAPI.Repositories
             user.SecurityKey = securityKey;
             user.UpdatedDate = DateTime.Now;
             await SaveChangesAsync();
+            PrintHeader printHeader = await GetPrintHeader();
             DashboardPref dashboardPref = await dbContext.Settings.Select(row => new DashboardPref()
             {
                 IsAutoEmail = row.IsAutoEmail == 1,
@@ -238,6 +256,7 @@ namespace PaybillAPI.Repositories
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
                 ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
+                HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };

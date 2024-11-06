@@ -242,25 +242,6 @@ namespace PaybillAPI.Repositories
                 return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Sales invoice"));
         }
 
-        public async Task<PrintHeader> GetPrintHeader()
-        {
-            Setting setting = await dbContext.Settings.FirstOrDefaultAsync() ?? throw new Exception("The application settings have not been updated. You cannot perform any actions until the settings are updated.");
-            return new PrintHeader()
-            {
-                InvoiceTitle = setting.InvoiceTitle ?? "Estimation",
-                CompanyName = setting.CompanyName,
-                Header1 = setting.Header1 ?? "",
-                Header2 = setting.Header2 ?? "",
-                Header3 = setting.Header3 ?? "",
-                GSTIN = setting.Gstin ?? "",
-                GSTSlabRequired = setting.GstslabRequired == 1
-
-            };
-        }
-
-
-
-
-
+        
     }
 }

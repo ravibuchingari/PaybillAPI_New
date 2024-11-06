@@ -4,6 +4,7 @@
     {
         public int TransactionId { get; set; }
         public string TransactionDate { get; set; } = null!;
+        public string? TransactionRefNo { get; set; }
         public string PaymentMode { get; set; } = null!;
         public string? UpiType { get; set; }
         public double ReceiptAmount { get; set; }

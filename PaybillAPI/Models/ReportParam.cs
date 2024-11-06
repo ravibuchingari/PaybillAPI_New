@@ -7,5 +7,6 @@
         public string? TransactionType { get; set; }
         public string? PaymentMode { get; set; }
         public string? UpiType { get; set; }
+        public string? Id { get; set; }
     }
 }

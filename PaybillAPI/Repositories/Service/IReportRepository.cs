@@ -9,5 +9,7 @@ namespace PaybillAPI.Repositories.Service
         Task<List<GSTHSNSummary>> GetGSTHSNSummary(DateTime fromDate, DateTime toDate);
         Task<List<SalesVM>> GetSalesDetails(ReportParam reportParam);
         Task<List<SalesSummary>> GetSalesSummary(ReportParam reportParam);
+        Task<List<PurchaseVM>> GetPurchaseDetails(ReportParam reportParam);
+        Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
     }
 }
