@@ -69,6 +69,16 @@ namespace PaybillAPI.Repositories
                 throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Category"));
         }
 
+        public async Task<IEnumerable<CategoryVM>> GetCategoriesWithItemCount()
+        {
+            return await dbContext.Categories.Select(row => new CategoryVM()
+            {
+                CategoryId = row.CategoryId,
+                CategoryName = row.CategoryName,
+                ItemCount = row.Items.Count()
+            }).ToListAsync();
+        }
+
         #endregion
 
         #region "GST"

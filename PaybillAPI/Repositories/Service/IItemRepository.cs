@@ -22,5 +22,6 @@ namespace PaybillAPI.Repositories.Service
         Task<IEnumerable<ItemVM>> SearchItems(string filter);
         Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode);
         Task<ResponseMessage> ResetStock();
+        Task<IEnumerable<CategoryVM>> GetCategoriesWithItemCount();
     }
 }

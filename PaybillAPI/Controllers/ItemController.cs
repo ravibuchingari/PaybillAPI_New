@@ -49,6 +49,13 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.DeleteCategory(int.Parse(categoryId)));
         }
 
+        [HttpGet]
+        [Route("category/report")]
+        public async Task<IActionResult> GetCategoriesWithItemCount()
+        {
+            return Ok(await itemRepository.GetCategoriesWithItemCount());
+        }
+
         #endregion
 
         #region "GST"
