@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using PaybillAPI.Models;
+using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
 
 namespace PaybillAPI.Controllers
@@ -10,7 +11,7 @@ namespace PaybillAPI.Controllers
     [Authorize(Roles = "admin,user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
-    public class ReportController(IReportRepository reportRepository, IWebHostEnvironment hostEnvironment) : ControllerBase
+    public class ReportController(ISharedRepository sharedRepository, ITransactionRepository transactionRepository, IReportRepository reportRepository, IWebHostEnvironment hostEnvironment) : ControllerBase
     {
         [HttpGet]
         [Route("sales/gst/return/detailed")]
@@ -105,7 +106,18 @@ namespace PaybillAPI.Controllers
         [Route("party/ledger")]
         public async Task<IActionResult> GetPartyLedger([FromBody] ReportParam reportParam)
         {
-            return Ok(await reportRepository.GetPartyLedger(reportParam));
+            if (!await sharedRepository.IsValidUser(reportParam.UserRowId, reportParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await transactionRepository.GetPartyLedger(reportParam));
+        }
+
+        [HttpPost]
+        [Route("party/balance/sheet")]
+        public async Task<IActionResult> GetBalanceSheet([FromBody] UserParam userParam)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await transactionRepository.GetBalanceSheet());
         }
 
     }

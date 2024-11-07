@@ -69,7 +69,7 @@ namespace PaybillAPI.Repositories
                         PaymentAmount = totalSalesAmount,
                         PaymentMode = salesVM.PaymentMode,
                         UpiType = salesVM.UpiType,
-                        Remarks = salesVM.Remarks,
+                        Remarks = salesVM.Remarks ?? string.Empty,
                         SalesId = sale.SalesId,
                         UpdatedBy = userRowId,
                         UpdatedDate = DateTime.Now

@@ -93,7 +93,7 @@ namespace PaybillAPI.Repositories
                 transaction.ReceiptAmount = totalPurchaseAmount;
                 transaction.PaymentMode = purchaseVM.PaymentMode;
                 transaction.UpiType = purchaseVM.UpiType;
-                transaction.Remarks = purchaseVM.Remarks;
+                transaction.Remarks = purchaseVM.Remarks ?? string.Empty;
                 transaction.PurchaseId = purchase.PurchaseId;
                 transaction.UpdatedBy = userRowId;
                 transaction.UpdatedDate = DateTime.Now;

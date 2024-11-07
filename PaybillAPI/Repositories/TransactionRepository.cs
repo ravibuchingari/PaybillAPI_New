@@ -160,5 +160,38 @@ namespace PaybillAPI.Repositories
             }
         }
 
+        public async Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam)
+        {
+            return await dbContext.Transactions.Where(col => col.PartyId == int.Parse(reportParam.Id!) && col.TransactionDate.Date >= Convert.ToDateTime(reportParam.FromDate).Date && col.TransactionDate <= Convert.ToDateTime(reportParam.ToDate).Date).OrderBy(ord => ord.TransactionDate).Select(row => new TransactionVM()
+            {
+                TransactionId = row.TransactionId,
+                TransactionDate = row.TransactionDate.ToString("dd-MMM-yyyy"),
+                TransactionRefNo = row.Sales != null ? row.Sales.InvoiceNo : (row.Purchase != null ? row.Purchase.InvoiceNo : ""),
+                TransactionType = row.TransactionType,
+                PaymentMode = row.PaymentMode,
+                UpiType = row.UpiType,
+                ReceiptAmount = row.ReceiptAmount,
+                PaymentAmount = row.PaymentAmount,
+                Remarks = row.Remarks ?? string.Empty,
+            }).ToListAsync();
+        }
+
+        public async Task<List<BalanceSheet>> GetBalanceSheet()
+        {
+            return await dbContext.Parties.OrderBy(ord => ord.PartyName).Select(row => new BalanceSheet()
+                    {
+                        PartyModel = new PartyVM()
+                        {
+                            PartyId = row.PartyId,
+                            PartyName = row.PartyName,
+                            PartyMobile = row.PartyMobile,
+                            PartyAddress = row.PartyAddress
+                        },
+                        TotalReceiptAmount = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.ReceiptAmount),
+                        TotalPaymentAmount = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.PaymentAmount),
+                        Balance = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.ReceiptAmount) - row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.PaymentAmount)
+            }).ToListAsync();
+        }
+
     }
 }

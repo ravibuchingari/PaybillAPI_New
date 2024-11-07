@@ -10,6 +10,6 @@ namespace PaybillAPI.Repositories.Service
         Task<List<SalesVM>> GetSalesDetails(ReportParam reportParam);
         Task<List<SalesSummary>> GetSalesSummary(ReportParam reportParam);
         Task<List<PurchaseVM>> GetPurchaseDetails(ReportParam reportParam);
-        Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
+        //Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
     }
 }

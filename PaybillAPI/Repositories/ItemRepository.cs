@@ -168,7 +168,7 @@ namespace PaybillAPI.Repositories
             item.SalesPrice = itemVM.SalesPrice;
             item.PurchasePrice = itemVM.PurchasePrice;
             item.Hsncode = itemVM.HSncode;
-            item.Measure = itemVM.Measure;
+            item.Measure = itemVM.Measure ?? string.Empty;
             item.OpeningStock = itemVM.OpeningStock;
             item.MinimumStock = itemVM.MinimumStock;
             item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
