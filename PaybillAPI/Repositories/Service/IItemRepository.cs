@@ -23,5 +23,8 @@ namespace PaybillAPI.Repositories.Service
         Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode);
         Task<ResponseMessage> ResetStock();
         Task<IEnumerable<CategoryVM>> GetCategoriesWithItemCount();
+        Task<ResponseMessage> CreateCategoryIfNotExists(string categoryName, int userRowId);
+        Task<ResponseMessage> CreateGstIfNotExists(GstVM gstVM, int userRowId);
+        Task<ResponseMessage> UploadItems(List<ItemVM> items, int userRowId);
     }
 }

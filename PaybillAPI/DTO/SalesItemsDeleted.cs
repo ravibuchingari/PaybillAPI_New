@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PaybillAPI.DTO;
 
 [Table("sales_items_deleted")]
+[Index("ItemId", Name = "fk_deleted_salesitem_item_id_idx")]
 public partial class SalesItemsDeleted
 {
     [Key]
@@ -54,4 +56,8 @@ public partial class SalesItemsDeleted
 
     [StringLength(250)]
     public string? DeletedRemarks { get; set; }
+
+    [ForeignKey("ItemId")]
+    [InverseProperty("SalesItemsDeleteds")]
+    public virtual Item Item { get; set; } = null!;
 }

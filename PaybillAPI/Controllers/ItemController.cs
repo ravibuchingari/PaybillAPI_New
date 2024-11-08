@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
+using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Controllers
 {
@@ -20,6 +21,15 @@ namespace PaybillAPI.Controllers
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.UpsertCategory(userParam.CategoryModel!, Convert.ToInt32(User.Identity?.Name)));
+        }
+
+        [HttpPost]
+        [Route("category/create")]
+        public async Task<IActionResult> CreateCategoryIfNotExists([FromBody] UserParam userParam)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await itemRepository.CreateCategoryIfNotExists(userParam.CategoryModel!.CategoryName!, Convert.ToInt32(User.Identity?.Name)));
         }
 
         [HttpPost]
@@ -70,6 +80,15 @@ namespace PaybillAPI.Controllers
         }
 
         [HttpPost]
+        [Route("gst/create")]
+        public async Task<IActionResult> CreateGstIfNotExists([FromBody] UserParam userParam)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await itemRepository.CreateGstIfNotExists(userParam.GstModel!, Convert.ToInt32(User.Identity?.Name)));
+        }
+
+        [HttpPost]
         [Route("gst/list/{isActive}")]
         public async Task<IActionResult> GetGsts([FromBody] UserParam userParam, [FromRoute] bool isActive)
         {
@@ -108,6 +127,19 @@ namespace PaybillAPI.Controllers
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await itemRepository.UpsertItem(userParam.ItemModel!, Convert.ToInt32(User.Identity?.Name)));
+        }
+
+        [HttpPost]
+        [Route("item/upload/{userRowId}/{securityKey}")]
+        public async Task<IActionResult> UploadItems([FromBody] List<ItemVM> items, [FromRoute] string userRowId, [FromRoute] string securityKey)
+        {
+            userRowId = DataProtection.UrlDecode(userRowId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            securityKey = DataProtection.UrlDecode(securityKey, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            if (!await sharedRepository.IsValidUser(int.Parse(userRowId), securityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            if (items.Count == 0)
+                return BadRequest("No item(s) found");
+            return Ok(await itemRepository.UploadItems(items!, Convert.ToInt32(User.Identity?.Name)));
         }
 
         [HttpGet]

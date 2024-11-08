@@ -242,6 +242,51 @@ namespace PaybillAPI.Repositories
                 return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Sales invoice"));
         }
 
-        
+        public async Task<PrintSalesInvoice?> GetSalesInvoiceToPrint(int salesId)
+        {
+            PrintSalesInvoice? invoice = await dbContext.Sales.Where(col => col.SalesId == salesId).Select(row => new PrintSalesInvoice()
+            {
+                InvoiceNo = row.InvoiceNo,
+                InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
+                SalesType = row.SalesType,
+                PaymentMode = row.PaymentMode,
+                UpiType = row.UpiType ?? string.Empty,
+                PaidAmount = row.PaidAmount,
+                PartyName = row.Party != null ? row.Party.PartyName : string.Empty,
+                CreatedBy = row.CreatedByNavigation.UserId,
+                CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy hh:mm tt"),
+                GstSummary = row.SalesItems.GroupBy(grp => grp.GstPer).Select(row => new GSTData()
+                {
+                    GstPer = row.Key,
+                    TaxableAmount = row.Sum(x => x.TaxableAmount),
+                    GstAmount = row.Sum(x => x.GstAmount)
+                }).ToList(),
+                SalesItems = row.SalesItems.Select(itm => new PrintSalesItem()
+                {
+                    ItemCode = itm.Item.ItemCode,
+                    ItemName = itm.Item.ItemName,
+                    Measure = itm.Item.Measure,
+                    Quantity = itm.Quantity,
+                    Mrp = itm.Mrp,
+                    Rate = itm.Rate,
+                    Amount = itm.Amount,
+                    DiscountInRs = itm.DiscountInRs,
+                    TaxableAmount = itm.TaxableAmount,
+                    IgstPer = itm.IgstPer,
+                    CgstPer = itm.CgstPer,
+                    SgstPer = itm.SgstPer,
+                    GstPer = itm.GstPer,
+
+                    IgstRs = itm.IgstRs,
+                    CgstRs = itm.CgstRs,
+                    SgstRs = itm.SgstRs,
+                    GstAmount = itm.GstAmount,
+                    TotalAmount = itm.TotalAmount,
+                    SavingAmount = (itm.Mrp * itm.Quantity) - itm.TaxableAmount
+                }).ToList(),
+            }).FirstOrDefaultAsync();
+
+            return invoice;
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> DeleteSalesItem(int salesItemId, string remarks, int userRowId);
         Task<SalesVM> GetSalesInvoiceDetails(int salesId);
         Task<IEnumerable<SalesVM>> GetSalesInvoices(DateTime fromDate, DateTime toDate);
+        Task<PrintSalesInvoice?> GetSalesInvoiceToPrint(int salesId);
         Task<ResponseMessage> SaveSalesInvoice(SalesVM salesVM, int userRowId);
     }
 }

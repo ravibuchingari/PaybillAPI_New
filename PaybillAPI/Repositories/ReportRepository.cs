@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.Models;
@@ -230,6 +231,64 @@ namespace PaybillAPI.Repositories
                                                    }
                                                }).ToListAsync();
             return list;
+        }
+
+        public async Task<List<SalesItemVM>> GetDeletedSalesItems(DateTime fromDate, DateTime toDate)
+        {
+            return await dbContext.SalesItemsDeleteds.Where(col => col.DeletedDate.Date >= fromDate.Date && col.DeletedDate.Date <= toDate.Date).OrderBy(ord => ord.DeletedDate).Select(row => new SalesItemVM()
+            {
+                ItemModel = new ItemVM()
+                {
+                    ItemCode = row.Item.ItemCode,
+                    ItemName = row.Item.ItemName,
+                    Measure = row.Item.Measure
+                },
+                Quantity = row.Quantity,
+                Rate = row.Rate,
+                Amount = row.Amount,
+                DiscountInRs = row.DiscountInRs,
+                TaxableAmount = row.TaxableAmount,
+                GstPer = row.GstPer,
+                IgstPer = row.IgstPer,
+                CgstPer = row.CgstPer,
+                SgstPer = row.SgstPer,
+                GstAmount = row.GstAmount,
+                IgstRs = row.IgstRs,
+                CgstRs = row.CgstRs,
+                SgstRs = row.SgstRs,
+                TotalAmount = row.TotalAmount,
+                CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
+                DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm")
+            }).ToListAsync();
+        }
+
+        public async Task<List<PurchaseItemVM>> GetDeletedPurchaseItems(DateTime fromDate, DateTime toDate)
+        {
+            return await dbContext.PurchaseItemsDeleteds.Where(col => col.DeletedDate.Date >= fromDate.Date && col.DeletedDate.Date <= toDate.Date).OrderBy(ord => ord.DeletedDate).Select(row => new PurchaseItemVM()
+            {
+                ItemModel = new ItemVM()
+                {
+                    ItemCode = row.Item.ItemCode,
+                    ItemName = row.Item.ItemName,
+                    Measure = row.Item.Measure
+                },
+                Quantity = row.Quantity,
+                Rate = row.Rate,
+                Amount = row.Amount,
+                DiscountInRs = row.DiscountInRs,
+                TaxableAmount = row.TaxableAmount,
+                GstPer = row.GstPer,
+                IgstPer = row.IgstPer,
+                CgstPer = row.CgstPer,
+                SgstPer = row.SgstPer,
+                GstAmount = row.GstAmount,
+                IgstRs = row.IgstRs,
+                CgstRs = row.CgstRs,
+                SgstRs = row.SgstRs,
+                TotalAmount = row.TotalAmount,
+                CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
+                DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm")
+            }).ToListAsync();
         }
 
     }

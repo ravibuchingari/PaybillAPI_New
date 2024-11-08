@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Models;
-using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
 
@@ -84,7 +83,7 @@ namespace PaybillAPI.Controllers
             return Ok(await sharedRepository.GetPrintHeader());
         }
 
-       
+
 
     }
 }

@@ -179,17 +179,17 @@ namespace PaybillAPI.Repositories
         public async Task<List<BalanceSheet>> GetBalanceSheet()
         {
             return await dbContext.Parties.OrderBy(ord => ord.PartyName).Select(row => new BalanceSheet()
-                    {
-                        PartyModel = new PartyVM()
-                        {
-                            PartyId = row.PartyId,
-                            PartyName = row.PartyName,
-                            PartyMobile = row.PartyMobile,
-                            PartyAddress = row.PartyAddress
-                        },
-                        TotalReceiptAmount = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.ReceiptAmount),
-                        TotalPaymentAmount = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.PaymentAmount),
-                        Balance = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.ReceiptAmount) - row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.PaymentAmount)
+            {
+                PartyModel = new PartyVM()
+                {
+                    PartyId = row.PartyId,
+                    PartyName = row.PartyName,
+                    PartyMobile = row.PartyMobile,
+                    PartyAddress = row.PartyAddress
+                },
+                TotalReceiptAmount = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.ReceiptAmount),
+                TotalPaymentAmount = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.PaymentAmount),
+                Balance = row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.ReceiptAmount) - row.Transactions.Where(p => p.PartyId == row.PartyId).Sum(sm => sm.PaymentAmount)
             }).ToListAsync();
         }
 

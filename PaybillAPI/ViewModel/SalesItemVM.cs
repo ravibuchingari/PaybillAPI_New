@@ -21,5 +21,6 @@
         public double TotalAmount { get; set; }
         public ItemVM ItemModel { get; set; } = new ItemVM();
         public string? CreatedDate { get; set; }
+        public string? DeletedDate { get; set; }
     }
 }

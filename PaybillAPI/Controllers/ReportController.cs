@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using PaybillAPI.Models;
-using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
 
 namespace PaybillAPI.Controllers
@@ -118,6 +117,20 @@ namespace PaybillAPI.Controllers
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             return Ok(await transactionRepository.GetBalanceSheet());
+        }
+
+        [HttpGet]
+        [Route("sales/items/deleted")]
+        public async Task<IActionResult> GetDeletedSalesItems([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetDeletedSalesItems(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
+        [HttpGet]
+        [Route("purchase/items/deleted")]
+        public async Task<IActionResult> GetDeletedPurchaseItems([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetDeletedPurchaseItems(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
         }
 
     }

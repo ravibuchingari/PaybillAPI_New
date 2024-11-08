@@ -24,7 +24,7 @@ public partial class Party
     [StringLength(150)]
     public string? PartyEmail { get; set; }
 
-    [StringLength(20)]
+    [StringLength(15)]
     public string? PartyGstNo { get; set; }
 
     [StringLength(500)]

@@ -79,6 +79,25 @@ namespace PaybillAPI.Repositories
             }).ToListAsync();
         }
 
+        public async Task<ResponseMessage> CreateCategoryIfNotExists(string categoryName, int userRowId)
+        {
+            Category? category = await dbContext.Categories.Where(col => col.CategoryName == categoryName).FirstOrDefaultAsync();
+            if (category == null)
+            {
+                category = new Category
+                {
+                    CategoryName = categoryName,
+                    CreatedBy = userRowId,
+                    UpdatedBy = userRowId,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now
+                };
+                await dbContext.Categories.AddAsync(category);
+                await SaveChangesAsync();
+            }
+            return new ResponseMessage(isSuccess: true, message: category.CategoryId.ToString());
+        }
+
         #endregion
 
         #region "GST"
@@ -112,6 +131,27 @@ namespace PaybillAPI.Repositories
             }
             await SaveChangesAsync();
             return new ResponseMessage(isSuccess: true, message: $"{(gstVM.GstId == 0 ? "GST created successfully" : "GST updated successfully")}");
+        }
+
+        public async Task<ResponseMessage> CreateGstIfNotExists(GstVM gstVM, int userRowId)
+        {
+            Gst? gst = await dbContext.Gsts.Where(col => col.IgstPer == gstVM.IgstPer && col.CgstPer == gstVM.CgstPer && col.SgstPer == gstVM.SgstPer).FirstOrDefaultAsync();
+            if (gst == null)
+            {
+                gst = new Gst()
+                {
+                    IgstPer = gstVM.IgstPer,
+                    CgstPer = gstVM.CgstPer,
+                    SgstPer = gstVM.SgstPer,
+                    CreatedBy = userRowId,
+                    UpdatedBy = userRowId,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now
+                };
+                await dbContext.Gsts.AddAsync(gst);
+                await SaveChangesAsync();
+            }
+            return new ResponseMessage(isSuccess: true, message: gst.GstId.ToString());
         }
 
         public async Task<IEnumerable<GstVM>> GetGsts(bool isActive)
@@ -433,6 +473,23 @@ namespace PaybillAPI.Repositories
             await SaveChangesAsync();
             return new ResponseMessage(isSuccess: true, message: "Stock balance was successfully reset.");
         }
+
+        public async Task<ResponseMessage> UploadItems(List<ItemVM> items, int userRowId)
+        {
+            foreach (var itemVM in items)
+            {
+                Item item = MapItem(itemVM, new Item());
+                item.CreatedDate = DateTime.Now;
+                item.CreatedBy = userRowId;
+                item.UpdatedDate = DateTime.Now;
+                item.UpdatedBy = userRowId;
+                await dbContext.Items.AddAsync(item);
+            }
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: "Data was imported successfully.");
+        }
+
+        
 
 
         #endregion

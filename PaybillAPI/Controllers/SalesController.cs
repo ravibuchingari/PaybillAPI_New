@@ -61,6 +61,20 @@ namespace PaybillAPI.Controllers
             return Ok(await salesRepository.DeleteSalesInvoice(int.Parse(salesId)));
         }
 
-        
+
+        [HttpPost]
+        [Route("sales/invoice/{salesId}/print")]
+        public async Task<IActionResult> GetSalesInvoiceToPrint([FromBody] UserParam userParam, [FromRoute] string salesId)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            salesId = DataProtection.UrlDecode(salesId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            PrintSalesInvoice? salesInvoice = await salesRepository.GetSalesInvoiceToPrint(int.Parse(salesId));
+            if (salesInvoice != null)
+                return Ok(salesInvoice);
+            else
+                return BadRequest("Sales invoice not found.");
+        }
+
     }
 }

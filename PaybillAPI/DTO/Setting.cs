@@ -47,7 +47,7 @@ public partial class Setting
     public string? Header3 { get; set; }
 
     [Column("GSTIN")]
-    [StringLength(20)]
+    [StringLength(15)]
     public string? Gstin { get; set; }
 
     [Column("GSTSlabRequired")]
@@ -69,7 +69,6 @@ public partial class Setting
     public int IsBiometricAuthEnabled { get; set; }
 
     public int IsAlertOnMinimumStock { get; set; }
-
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
