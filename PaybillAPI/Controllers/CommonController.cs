@@ -83,6 +83,12 @@ namespace PaybillAPI.Controllers
             return Ok(await sharedRepository.GetPrintHeader());
         }
 
+        [HttpPost]
+        [Route("unlock/request/insert")]
+        public async Task<IActionResult> InsUnlockRequest([FromBody] UnlockRequestVM request)
+        {
+            return Ok(await sharedRepository.InsUnlockRequest(request, Convert.ToInt32(User.Identity?.Name)));
+        }
 
 
     }

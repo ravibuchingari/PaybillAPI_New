@@ -33,6 +33,8 @@ public partial class Purchase
     [StringLength(500)]
     public string? Remarks { get; set; }
 
+    public sbyte IsLocked { get; set; }
+
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 
@@ -56,6 +58,9 @@ public partial class Purchase
 
     [InverseProperty("Purchase")]
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+
+    [InverseProperty("Purchase")]
+    public virtual ICollection<UnlockRequest> UnlockRequests { get; set; } = new List<UnlockRequest>();
 
     [ForeignKey("UpdatedBy")]
     [InverseProperty("PurchaseUpdatedByNavigations")]

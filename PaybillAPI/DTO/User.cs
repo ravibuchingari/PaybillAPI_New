@@ -96,6 +96,9 @@ public partial class User
     [InverseProperty("UpdatedByNavigation")]
     public virtual ICollection<Transaction> TransactionUpdatedByNavigations { get; set; } = new List<Transaction>();
 
+    [InverseProperty("RequestedByNavigation")]
+    public virtual ICollection<UnlockRequest> UnlockRequests { get; set; } = new List<UnlockRequest>();
+
     [ForeignKey("UpdatedBy")]
     [InverseProperty("InverseUpdatedByNavigation")]
     public virtual User? UpdatedByNavigation { get; set; }

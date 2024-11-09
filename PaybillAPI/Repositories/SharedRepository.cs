@@ -308,7 +308,41 @@ namespace PaybillAPI.Repositories
             return new ResponseMessage(isSuccess: true, message: AppConstants.RESPONSE_SUCCESS);
         }
 
+        public async Task<ResponseMessage> InsUnlockRequest(UnlockRequestVM request, int userRowId)
+        {
+            await dbContext.UnlockRequests.AddAsync(new UnlockRequest()
+            {
+                SalesId = request.SalesModel != null ? request.SalesModel.SalesId : null,
+                PurchaseId = request.PurchaseModel != null ? request.PurchaseModel.PurchaseId : null,
+                Remarks = request.Remarks,
+                RequestStatusId = 1,
+                RequestedDate = DateTime.Now,
+                RequestedBy = userRowId
+            });
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: "Invoice unlock request submitted successfully.");
+        }
 
+        public async Task<List<UnlockRequestVM>> GetUnlockRequests()
+        {
+            return await dbContext.UnlockRequests.OrderBy(ord => ord.RequestStatusId).ThenBy(ord => ord.RequestedDate).Select(row => new UnlockRequestVM()
+            {
+                UnlockRequestId = row.UnlockRequestId,
+                RequestedDate = row.RequestedDate.ToString("dd-MMM-yyyy hh:mm tt"),
+                SalesModel = row.Sales != null ? new SalesVM()
+                {
+                    SalesId = row.Sales.SalesId,
+                    InvoiceNo = row.Sales.InvoiceNo,
+                    InvoiceDate = row.Sales.InvoiceDate.ToString("dd-MMM-yyyy")
+                } : null,
+                PurchaseModel = row.Purchase != null ? new PurchaseVM()
+                {
+                    PurchaseId = row.Purchase.PurchaseId,
+                    InvoiceNo = row.Purchase.InvoiceNo,
+                    InvoiceDate = row.Purchase.InvoiceDate.ToString("dd-MMM-yyyy")
+                } : null,
+            }).ToListAsync();
+        }
 
     }
 }

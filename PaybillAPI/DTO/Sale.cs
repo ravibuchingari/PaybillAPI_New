@@ -34,6 +34,8 @@ public partial class Sale
 
     public double BalanceAmount { get; set; }
 
+    public sbyte IsLocked { get; set; }
+
     [StringLength(250)]
     public string? Remarks { get; set; }
 
@@ -55,4 +57,7 @@ public partial class Sale
 
     [InverseProperty("Sales")]
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+
+    [InverseProperty("Sales")]
+    public virtual ICollection<UnlockRequest> UnlockRequests { get; set; } = new List<UnlockRequest>();
 }

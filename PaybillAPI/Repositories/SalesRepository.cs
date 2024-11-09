@@ -26,6 +26,7 @@ namespace PaybillAPI.Repositories
                     PaymentMode = salesVM.PaymentMode,
                     UpiType = salesVM.UpiType,
                     Remarks = salesVM.Remarks,
+                    IsLocked = 1,
                     CreatedDate = DateTime.Now,
                     CreatedBy = userRowId
                 };
@@ -112,9 +113,12 @@ namespace PaybillAPI.Repositories
 
         public async Task<ResponseMessage> DeleteSalesItem(int salesItemId, string remarks, int userRowId)
         {
-            SalesItem? salesItem = await dbContext.SalesItems.FirstOrDefaultAsync(col => col.SalesItemId == salesItemId);
+            SalesItem? salesItem = await dbContext.SalesItems.Include(sls => sls.Sales).FirstOrDefaultAsync(col => col.SalesItemId == salesItemId);
             if (salesItem != null)
             {
+                if (salesItem.Sales.IsLocked == 1)
+                    return new ResponseMessage(isSuccess: false, message: "The invoice was locked by the administrator");
+
                 salesItem.DeletedBy = userRowId;
                 salesItem.DeletedRemarks = remarks;
                 await SaveChangesAsync();
@@ -136,6 +140,7 @@ namespace PaybillAPI.Repositories
                 SalesType = row.SalesType,
                 PaymentMode = row.PaymentMode,
                 UpiType = row.UpiType,
+                IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.SalesItems.Where(c => c.SalesId == row.SalesId).Sum(sm => sm.Amount),
@@ -162,6 +167,7 @@ namespace PaybillAPI.Repositories
                 SalesType = row.SalesType,
                 PaymentMode = row.PaymentMode,
                 UpiType = row.UpiType,
+                IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.SalesItems.Sum(sm => sm.Amount),

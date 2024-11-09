@@ -14,6 +14,7 @@ namespace PaybillAPI.ViewModel
         public double BalanceAmount { get; set; }
         public string? Remarks { get; set; } = string.Empty;
         public int CreatedBy { get; set; }
+        public bool IsLocked { get; set; }
         public PartyVM? PartyModel { get; set; }
         public List<SalesItemVM> SalesItems { get; set; } = [];
         public InvoiceSummary? Summary { get; set; }

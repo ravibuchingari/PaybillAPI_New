@@ -17,5 +17,6 @@ namespace PaybillAPI.Repositories.Service
         Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest);
         Task<ResponseMessage> ChangePassword(int userRowId, string oldPassword, string newPassword);
         Task<ResponseMessage> UpsertUser(UserVM userVM, int userRowId);
+        Task<ResponseMessage> InsUnlockRequest(UnlockRequestVM request, int userRowId);
     }
 }

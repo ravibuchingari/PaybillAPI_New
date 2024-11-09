@@ -33,7 +33,7 @@ namespace PaybillAPI.Repositories
                 purchase.Remarks = purchaseVM.Remarks;
                 purchase.UpdatedDate = DateTime.Now;
                 purchase.UpdatedBy = userRowId;
-
+                purchase.IsLocked = 1;
                 if (purchaseVM.PurchaseId == 0)
                 {
                     purchase.CreatedDate = DateTime.Now;
@@ -139,9 +139,12 @@ namespace PaybillAPI.Repositories
 
         public async Task<ResponseMessage> DeletePurchaseItem(int purchaseItemId, string remarks, int userRowId)
         {
-            PurchaseItem? purchaseItem = await dbContext.PurchaseItems.FirstOrDefaultAsync(col => col.PurchaseItemId == purchaseItemId);
+            PurchaseItem? purchaseItem = await dbContext.PurchaseItems.Include(pur => pur.Purchase).FirstOrDefaultAsync(col => col.PurchaseItemId == purchaseItemId);
             if (purchaseItem != null)
             {
+                if (purchaseItem.Purchase.IsLocked == 1)
+                    return new ResponseMessage(isSuccess: false, message: "The invoice was locked by the administrator");
+
                 purchaseItem.DeletedBy = userRowId;
                 purchaseItem.DeletedRemarks = remarks;
                 await SaveChangesAsync();
@@ -161,6 +164,7 @@ namespace PaybillAPI.Repositories
                 InvoiceNo = row.InvoiceNo,
                 InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 PurchaseType = row.PurchaseType,
+                IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.PurchaseItems.Where(c => c.PurchaseId == row.PurchaseId).Sum(sm => sm.Amount),
@@ -220,6 +224,7 @@ namespace PaybillAPI.Repositories
                 InvoiceNo = row.InvoiceNo,
                 InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 PurchaseType = row.PurchaseType,
+                IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.PurchaseItems.Sum(sm => sm.Amount),

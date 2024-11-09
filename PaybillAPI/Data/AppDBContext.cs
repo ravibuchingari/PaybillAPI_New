@@ -21,6 +21,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<PurchaseItemsDeleted> PurchaseItemsDeleteds { get; set; }
 
+    public virtual DbSet<RequestStatus> RequestStatuses { get; set; }
+
     public virtual DbSet<Sale> Sales { get; set; }
 
     public virtual DbSet<SalesItem> SalesItems { get; set; }
@@ -32,6 +34,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
     public virtual DbSet<Transaction> Transactions { get; set; }
 
     public virtual DbSet<TransactionsDeleted> TransactionsDeleteds { get; set; }
+
+    public virtual DbSet<UnlockRequest> UnlockRequests { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
