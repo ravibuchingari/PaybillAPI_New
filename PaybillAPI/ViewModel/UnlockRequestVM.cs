@@ -11,6 +11,7 @@
         public string? RequestedDate { get; set; }
 
         public string? RequestStatusDesc { get; set; }
+        public double TotalAmount { get; set; }
 
         public SalesVM? SalesModel { get; set; }
         public PurchaseVM? PurchaseModel { get; set; }

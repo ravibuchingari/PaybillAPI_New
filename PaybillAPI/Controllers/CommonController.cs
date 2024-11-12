@@ -90,6 +90,24 @@ namespace PaybillAPI.Controllers
             return Ok(await sharedRepository.InsUnlockRequest(request, Convert.ToInt32(User.Identity?.Name)));
         }
 
+        [HttpPost]
+        [Route("unlock/request/list")]
+        public async Task<IActionResult> GetUnlockRequests([FromBody] UserParam userParam)
+        {
+            if (!await sharedRepository.IsValidAdminUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await sharedRepository.GetUnlockRequests());
+        }
+
+        [HttpPost]
+        [Route("unlock/request/update/{unlockRequestId}/{isApproved}")]
+        public async Task<IActionResult> UpdateUnlockRequest([FromBody] UserParam userParam, [FromRoute] string unlockRequestId, [FromRoute] bool isApproved)
+        {
+            if (!await sharedRepository.IsValidAdminUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            unlockRequestId = DataProtection.UrlDecode(unlockRequestId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            return Ok(await sharedRepository.UpdateUnlockRequest(int.Parse(unlockRequestId), isApproved, Convert.ToInt32(User.Identity?.Name)));
+        }
 
     }
 }

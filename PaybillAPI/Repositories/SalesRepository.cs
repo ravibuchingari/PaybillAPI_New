@@ -41,8 +41,9 @@ namespace PaybillAPI.Repositories
                     await dbContext.SalesItems.AddAsync(new SalesItem()
                     {
                         SalesId = sale.SalesId,
-                        ItemId = salesItemVM.ItemModel!.ItemId,
+                        ItemId = salesItemVM.ItemModel.ItemId,
                         Quantity = salesItemVM.Quantity,
+                        Mrp = salesItemVM.ItemModel.Mrp,
                         Rate = salesItemVM.Rate,
                         Amount = salesItemVM.Amount,
                         DiscountInRs = salesItemVM.DiscountInRs,
@@ -261,6 +262,7 @@ namespace PaybillAPI.Repositories
                 PartyName = row.Party != null ? row.Party.PartyName : string.Empty,
                 CreatedBy = row.CreatedByNavigation.UserId,
                 CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy hh:mm tt"),
+                PrintedTime = DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt"),
                 GstSummary = row.SalesItems.GroupBy(grp => grp.GstPer).Select(row => new GSTData()
                 {
                     GstPer = row.Key,

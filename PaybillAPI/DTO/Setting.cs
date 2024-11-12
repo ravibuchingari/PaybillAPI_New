@@ -10,6 +10,8 @@ namespace PaybillAPI.DTO;
 public partial class Setting
 {
     [Key]
+    public sbyte RowId { get; set; }
+
     [StringLength(48)]
     public string CompanyName { get; set; } = null!;
 
@@ -79,6 +81,10 @@ public partial class Setting
     public int CreatedBy { get; set; }
 
     public int UpdatedBy { get; set; }
+
+    [Column("settingscol")]
+    [StringLength(45)]
+    public string? Settingscol { get; set; }
 
     [ForeignKey("CreatedBy")]
     [InverseProperty("SettingCreatedByNavigations")]

@@ -325,23 +325,55 @@ namespace PaybillAPI.Repositories
 
         public async Task<List<UnlockRequestVM>> GetUnlockRequests()
         {
-            return await dbContext.UnlockRequests.OrderBy(ord => ord.RequestStatusId).ThenBy(ord => ord.RequestedDate).Select(row => new UnlockRequestVM()
+            return await dbContext.UnlockRequests.Where(col => col.RequestStatusId == 1).OrderBy(ord => ord.RequestedDate).Select(row => new UnlockRequestVM()
             {
                 UnlockRequestId = row.UnlockRequestId,
                 RequestedDate = row.RequestedDate.ToString("dd-MMM-yyyy hh:mm tt"),
+                RequestedBy = $"{row.RequestedByNavigation.FirstName} {row.RequestedByNavigation.LastName} ({row.RequestedByNavigation.UserId})",
                 SalesModel = row.Sales != null ? new SalesVM()
                 {
                     SalesId = row.Sales.SalesId,
                     InvoiceNo = row.Sales.InvoiceNo,
-                    InvoiceDate = row.Sales.InvoiceDate.ToString("dd-MMM-yyyy")
+                    InvoiceDate = row.Sales.InvoiceDate.ToString("dd-MMM-yyyy"),
+                    PartyModel = row.Sales.Party != null ? new PartyVM() { PartyName = row.Sales.Party.PartyName } : null
                 } : null,
                 PurchaseModel = row.Purchase != null ? new PurchaseVM()
                 {
                     PurchaseId = row.Purchase.PurchaseId,
                     InvoiceNo = row.Purchase.InvoiceNo,
-                    InvoiceDate = row.Purchase.InvoiceDate.ToString("dd-MMM-yyyy")
+                    InvoiceDate = row.Purchase.InvoiceDate.ToString("dd-MMM-yyyy"),
+                    PartyModel = new PartyVM() { PartyName = row.Purchase.Party.PartyName }
                 } : null,
+                TotalAmount = row.Sales != null ? row.Sales.SalesItems.Sum(x => x.TotalAmount) : row.Purchase!.PurchaseItems.Sum(x => x.TotalAmount)
             }).ToListAsync();
+        }
+
+        public async Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, int userRowId)
+        {
+            UnlockRequest? unlockRequest = await dbContext.UnlockRequests.Where(col => col.UnlockRequestId == unlockRequestId && col.RequestStatusId == 1).FirstOrDefaultAsync();
+            if (unlockRequest == null)
+                return new ResponseMessage(isSuccess: false, message: "The unlock request was already processed.");
+            unlockRequest.UpdatedDate = DateTime.Now;
+            unlockRequest.UpdatedBy = userRowId;
+            unlockRequest.RequestStatusId = (sbyte)(isApproved ? 2 : 3);
+            if (isApproved)
+            {
+                if (unlockRequest.SalesId != null)
+                {
+                    Sale? sale = await dbContext.Sales.FindAsync(unlockRequest.SalesId);
+                    if (sale != null)
+                        sale.IsLocked = 0;
+                }
+
+                if (unlockRequest.PurchaseId != null)
+                {
+                    Purchase? purchase = await dbContext.Purchases.FindAsync(unlockRequest.PurchaseId);
+                    if (purchase != null)
+                        purchase.IsLocked = 0;
+                }
+            }
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: isApproved ? "The unlock request was approved successfully." : "The unlock request was rejected.");
         }
 
     }

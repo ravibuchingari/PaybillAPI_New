@@ -11,6 +11,7 @@
         public string PaymentMode { get; set; }
         public string UpiType { get; set; }
         public string PartyName { get; set; }
+        public string PrintedTime { get; set; } = null!;
         public List<GSTData> GstSummary { get; set; } = [];
         public List<PrintSalesItem> SalesItems { get; set; } = [];
     }
