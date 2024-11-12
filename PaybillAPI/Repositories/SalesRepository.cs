@@ -267,6 +267,9 @@ namespace PaybillAPI.Repositories
                 {
                     GstPer = row.Key,
                     TaxableAmount = row.Sum(x => x.TaxableAmount),
+                    IgstAmount = row.Sum(x => x.IgstRs),
+                    CgstAmount = row.Sum(x => x.CgstRs),
+                    SgstAmount = row.Sum(x => x.SgstRs),
                     GstAmount = row.Sum(x => x.GstAmount)
                 }).ToList(),
                 SalesItems = row.SalesItems.Select(itm => new PrintSalesItem()
@@ -284,7 +287,6 @@ namespace PaybillAPI.Repositories
                     CgstPer = itm.CgstPer,
                     SgstPer = itm.SgstPer,
                     GstPer = itm.GstPer,
-
                     IgstRs = itm.IgstRs,
                     CgstRs = itm.CgstRs,
                     SgstRs = itm.SgstRs,

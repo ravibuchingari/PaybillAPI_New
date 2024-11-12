@@ -30,11 +30,11 @@ public partial class Setting
     [StringLength(250)]
     public string? EmailPassword { get; set; }
 
-    public int IsAutoEmail { get; set; }
+    public sbyte IsAutoEmail { get; set; }
 
-    public int IsBackupOnExit { get; set; }
+    public sbyte IsBackupOnExit { get; set; }
 
-    public int IsDiscountEnabled { get; set; }
+    public sbyte IsDiscountEnabled { get; set; }
 
     [StringLength(48)]
     public string? InvoiceTitle { get; set; }
@@ -53,24 +53,27 @@ public partial class Setting
     public string? Gstin { get; set; }
 
     [Column("GSTSlabRequired")]
-    public int GstslabRequired { get; set; }
+    public sbyte GstslabRequired { get; set; }
 
-    public int AddItemOnSelected { get; set; }
+    [Column("ItemWiseGSTSlabRequired")]
+    public sbyte ItemWiseGstslabRequired { get; set; }
+
+    public sbyte AddItemOnSelected { get; set; }
 
     [StringLength(8)]
     public string? InvoicePrefix { get; set; }
 
     public sbyte InvoiceLength { get; set; }
 
-    public int IsCreateContactOnParty { get; set; }
+    public sbyte IsCreateContactOnParty { get; set; }
 
-    public int IsCompressBackup { get; set; }
+    public sbyte IsCompressBackup { get; set; }
 
-    public int IsShadowMenuButton { get; set; }
+    public sbyte IsShadowMenuButton { get; set; }
 
-    public int IsBiometricAuthEnabled { get; set; }
+    public sbyte IsBiometricAuthEnabled { get; set; }
 
-    public int IsAlertOnMinimumStock { get; set; }
+    public sbyte IsAlertOnMinimumStock { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
@@ -81,10 +84,6 @@ public partial class Setting
     public int CreatedBy { get; set; }
 
     public int UpdatedBy { get; set; }
-
-    [Column("settingscol")]
-    [StringLength(45)]
-    public string? Settingscol { get; set; }
 
     [ForeignKey("CreatedBy")]
     [InverseProperty("SettingCreatedByNavigations")]

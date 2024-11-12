@@ -222,8 +222,9 @@ namespace PaybillAPI.Repositories
                 printHeader.Header1 = setting.Header1 ?? "";
                 printHeader.Header2 = setting.Header2 ?? "";
                 printHeader.Header3 = setting.Header3 ?? "";
-                printHeader.GSTIN = setting.Gstin ?? "";
-                printHeader.GSTSlabRequired = setting.GstslabRequired == 1;
+                printHeader.Gstin = setting.Gstin ?? "";
+                printHeader.GstSlabRequired = setting.GstslabRequired == 1;
+                printHeader.ItemWiseGstSlabRequired = setting.ItemWiseGstslabRequired == 1;
             }
             return printHeader;
         }

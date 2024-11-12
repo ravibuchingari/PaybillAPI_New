@@ -30,15 +30,16 @@ namespace PaybillAPI.Repositories
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
                 IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
-                HeaderModel = new ReceiptHeader()
+                HeaderModel = new PrintHeader()
                 {
                     CompanyName = row.CompanyName,
-                    InvoiceTitle = row.InvoiceTitle,
-                    Header1 = row.Header1,
-                    Header2 = row.Header2,
-                    Header3 = row.Header3,
-                    Gstin = row.Gstin,
+                    InvoiceTitle = row.InvoiceTitle ?? "",
+                    Header1 = row.Header1 ?? "",
+                    Header2 = row.Header2 ?? "",
+                    Header3 = row.Header3 ?? "",
+                    Gstin = row.Gstin ?? "",
                     GstSlabRequired = row.GstslabRequired == 1,
+                    ItemWiseGstSlabRequired = row.ItemWiseGstslabRequired == 1,
                 },
                 IsSettingsUpdated = true
 
@@ -54,23 +55,24 @@ namespace PaybillAPI.Repositories
             setting.EmailFrom = settingVM.EmailFrom;
             setting.EmailTo = settingVM.EmailTo;
             setting.EmailPassword = settingVM.EmailPassword;
-            setting.IsAutoEmail = settingVM.IsAutoEmail.GetHashCode();
-            setting.IsBackupOnExit = settingVM.IsBackupOnExit.GetHashCode();
-            setting.IsDiscountEnabled = settingVM.IsDiscountEnabled.GetHashCode();
+            setting.IsAutoEmail = (sbyte)settingVM.IsAutoEmail.GetHashCode();
+            setting.IsBackupOnExit = (sbyte)settingVM.IsBackupOnExit.GetHashCode();
+            setting.IsDiscountEnabled = (sbyte)settingVM.IsDiscountEnabled.GetHashCode();
             setting.InvoiceTitle = settingVM.HeaderModel!.InvoiceTitle;
             setting.Header1 = settingVM.HeaderModel.Header1;
             setting.Header2 = settingVM.HeaderModel.Header2;
             setting.Header3 = settingVM.HeaderModel.Header3;
             setting.Gstin = settingVM.HeaderModel.Gstin;
-            setting.GstslabRequired = settingVM.HeaderModel.GstSlabRequired.GetHashCode()!;
-            setting.AddItemOnSelected = settingVM.AddItemOnSelected.GetHashCode();
+            setting.GstslabRequired = (sbyte)settingVM.HeaderModel.GstSlabRequired.GetHashCode()!;
+            setting.ItemWiseGstslabRequired = (sbyte)settingVM.HeaderModel.ItemWiseGstSlabRequired.GetHashCode()!;
+            setting.AddItemOnSelected = (sbyte)settingVM.AddItemOnSelected.GetHashCode();
             setting.InvoicePrefix = settingVM.InvoicePrefix;
             setting.InvoiceLength = settingVM.InvoiceLength;
-            setting.IsCreateContactOnParty = settingVM.IsCreateContactOnParty.GetHashCode();
-            setting.IsCompressBackup = settingVM.IsCompressBackup.GetHashCode();
-            setting.IsShadowMenuButton = settingVM.IsShadowMenuButton.GetHashCode();
-            setting.IsBiometricAuthEnabled = settingVM.IsBiometricAuthEnabled.GetHashCode();
-            setting.IsAlertOnMinimumStock = settingVM.IsAlertOnMinimumStock.GetHashCode();
+            setting.IsCreateContactOnParty = (sbyte)settingVM.IsCreateContactOnParty.GetHashCode();
+            setting.IsCompressBackup = (sbyte)settingVM.IsCompressBackup.GetHashCode();
+            setting.IsShadowMenuButton = (sbyte)settingVM.IsShadowMenuButton.GetHashCode();
+            setting.IsBiometricAuthEnabled = (sbyte)settingVM.IsBiometricAuthEnabled.GetHashCode();
+            setting.IsAlertOnMinimumStock = (sbyte)settingVM.IsAlertOnMinimumStock.GetHashCode();
             return setting;
         }
 
