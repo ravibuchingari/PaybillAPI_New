@@ -115,12 +115,9 @@ namespace PaybillAPI.Repositories
                                   join sls in dbContext.Sales on sls_itm.SalesId equals sls.SalesId
                                   join itm in dbContext.Items on sls_itm.ItemId equals itm.ItemId
                                   where itm.Hsncode == hCode
-                                  group new { sls_itm } by new { sls_itm.GstPer, sls_itm.IgstPer, sls_itm.CgstPer, sls_itm.SgstPer } into grp
+                                  group new { sls_itm } by new { itm.Hsncode, sls_itm.GstPer } into grp
                                   select new GSTData()
                                   {
-                                      IgstPer = grp.Key.IgstPer,
-                                      CgstPer = grp.Key.CgstPer,
-                                      SgstPer = grp.Key.SgstPer,
                                       GstPer = grp.Key.GstPer,
                                       TaxableAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity), 2),
                                       IgstAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity * sm.sls_itm.IgstPer / 100), 2),
