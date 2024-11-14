@@ -26,6 +26,8 @@ namespace PaybillAPI.Repositories
                     PaymentMode = salesVM.PaymentMode,
                     UpiType = salesVM.UpiType,
                     Remarks = salesVM.Remarks,
+                    PaidAmount = salesVM.PaidAmount,
+                    BalanceAmount = salesVM.BalanceAmount,
                     IsLocked = 1,
                     CreatedDate = DateTime.Now,
                     CreatedBy = userRowId

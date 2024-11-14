@@ -22,7 +22,7 @@ namespace PaybillAPI.Repositories
                                                                 InvoiceDate = sls.InvoiceDate,
                                                                 PartyName = prt.PartyName,
                                                                 PartyGstin = prt.PartyGstNo
-                                                            }).ToListAsync();
+                                                            }).OrderBy(ord => ord.InvoiceDate).ThenBy(ord => ord.SalesId).ToListAsync();
 
 
             foreach (var party in registeredList)
@@ -49,7 +49,7 @@ namespace PaybillAPI.Repositories
             List<GSTReturnDetailed> unRegistered = await dbContext.Sales.Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date && (col.Party == null || col.Party.PartyGstNo == null || col.Party.PartyGstNo.Trim().Length == 0)).Select(row => new GSTReturnDetailed()
             {
                 InvoiceDate = row.InvoiceDate.Date
-            }).ToListAsync();
+            }).Distinct().ToListAsync();
 
             foreach (var party in unRegistered)
             {
@@ -105,7 +105,7 @@ namespace PaybillAPI.Repositories
             var hsnCodes = await dbContext.SalesItems.Where(col => col.Sales.InvoiceDate.Date >= fromDate.Date &&
                                                                     col.Sales.InvoiceDate.Date <= toDate.Date &&
                                                                     col.Item.Hsncode != null &&
-                                                                    col.Item.Hsncode.Trim().Length > 0).Select(row => row.Item.Hsncode).Distinct().ToListAsync();
+                                                                    col.Item.Hsncode.Trim().Length > 0).OrderBy(ord => ord.Item.Hsncode).Select(row => row.Item.Hsncode).Distinct().ToListAsync();
             foreach (var hCode in hsnCodes)
             {
                 var summary = new GSTHSNSummary
