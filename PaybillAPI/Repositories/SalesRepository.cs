@@ -171,6 +171,7 @@ namespace PaybillAPI.Repositories
                 PaymentMode = row.PaymentMode,
                 UpiType = row.UpiType,
                 IsLocked = row.IsLocked == 1,
+                Remarks = row.Remarks,
                 Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.SalesItems.Sum(sm => sm.Amount),
@@ -210,6 +211,10 @@ namespace PaybillAPI.Repositories
             }).ToListAsync();
 
             salesVM.SalesItems = list;
+
+            string? remarks = await dbContext.UnlockRequests.Where(col => col.SalesId == salesId).OrderByDescending(ord => ord.UnlockRequestId).Select(row => row.Remarks).Take(1).FirstOrDefaultAsync();
+            if (!string.IsNullOrEmpty(remarks)) 
+                salesVM.Remarks = string.IsNullOrEmpty(salesVM.Remarks) ? remarks : $"{salesVM.Remarks}\n{remarks}";
 
             return salesVM;
 
@@ -287,7 +292,7 @@ namespace PaybillAPI.Repositories
                     TaxableAmount = itm.TaxableAmount,
                     IgstPer = itm.IgstPer,
                     CgstPer = itm.CgstPer,
-                    SgstPer = itm.SgstPer,
+                    SgstPer = itm.SgstPer,  
                     GstPer = itm.GstPer,
                     IgstRs = itm.IgstRs,
                     CgstRs = itm.CgstRs,

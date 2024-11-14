@@ -106,7 +106,7 @@ namespace PaybillAPI.Controllers
             if (!await sharedRepository.IsValidAdminUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             unlockRequestId = DataProtection.UrlDecode(unlockRequestId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await sharedRepository.UpdateUnlockRequest(int.Parse(unlockRequestId), isApproved, Convert.ToInt32(User.Identity?.Name)));
+            return Ok(await sharedRepository.UpdateUnlockRequest(int.Parse(unlockRequestId), isApproved, userParam.remarks, Convert.ToInt32(User.Identity?.Name)));
         }
 
     }

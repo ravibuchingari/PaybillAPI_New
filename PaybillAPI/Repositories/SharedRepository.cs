@@ -329,6 +329,7 @@ namespace PaybillAPI.Repositories
             return await dbContext.UnlockRequests.Where(col => col.RequestStatusId == 1).OrderBy(ord => ord.RequestedDate).Select(row => new UnlockRequestVM()
             {
                 UnlockRequestId = row.UnlockRequestId,
+                Remarks = row.Remarks,
                 RequestedDate = row.RequestedDate.ToString("dd-MMM-yyyy hh:mm tt"),
                 RequestedBy = $"{row.RequestedByNavigation.FirstName} {row.RequestedByNavigation.LastName} ({row.RequestedByNavigation.UserId})",
                 SalesModel = row.Sales != null ? new SalesVM()
@@ -349,7 +350,7 @@ namespace PaybillAPI.Repositories
             }).ToListAsync();
         }
 
-        public async Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, int userRowId)
+        public async Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, string remarks, int userRowId)
         {
             UnlockRequest? unlockRequest = await dbContext.UnlockRequests.Where(col => col.UnlockRequestId == unlockRequestId && col.RequestStatusId == 1).FirstOrDefaultAsync();
             if (unlockRequest == null)
@@ -357,6 +358,8 @@ namespace PaybillAPI.Repositories
             unlockRequest.UpdatedDate = DateTime.Now;
             unlockRequest.UpdatedBy = userRowId;
             unlockRequest.RequestStatusId = (sbyte)(isApproved ? 2 : 3);
+            if(string.IsNullOrEmpty(remarks))
+                unlockRequest.Remarks = $"{unlockRequest.Remarks}\n{remarks}";
             if (isApproved)
             {
                 if (unlockRequest.SalesId != null)

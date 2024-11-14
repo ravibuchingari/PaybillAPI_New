@@ -19,6 +19,6 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> UpsertUser(UserVM userVM, int userRowId);
         Task<ResponseMessage> InsUnlockRequest(UnlockRequestVM request, int userRowId);
         Task<List<UnlockRequestVM>> GetUnlockRequests();
-        Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, int userRowId);
+        Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, string remarks, int userRowId);
     }
 }
