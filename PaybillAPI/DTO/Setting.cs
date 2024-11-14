@@ -85,6 +85,8 @@ public partial class Setting
 
     public int UpdatedBy { get; set; }
 
+    public sbyte ItemCodeAllowNumberOnly { get; set; }
+
     [ForeignKey("CreatedBy")]
     [InverseProperty("SettingCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;

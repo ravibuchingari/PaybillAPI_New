@@ -256,6 +256,7 @@ namespace PaybillAPI.Repositories
                 IsCompressBackup = row.IsCompressBackup == 1,
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
+                ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
                 ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
@@ -316,7 +317,8 @@ namespace PaybillAPI.Repositories
                 SalesId = request.SalesModel != null ? request.SalesModel.SalesId : null,
                 PurchaseId = request.PurchaseModel != null ? request.PurchaseModel.PurchaseId : null,
                 Remarks = request.Remarks,
-                RequestStatusId = 1,
+                IsApproved = 0,
+                IsRejected = 0,
                 RequestedDate = DateTime.Now,
                 RequestedBy = userRowId
             });
@@ -326,7 +328,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<List<UnlockRequestVM>> GetUnlockRequests()
         {
-            return await dbContext.UnlockRequests.Where(col => col.RequestStatusId == 1).OrderBy(ord => ord.RequestedDate).Select(row => new UnlockRequestVM()
+            return await dbContext.UnlockRequests.Where(col => col.IsApproved == 0 && col.IsRejected == 0).OrderBy(ord => ord.RequestedDate).Select(row => new UnlockRequestVM()
             {
                 UnlockRequestId = row.UnlockRequestId,
                 Remarks = row.Remarks,
@@ -352,13 +354,14 @@ namespace PaybillAPI.Repositories
 
         public async Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, string remarks, int userRowId)
         {
-            UnlockRequest? unlockRequest = await dbContext.UnlockRequests.Where(col => col.UnlockRequestId == unlockRequestId && col.RequestStatusId == 1).FirstOrDefaultAsync();
+            UnlockRequest? unlockRequest = await dbContext.UnlockRequests.Where(col => col.UnlockRequestId == unlockRequestId && col.IsApproved == 0 && col.IsRejected == 0).FirstOrDefaultAsync();
             if (unlockRequest == null)
                 return new ResponseMessage(isSuccess: false, message: "The unlock request was already processed.");
             unlockRequest.UpdatedDate = DateTime.Now;
             unlockRequest.UpdatedBy = userRowId;
-            unlockRequest.RequestStatusId = (sbyte)(isApproved ? 2 : 3);
-            if(string.IsNullOrEmpty(remarks))
+            unlockRequest.IsApproved = (sbyte)isApproved.GetHashCode();
+            unlockRequest.IsRejected = (sbyte)(!isApproved).GetHashCode();
+            if (string.IsNullOrEmpty(remarks))
                 unlockRequest.Remarks = $"{unlockRequest.Remarks}\n{remarks}";
             if (isApproved)
             {

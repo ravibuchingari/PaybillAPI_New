@@ -30,6 +30,7 @@ namespace PaybillAPI.Repositories
                 IsShadowMenuButton = row.IsShadowMenuButton == 1,
                 IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
+                ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
                 HeaderModel = new PrintHeader()
                 {
                     CompanyName = row.CompanyName,
@@ -73,6 +74,7 @@ namespace PaybillAPI.Repositories
             setting.IsShadowMenuButton = (sbyte)settingVM.IsShadowMenuButton.GetHashCode();
             setting.IsBiometricAuthEnabled = (sbyte)settingVM.IsBiometricAuthEnabled.GetHashCode();
             setting.IsAlertOnMinimumStock = (sbyte)settingVM.IsAlertOnMinimumStock.GetHashCode();
+            setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
             return setting;
         }
 

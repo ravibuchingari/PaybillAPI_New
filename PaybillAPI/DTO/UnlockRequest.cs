@@ -8,7 +8,6 @@ namespace PaybillAPI.DTO;
 [Index("PurchaseId", Name = "fk_request_purchase_id_idx")]
 [Index("RequestedBy", Name = "fk_request_requested_by_idx")]
 [Index("SalesId", Name = "fk_request_sales_id_idx")]
-[Index("RequestStatusId", Name = "fk_request_status_id_idx")]
 [Index("UpdatedBy", Name = "fk_request_updated_by_idx")]
 public partial class UnlockRequest
 {
@@ -19,7 +18,7 @@ public partial class UnlockRequest
 
     public int? PurchaseId { get; set; }
 
-    [StringLength(250)]
+    [StringLength(500)]
     public string Remarks { get; set; } = null!;
 
     public int RequestedBy { get; set; }
@@ -27,20 +26,18 @@ public partial class UnlockRequest
     [Column(TypeName = "datetime")]
     public DateTime RequestedDate { get; set; }
 
-    public sbyte RequestStatusId { get; set; }
-
     [Column(TypeName = "datetime")]
     public DateTime? UpdatedDate { get; set; }
 
     public int? UpdatedBy { get; set; }
 
+    public sbyte IsApproved { get; set; }
+
+    public sbyte IsRejected { get; set; }
+
     [ForeignKey("PurchaseId")]
     [InverseProperty("UnlockRequests")]
     public virtual Purchase? Purchase { get; set; }
-
-    [ForeignKey("RequestStatusId")]
-    [InverseProperty("UnlockRequests")]
-    public virtual RequestStatus RequestStatus { get; set; } = null!;
 
     [ForeignKey("RequestedBy")]
     [InverseProperty("UnlockRequestRequestedByNavigations")]
