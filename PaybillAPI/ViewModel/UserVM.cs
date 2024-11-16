@@ -14,6 +14,7 @@
         public string? JwtToken { get; set; }
         public string? SecurityKey { get; set; }
         public string? SaltKey { get; set; }
+        public string? BiometricAuthKey { get; set; }
         public ClientVM? Client { get; set; }
 
     }

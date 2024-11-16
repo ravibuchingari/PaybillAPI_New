@@ -14,6 +14,7 @@
         public bool IsAlertOnNegativeBalance { get; set; } = true;
         public bool ItemCodeAllowNumberOnly { get; set; }
         public string ServiceGSTCode { get; set; } = string.Empty;
+        public bool IsBiometricAuthEnabled { get; set; }
         public PrintHeader HeaderModel { get; set; } = null!;
     }
 }

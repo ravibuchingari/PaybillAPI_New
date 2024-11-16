@@ -8,5 +8,6 @@ namespace PaybillAPI.ViewModel
         public string Message { get; set; } = string.Empty;
         public UserVM User { get; set; } = null!;
         public DashboardPref Pref { get; set; } = null!;
+        public bool IsBiometricAuthentication { get; set; }
     }
 }

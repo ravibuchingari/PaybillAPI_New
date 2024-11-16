@@ -53,6 +53,9 @@ public partial class User
 
     public int? UpdatedBy { get; set; }
 
+    [StringLength(1000)]
+    public string? BiometricAuthKey { get; set; }
+
     [ForeignKey("CreatedBy")]
     [InverseProperty("InverseCreatedByNavigation")]
     public virtual User? CreatedByNavigation { get; set; }

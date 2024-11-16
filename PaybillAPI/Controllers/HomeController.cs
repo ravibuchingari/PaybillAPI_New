@@ -1,5 +1,6 @@
 ﻿using Authentication.JWTAuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
@@ -12,8 +13,8 @@ namespace PaybillAPI.Controllers
     public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler, IHttpContextAccessor contextAccessor) : ControllerBase
     {
         [HttpGet]
-        [Route("test")]
-        public async Task<ContentResult> Test()
+        [Route("start")]
+        public async Task<ContentResult> Start()
         {
             var request = contextAccessor.HttpContext?.Request;
             string logoUrl = $"{request?.Scheme}://{request?.Host}{request?.PathBase}/images/logo.png";
@@ -56,6 +57,38 @@ namespace PaybillAPI.Controllers
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             authRequest.Password = DataProtection.DecryptWithIV(authRequest.Password, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             AuthResponseVM authResponse = await sharedRepository.UserAuthentication(authRequest);
+            if (authResponse.IsSuccess)
+            {
+                AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
+                {
+                    UserRowId = authResponse.User.UserRowId.ToString()!,
+                    UserId = authResponse.User.UserId,
+                    UserRole = authResponse.User.IsAdmin ? "admin" : "user",
+                    SecurityKey = authResponse.User.SecurityKey!
+                });
+                if (authenticationResponse.IsSuccess)
+                {
+                    authResponse.User.JwtToken = authenticationResponse.JwtToken;
+                    authResponse.User.SecurityKey = DataProtection.UrlEncode(authResponse.User.SecurityKey!, AppConstants.API_AES_KEY_AND_IV);
+                    return Ok(authResponse);
+                }
+                else
+                    return BadRequest(authResponse.Message);
+            }
+            else
+                return BadRequest(authResponse.Message);
+        }
+
+        [HttpPost]
+        [Route("authenticate/biometric")]
+        public async Task<IActionResult> AuthenticateBiometric([FromForm] string biometricAuthKey)
+        {
+            UserVM? userVM = JsonConvert.DeserializeObject<UserVM>(DataProtection.DecryptWithIV(biometricAuthKey, AppConstants.API_AES_KEY_AND_IV));
+
+            if (userVM == null || !await sharedRepository.IsValidAccount(userVM.Client!.ClientUniqueId, userVM.Client.ClientId))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            userVM.BiometricAuthKey = biometricAuthKey;
+            AuthResponseVM authResponse = await sharedRepository.UserAuthenticationBiometric(userVM);
             if (authResponse.IsSuccess)
             {
                 AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()

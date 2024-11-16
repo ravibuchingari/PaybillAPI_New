@@ -6,5 +6,6 @@
         public string ClientId { get; set; } = null!;
         public string UserId { get; set; } = null!;
         public string Password { get; set; } = null!;
+        public string? BiometricAuthKey { get; set; }
     }
 }

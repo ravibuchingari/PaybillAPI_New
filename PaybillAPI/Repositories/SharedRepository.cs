@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -21,7 +22,7 @@ namespace PaybillAPI.Repositories
                                                 .Append("<body style='background-color: black;'><div><img style='position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);' src='")
                                                 .Append(logoUrl)
                                                 .Append("'>")
-                                                .Append("<div style='color: white; font-family: Verdana, Geneva, Tahoma;'>Paybill api server started</div>")
+                                                .Append("<div style='color: white; font-family: Verdana, Geneva, Tahoma;'>PayBill api server started</div>")
                                                 .Append("</div></body></html>").ToString();
                 }
                 else
@@ -249,9 +250,7 @@ namespace PaybillAPI.Repositories
 
             string securityKey = SharedMethod.GenerateUniqueID();
 
-            user.SecurityKey = securityKey;
-            user.UpdatedDate = DateTime.Now;
-            await SaveChangesAsync();
+            
             PrintHeader printHeader = await GetPrintHeader();
             DashboardPref dashboardPref = await dbContext.Settings.Select(row => new DashboardPref()
             {
@@ -265,10 +264,35 @@ namespace PaybillAPI.Repositories
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
                 ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
                 ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
+                IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
+
+            string biometricAuthKey = string.Empty;
+
+            if(dashboardPref.IsBiometricAuthEnabled)
+            {
+                string authKey = JsonConvert.SerializeObject(
+                new UserVM()
+                {
+                    Client = new ClientVM()
+                    {
+                        ClientId = authRequest.ClientId,
+                        ClientUniqueId = authRequest.ClientUniqueId
+                    },
+                    SecurityKey = user.SecurityKey,
+                    UserRowId = user.UserRowId,
+                    UserId = user.UserId
+                });
+                biometricAuthKey = DataProtection.EncryptWithIV(authKey, AppConstants.API_AES_KEY_AND_IV);
+            }
+
+            user.BiometricAuthKey = biometricAuthKey;
+            user.SecurityKey = securityKey;
+            user.UpdatedDate = DateTime.Now;
+            await SaveChangesAsync();
 
             Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
 
@@ -285,6 +309,7 @@ namespace PaybillAPI.Repositories
                     Address = user.Address ?? string.Empty,
                     IsAdmin = user.IsAdmin == 1,
                     SecurityKey = user.SecurityKey,
+                    BiometricAuthKey = biometricAuthKey,
                     Client = new ClientVM()
                     {
                         ClientUniqueId = client.ClientUniqueId,
@@ -293,7 +318,65 @@ namespace PaybillAPI.Repositories
                         IsActivated = client.IsActivated == 1
                     }
                 },
-                Pref = dashboardPref
+                Pref = dashboardPref,
+                IsBiometricAuthentication = false
+            };
+        }
+
+        public async Task<AuthResponseVM> UserAuthenticationBiometric(UserVM authRequest)
+        {
+            string error = "Biometric authentication could not be verified. Please logIn with your user credentials and try again.";
+
+            User? user = await dbContext.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1 && col.BiometricAuthKey == authRequest.BiometricAuthKey && col.SecurityKey == authRequest.SecurityKey).FirstOrDefaultAsync();
+            if (user == null)
+                return new AuthResponseVM() { IsSuccess = false, Message = error };
+
+            PrintHeader printHeader = await GetPrintHeader();
+            DashboardPref dashboardPref = await dbContext.Settings.Select(row => new DashboardPref()
+            {
+                IsAutoEmail = row.IsAutoEmail == 1,
+                IsBackupOnExit = row.IsBackupOnExit == 1,
+                IsDiscountEnabled = row.IsDiscountEnabled == 1,
+                AddItemOnSelected = row.AddItemOnSelected == 1,
+                IsCreateContactOnParty = row.IsCreateContactOnParty == 1,
+                IsCompressBackup = row.IsCompressBackup == 1,
+                IsShadowMenuButton = row.IsShadowMenuButton == 1,
+                IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
+                ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
+                ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
+                IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
+                HeaderModel = printHeader,
+                IsSettingsUpdated = true
+
+            }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
+
+
+            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
+
+            return new AuthResponseVM()
+            {
+                IsSuccess = true,
+                User = new UserVM()
+                {
+                    UserRowId = user.UserRowId,
+                    UserId = user.UserId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Mobile = user.Mobile,
+                    Address = user.Address ?? string.Empty,
+                    IsAdmin = user.IsAdmin == 1,
+                    SecurityKey = user.SecurityKey,
+                    BiometricAuthKey = authRequest.BiometricAuthKey,
+                    Client = new ClientVM()
+                    {
+                        ClientUniqueId = client.ClientUniqueId,
+                        ClientId = client.ClientId,
+                        IsPremiumUser = client.IsPremiumUser == 1,
+                        IsActivated = client.IsActivated == 1
+                    }
+                },
+                Pref = dashboardPref,
+                IsBiometricAuthentication = true
             };
         }
 

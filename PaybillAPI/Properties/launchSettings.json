@@ -26,7 +26,7 @@
     "paybillapi": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "api/home/test",
+      "launchUrl": "api/home/start",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
@@ -35,7 +35,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/home/test",
+      "launchUrl": "api/home/start",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
