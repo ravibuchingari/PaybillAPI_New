@@ -41,6 +41,9 @@ namespace PaybillAPI.Repositories
                     Gstin = row.Gstin ?? "",
                     GstSlabRequired = row.GstslabRequired == 1,
                     ItemWiseGstSlabRequired = row.ItemWiseGstslabRequired == 1,
+                    IsPaymentDetailsRequired = row.IsPaymentDetailsRequired == 1,
+                    IsSavingDetailsRequired = row.IsSavingDetailsRequired == 1,
+                    IsGstSummaryRequired = row.IsGstSummaryRequired == 1
                 },
                 IsSettingsUpdated = true
 
@@ -66,6 +69,9 @@ namespace PaybillAPI.Repositories
             setting.Gstin = settingVM.HeaderModel.Gstin;
             setting.GstslabRequired = (sbyte)settingVM.HeaderModel.GstSlabRequired.GetHashCode()!;
             setting.ItemWiseGstslabRequired = (sbyte)settingVM.HeaderModel.ItemWiseGstSlabRequired.GetHashCode()!;
+            setting.IsPaymentDetailsRequired = (sbyte)settingVM.HeaderModel.IsPaymentDetailsRequired.GetHashCode()!;
+            setting.IsSavingDetailsRequired = (sbyte)settingVM.HeaderModel.IsSavingDetailsRequired.GetHashCode()!;
+            setting.IsGstSummaryRequired = (sbyte)settingVM.HeaderModel.IsGstSummaryRequired.GetHashCode()!;
             setting.AddItemOnSelected = (sbyte)settingVM.AddItemOnSelected.GetHashCode();
             setting.InvoicePrefix = settingVM.InvoicePrefix;
             setting.InvoiceLength = settingVM.InvoiceLength;

@@ -83,12 +83,11 @@ namespace PaybillAPI.Controllers
         [Route("authenticate/biometric")]
         public async Task<IActionResult> AuthenticateBiometric([FromForm] string biometricAuthKey)
         {
-            UserVM? userVM = JsonConvert.DeserializeObject<UserVM>(DataProtection.DecryptWithIV(biometricAuthKey, AppConstants.API_AES_KEY_AND_IV));
+            BiometricAuth? biometricAuth = JsonConvert.DeserializeObject<BiometricAuth>(DataProtection.DecryptWithIV(biometricAuthKey, AppConstants.API_AES_KEY_AND_IV));
 
-            if (userVM == null || !await sharedRepository.IsValidAccount(userVM.Client!.ClientUniqueId, userVM.Client.ClientId))
+            if (biometricAuth == null || !await sharedRepository.IsValidAccount(biometricAuth.ClientUniqueId, biometricAuth.ClientId))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
-            userVM.BiometricAuthKey = biometricAuthKey;
-            AuthResponseVM authResponse = await sharedRepository.UserAuthenticationBiometric(userVM);
+            AuthResponseVM authResponse = await sharedRepository.UserAuthenticationBiometric(biometricAuth, biometricAuthKey);
             if (authResponse.IsSuccess)
             {
                 AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()

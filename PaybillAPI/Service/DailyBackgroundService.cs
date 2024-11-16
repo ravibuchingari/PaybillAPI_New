@@ -1,8 +1,4 @@
-﻿
-using PaybillAPI.Data;
-using PaybillAPI.Models;
-
-namespace PaybillAPI.Service
+﻿namespace PaybillAPI.Service
 {
     public class DailyBackgroundService(IServiceProvider serviceProvider) : BackgroundService
     {
@@ -20,7 +16,7 @@ namespace PaybillAPI.Service
                 }
                 await Task.CompletedTask;
             }
-            catch (Exception){}
+            catch (Exception) { }
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)

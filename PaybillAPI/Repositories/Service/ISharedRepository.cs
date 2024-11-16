@@ -15,7 +15,7 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> UpdateProfile(ClientVM clientVM);
         Task<PrintHeader> GetPrintHeader();
         Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest);
-        Task<AuthResponseVM> UserAuthenticationBiometric(UserVM authRequest);
+        Task<AuthResponseVM> UserAuthenticationBiometric(BiometricAuth authRequest, string biometricAuthKey);
         Task<ResponseMessage> ChangePassword(int userRowId, string oldPassword, string newPassword);
         Task<ResponseMessage> UpsertUser(UserVM userVM, int userRowId);
         Task<ResponseMessage> InsUnlockRequest(UnlockRequestVM request, int userRowId);

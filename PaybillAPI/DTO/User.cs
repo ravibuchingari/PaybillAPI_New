@@ -53,7 +53,7 @@ public partial class User
 
     public int? UpdatedBy { get; set; }
 
-    [StringLength(1000)]
+    [StringLength(600)]
     public string? BiometricAuthKey { get; set; }
 
     [ForeignKey("CreatedBy")]

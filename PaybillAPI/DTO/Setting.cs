@@ -87,6 +87,12 @@ public partial class Setting
 
     public sbyte ItemCodeAllowNumberOnly { get; set; }
 
+    public sbyte IsPaymentDetailsRequired { get; set; }
+
+    public sbyte IsSavingDetailsRequired { get; set; }
+
+    public sbyte IsGstSummaryRequired { get; set; }
+
     [ForeignKey("CreatedBy")]
     [InverseProperty("SettingCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;
