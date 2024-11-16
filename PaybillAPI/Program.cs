@@ -5,6 +5,7 @@ using PaybillAPI.Data;
 using PaybillAPI.Middlewares;
 using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
+using PaybillAPI.Service;
 using Serilog;
 using System.Text.Json;
 
@@ -32,6 +33,9 @@ builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>(option => ActivatorUtilities.CreateInstance<JwtTokenHandler>(option, jwtParameters));
 builder.Services.AddDbContext<AppDBContext>(options => options.UseMySQL(builder.Configuration.GetConnectionString("SqlConnection")!));
 builder.Services.AddJwtAuthenticationExtension(jwtParameters);
+
+//it is optional. The service is used to manage daily activities
+builder.Services.AddHostedService<DailyBackgroundService>();
 
 builder.Services.AddHttpContextAccessor();
 
