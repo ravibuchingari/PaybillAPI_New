@@ -282,7 +282,7 @@ namespace PaybillAPI.Repositories
                         ClientId = authRequest.ClientId,
                         ClientUniqueId = authRequest.ClientUniqueId
                     },
-                    SecurityKey = user.SecurityKey,
+                    SecurityKey = securityKey,
                     UserRowId = user.UserRowId,
                     UserId = user.UserId
                 });
@@ -327,7 +327,7 @@ namespace PaybillAPI.Repositories
         {
             string error = "Biometric authentication could not be verified. Please logIn with your user credentials and try again.";
 
-            User? user = await dbContext.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1 && col.BiometricAuthKey == authRequest.BiometricAuthKey && col.SecurityKey == authRequest.SecurityKey).FirstOrDefaultAsync();
+            User? user = await dbContext.Users.Where(col => col.UserRowId == authRequest.UserRowId && col.IsActive == 1 && col.BiometricAuthKey == authRequest.BiometricAuthKey && col.SecurityKey == authRequest.SecurityKey).FirstOrDefaultAsync();
             if (user == null)
                 return new AuthResponseVM() { IsSuccess = false, Message = error };
 
@@ -351,7 +351,7 @@ namespace PaybillAPI.Repositories
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
 
 
-            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
+            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.Client!.ClientUniqueId).FirstAsync();
 
             return new AuthResponseVM()
             {
