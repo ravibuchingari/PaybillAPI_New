@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="DTOTemp\" />
     <Folder Include="wwwroot\applog\" />
+    <Folder Include="wwwroot\temp\" />
   </ItemGroup>
 
   <ItemGroup>

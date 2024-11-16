@@ -5,7 +5,7 @@ namespace PaybillAPI.Repositories.Service
 {
     public interface ISharedRepository
     {
-        Task<string> CheckDatabase();
+        Task<string> CheckDatabase(string logoUrl);
         Task<string> CreateAccountIfNotExists(ClientVM client);
         Task<string> CreateUserIfNotExists(UserVM userVM);
         Task<IEnumerable<UserVM>> GetUsers();

@@ -10,17 +10,23 @@ namespace PaybillAPI.Repositories
 {
     public class SharedRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), ISharedRepository
     {
-        public async Task<string> CheckDatabase()
+        public async Task<string> CheckDatabase(string logoUrl)
         {
             try
             {
-                var isExists = await dbContext.Database.CanConnectAsync();
-                if (isExists)
+                var isConnected = await dbContext.Database.CanConnectAsync();
+                if (isConnected)
                 {
-                    return "<div style='color: white; font-size: 22px'>Paybill api service started...</div>";
+                    return new StringBuilder().Append("<html><head><title>Player Server</title></head>")
+                                                .Append("<body style='background-color: black;'><div><img style='position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);' src='")
+                                                .Append(logoUrl)
+                                                .Append("'>")
+                                                .Append("<div style='color: white; font-family: Verdana, Geneva, Tahoma;'>Paybill api server started</div>")
+                                                .Append("</div></body></html>").ToString();
                 }
                 else
-                    return new StringBuilder().Append("Error: The PayBill API service database is not configured.")
+                    return new StringBuilder().Append("<html><body style='background-color: black;'>")
+                        .Append("Error: The PayBill API service database is not configured.")
                         .Append('\n')
                         .Append("Steps to create database: ")
                         .Append('\n')
@@ -30,7 +36,8 @@ namespace PaybillAPI.Repositories
                         .Append('\n')
                         .Append("3. Update the valid SQL Server connection string.")
                         .Append('\n')
-                        .Append("4. And run the database script file from wwwroot->dbscript->script.sql").ToString();
+                        .Append("4. And run the database script file from wwwroot->dbscript->script.sql")
+                        .Append("</body></html>").ToString();
             }
             catch (Exception ex)
             {

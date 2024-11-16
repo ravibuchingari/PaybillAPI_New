@@ -9,19 +9,22 @@ namespace PaybillAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler, ISalesRepository salesRepository) : ControllerBase
+    public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler, IHttpContextAccessor contextAccessor) : ControllerBase
     {
         [HttpGet]
         [Route("test")]
         public async Task<ContentResult> Test()
         {
-            string message = await sharedRepository.CheckDatabase();
+            var request = contextAccessor.HttpContext?.Request;
+            string logoUrl = $"{request?.Scheme}://{request?.Host}{request?.PathBase}/images/logo.png";
+
+            string message = await sharedRepository.CheckDatabase(logoUrl);
 
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.OK,
                 ContentType = "text/html",
-                Content = $"<html><body style='background-color: black;'>{message}</body></html>"
+                Content = message
             };
         }
 
