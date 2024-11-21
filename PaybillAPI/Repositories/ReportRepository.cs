@@ -104,8 +104,9 @@ namespace PaybillAPI.Repositories
             List<GSTHSNSummary> listSummary = [];
             var hsnCodes = await dbContext.SalesItems.Where(col => col.Sales.InvoiceDate.Date >= fromDate.Date &&
                                                                     col.Sales.InvoiceDate.Date <= toDate.Date &&
+                                                                    col.Item != null &&
                                                                     col.Item.Hsncode != null &&
-                                                                    col.Item.Hsncode.Trim().Length > 0).OrderBy(ord => ord.Item.Hsncode).Select(row => row.Item.Hsncode).Distinct().ToListAsync();
+                                                                    col.Item.Hsncode.Trim().Length > 0).OrderBy(ord => ord.Item!.Hsncode).Select(row => row.Item!.Hsncode).Distinct().ToListAsync();
             foreach (var hCode in hsnCodes)
             {
                 var summary = new GSTHSNSummary
@@ -114,8 +115,42 @@ namespace PaybillAPI.Repositories
                     Data = await (from sls_itm in dbContext.SalesItems
                                   join sls in dbContext.Sales on sls_itm.SalesId equals sls.SalesId
                                   join itm in dbContext.Items on sls_itm.ItemId equals itm.ItemId
-                                  where itm.Hsncode == hCode
+                                  where sls_itm.Item != null && itm.Hsncode == hCode
                                   group new { sls_itm } by new { itm.Hsncode, sls_itm.GstPer } into grp
+                                  select new GSTData()
+                                  {
+                                      GstPer = grp.Key.GstPer,
+                                      TaxableAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity), 2),
+                                      IgstAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity * sm.sls_itm.IgstPer / 100), 2),
+                                      CgstAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity * sm.sls_itm.CgstPer / 100), 2),
+                                      SgstAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity * sm.sls_itm.SgstPer / 100), 2),
+                                      GstAmount = Math.Round(grp.Sum(sm => (sm.sls_itm.Rate - sm.sls_itm.PurchasePrice) * sm.sls_itm.Quantity * sm.sls_itm.GstPer / 100), 2)
+                                  }).ToListAsync()
+                };
+                listSummary.Add(summary);
+            }
+
+            return listSummary;
+        }
+
+        public async Task<List<GSTHSNSummary>> GetGSTSACSummary(DateTime fromDate, DateTime toDate)
+        {
+            List<GSTHSNSummary> listSummary = [];
+            var hsnCodes = await dbContext.SalesItems.Where(col => col.Sales.InvoiceDate.Date >= fromDate.Date &&
+                                                                    col.Sales.InvoiceDate.Date <= toDate.Date &&
+                                                                    col.ServiceType != null &&
+                                                                    col.ServiceType.SacCode != null &&
+                                                                    col.ServiceType.SacCode.Trim().Length > 0).OrderBy(ord => ord.ServiceType!.SacCode).Select(row => row.ServiceType!.SacCode).Distinct().ToListAsync();
+            foreach (var hCode in hsnCodes)
+            {
+                var summary = new GSTHSNSummary
+                {
+                    HsnCode = hCode!,
+                    Data = await (from sls_itm in dbContext.SalesItems
+                                  join sls in dbContext.Sales on sls_itm.SalesId equals sls.SalesId
+                                  join itm in dbContext.ServiceTypes on sls_itm.ServiceTypeId equals itm.ServiceTypeId
+                                  where sls_itm.ServiceType != null && itm.SacCode == hCode
+                                  group new { sls_itm } by new { itm.SacCode, sls_itm.GstPer } into grp
                                   select new GSTData()
                                   {
                                       GstPer = grp.Key.GstPer,
@@ -233,12 +268,12 @@ namespace PaybillAPI.Repositories
         {
             return await dbContext.SalesItemsDeleteds.Where(col => col.DeletedDate.Date >= fromDate.Date && col.DeletedDate.Date <= toDate.Date).OrderBy(ord => ord.DeletedDate).Select(row => new SalesItemVM()
             {
-                ItemModel = new ItemVM()
+                ItemModel = row.Item != null ? new ItemVM()
                 {
                     ItemCode = row.Item.ItemCode,
                     ItemName = row.Item.ItemName,
                     Measure = row.Item.Measure
-                },
+                } : null,
                 Quantity = row.Quantity,
                 Rate = row.Rate,
                 Amount = row.Amount,
@@ -254,7 +289,8 @@ namespace PaybillAPI.Repositories
                 SgstRs = row.SgstRs,
                 TotalAmount = row.TotalAmount,
                 CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
-                DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm")
+                DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
+                deletedRemarks = row.DeletedRemarks
             }).ToListAsync();
         }
 

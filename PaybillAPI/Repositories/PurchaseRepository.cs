@@ -143,7 +143,7 @@ namespace PaybillAPI.Repositories
             if (purchaseItem != null)
             {
                 if (purchaseItem.Purchase.IsLocked == 1)
-                    return new ResponseMessage(isSuccess: false, message: "The invoice was locked by the administrator");
+                    return new ResponseMessage(isSuccess: false, message: AppConstants.INVOICE_LOCKED_MESSAGE);
 
                 purchaseItem.DeletedBy = userRowId;
                 purchaseItem.DeletedRemarks = remarks;

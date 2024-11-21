@@ -227,7 +227,7 @@ namespace PaybillAPI.Controllers
             return Ok(await itemRepository.GetServiceTypes(isAll));
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("service/{serviceTypeId}/details")]
         public async Task<IActionResult> GetServiceTypeDetails([FromRoute] string serviceTypeId)
         {

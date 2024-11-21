@@ -12,5 +12,7 @@
         public static readonly string[] API_AES_KEY_AND_IV = ["aptlADsyGEtotitNrGNGBeautyRaESpb", "rEPbyteH4377rfvi"];
         public static readonly string[] PAYBILL_API_AES_KEY_AND_IV = ["PgUpwEBhCapsVkScrLKEySGNSkEYPgDn", "NumPrtScnLockvhI"];
 
+        internal const string INVOICE_LOCKED_MESSAGE = "The invoice was locked. To unlock the invoice, please contact the administrator";
+
     }
 }

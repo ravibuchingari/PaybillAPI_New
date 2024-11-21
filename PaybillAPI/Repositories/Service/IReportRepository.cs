@@ -12,6 +12,7 @@ namespace PaybillAPI.Repositories.Service
         Task<List<PurchaseVM>> GetPurchaseDetails(ReportParam reportParam);
         Task<List<PurchaseItemVM>> GetDeletedPurchaseItems(DateTime fromDate, DateTime toDate);
         Task<List<SalesItemVM>> GetDeletedSalesItems(DateTime fromDate, DateTime toDate);
+        Task<List<GSTHSNSummary>> GetGSTSACSummary(DateTime fromDate, DateTime toDate);
         //Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
     }
 }

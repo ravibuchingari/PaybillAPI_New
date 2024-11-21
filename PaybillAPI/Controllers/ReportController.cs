@@ -19,29 +19,18 @@ namespace PaybillAPI.Controllers
             return Ok(await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
         }
 
-        /*[HttpGet]
-        [Route("sales/gst/return/detailed/download")]
-        public async Task<IActionResult> GetGSTReturnDetailedDownload([FromQuery] string fromDate, [FromQuery] string toDate)
-        {
-            var list = await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate));
-            if (list.Count > 0)
-            {
-                string[] selectedProperties = [];
-                string fileName = SharedMethod.GenerateExcel(SharedMethod.ConvertToDataTable(list, selectedProperties), Path.Combine(hostEnvironment.WebRootPath, AppConstants.TEMP_DIR), $"Sales summary from {fromDate} to {toDate}", "sales_summary");
-                new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string? contentType);
-                var fileStream = File(System.IO.File.OpenRead(fileName), contentType: contentType ?? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                return fileStream;
-            }
-            else
-                return BadRequest("No data found");
-
-        }*/
-
         [HttpGet]
         [Route("sales/gst/hsn/summary")]
         public async Task<IActionResult> GetGSTHSNSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
             return Ok(await reportRepository.GetGSTHSNSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
+        [HttpGet]
+        [Route("sales/gst/sac/summary")]
+        public async Task<IActionResult> GetGSTSACSummary([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetGSTSACSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
         }
 
         [HttpPost]

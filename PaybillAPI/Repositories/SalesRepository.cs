@@ -60,7 +60,7 @@ namespace PaybillAPI.Repositories
                         IgstRs = salesItemVM.IgstRs,
                         GstAmount = salesItemVM.GstAmount,
                         TotalAmount = salesItemVM.TotalAmount,
-                        PurchasePrice = salesItemVM.ItemModel!.PurchasePrice,
+                        PurchasePrice = salesItemVM.ItemModel != null ? salesItemVM.ItemModel!.PurchasePrice : 0,
                         CreatedDate = DateTime.Now
                     });
                 }
@@ -121,7 +121,7 @@ namespace PaybillAPI.Repositories
             if (salesItem != null)
             {
                 if (salesItem.Sales.IsLocked == 1)
-                    return new ResponseMessage(isSuccess: false, message: "The invoice was locked by the administrator");
+                    return new ResponseMessage(isSuccess: false, message: AppConstants.INVOICE_LOCKED_MESSAGE);
 
                 salesItem.DeletedBy = userRowId;
                 salesItem.DeletedRemarks = remarks;
