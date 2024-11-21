@@ -23,8 +23,8 @@
         public ServiceTypeVM? ServiceTypeModel { get; set; } = null!;
         public string? CreatedDate { get; set; }
         public string? DeletedDate { get; set; }
-        public string? deletedBy { get; set; }
-        public string? deletedRemarks { get; set; }
+        public string? DeletedBy { get; set; }
+        public string? DeletedRemarks { get; set; }
         public bool IsSalesItem { get; set; }
     }
 }

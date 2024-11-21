@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PaybillAPI.DTO;
 
 [Table("purchase_items_deleted")]
+[Index("DeletedBy", Name = "fk_deleted_purchase_item_deleted_ny_idx")]
 [Index("ItemId", Name = "fk_deleted_purchaseitem_item_id_idx")]
 public partial class PurchaseItemsDeleted
 {
@@ -54,6 +55,10 @@ public partial class PurchaseItemsDeleted
 
     [StringLength(250)]
     public string? DeletedRemarks { get; set; }
+
+    [ForeignKey("DeletedBy")]
+    [InverseProperty("PurchaseItemsDeleteds")]
+    public virtual User DeletedByNavigation { get; set; } = null!;
 
     [ForeignKey("ItemId")]
     [InverseProperty("PurchaseItemsDeleteds")]

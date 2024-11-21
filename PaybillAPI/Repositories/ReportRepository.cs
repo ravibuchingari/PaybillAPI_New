@@ -274,6 +274,10 @@ namespace PaybillAPI.Repositories
                     ItemName = row.Item.ItemName,
                     Measure = row.Item.Measure
                 } : null,
+                ServiceTypeModel = row.ServiceType != null ? new ServiceTypeVM()
+                {
+                    ServiceTypeName = row.ServiceType.ServiceTypeName
+                } : null,
                 Quantity = row.Quantity,
                 Rate = row.Rate,
                 Amount = row.Amount,
@@ -290,7 +294,8 @@ namespace PaybillAPI.Repositories
                 TotalAmount = row.TotalAmount,
                 CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
                 DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
-                deletedRemarks = row.DeletedRemarks
+                DeletedBy = row.DeletedByNavigation.UserId,
+                DeletedRemarks = row.DeletedRemarks
             }).ToListAsync();
         }
 
@@ -319,7 +324,9 @@ namespace PaybillAPI.Repositories
                 SgstRs = row.SgstRs,
                 TotalAmount = row.TotalAmount,
                 CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
-                DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm")
+                DeletedDate = row.CreatedDate.ToString("dd-MMM-yyyy HH:mm"),
+                DeletedBy = row.DeletedByNavigation.UserId,
+                DeletedRemarks = row.DeletedRemarks
             }).ToListAsync();
         }
 
