@@ -29,4 +29,7 @@ public partial class Gst
 
     [InverseProperty("Gst")]
     public virtual ICollection<Item> Items { get; set; } = new List<Item>();
+
+    [InverseProperty("Gst")]
+    public virtual ICollection<ServiceType> ServiceTypes { get; set; } = new List<ServiceType>();
 }

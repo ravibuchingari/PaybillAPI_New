@@ -88,6 +88,12 @@ public partial class User
     public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
 
     [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<ServiceType> ServiceTypeCreatedByNavigations { get; set; } = new List<ServiceType>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<ServiceType> ServiceTypeUpdatedByNavigations { get; set; } = new List<ServiceType>();
+
+    [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Setting> SettingCreatedByNavigations { get; set; } = new List<Setting>();
 
     [InverseProperty("UpdatedByNavigation")]

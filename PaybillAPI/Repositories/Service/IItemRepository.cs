@@ -26,5 +26,9 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> CreateCategoryIfNotExists(string categoryName, int userRowId);
         Task<ResponseMessage> CreateGstIfNotExists(GstVM gstVM, int userRowId);
         Task<ResponseMessage> UploadItems(List<ItemVM> items, int userRowId);
+        Task<ResponseMessage> UpsertServiceType(ServiceTypeVM serviceTypeVM, int userRowId);
+        Task<IEnumerable<ServiceTypeVM>> GetServiceTypes(bool isAll);
+        Task<ResponseMessage> DeleteServiceType(int serviceTypeId);
+        Task<ServiceTypeVM> GetServiceTypeDetails(int serviceTypeId);
     }
 }

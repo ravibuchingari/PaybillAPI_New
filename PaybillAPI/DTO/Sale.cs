@@ -56,6 +56,9 @@ public partial class Sale
     public virtual ICollection<SalesItem> SalesItems { get; set; } = new List<SalesItem>();
 
     [InverseProperty("Sales")]
+    public virtual ICollection<SalesServiceItem> SalesServiceItems { get; set; } = new List<SalesServiceItem>();
+
+    [InverseProperty("Sales")]
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 
     [InverseProperty("Sales")]

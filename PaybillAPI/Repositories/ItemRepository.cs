@@ -306,7 +306,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<ItemVM> GetItemDetails(int itemId)
         {
-            ItemVM? itemVM = await dbContext.Items.Select(row => new ItemVM()
+            ItemVM? itemVM = await dbContext.Items.Where(col => col.ItemId == itemId).Select(row => new ItemVM()
             {
                 ItemId = row.ItemId,
                 ItemCode = row.ItemCode,
@@ -328,7 +328,7 @@ namespace PaybillAPI.Repositories
                     CgstPer = row.Gst.CgstPer,
                     IgstPer = row.Gst.IgstPer
                 } : null
-            }).FirstOrDefaultAsync(col => col.ItemId == itemId);
+            }).FirstOrDefaultAsync();
 
             if (itemVM != null)
                 return itemVM;
@@ -491,6 +491,122 @@ namespace PaybillAPI.Repositories
 
 
 
+
+        #endregion
+
+        #region "Service Item"
+
+        private static ServiceType MapServiceType(ServiceTypeVM itemVM, ServiceType item)
+        {
+            if (itemVM.GstModel != null)
+                item.GstId = itemVM.GstModel.GstId;
+            item.ServiceTypeName = itemVM.ServiceTypeName;
+            item.ServiceCharge = itemVM.ServiceCharge;
+            item.ServiceDescription = itemVM.ServiceDescription;
+            item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
+            return item;
+        }
+
+        public async Task<ResponseMessage> UpsertServiceType(ServiceTypeVM serviceTypeVM, int userRowId)
+        {
+            ServiceType? item;
+            if (serviceTypeVM.ServiceTypeId == 0)
+            {
+                item = MapServiceType(serviceTypeVM, new ServiceType());
+                item.CreatedDate = DateTime.Now;
+                item.CreatedBy = userRowId;
+                item.UpdatedDate = DateTime.Now;
+                item.UpdatedBy = userRowId;
+                await dbContext.ServiceTypes.AddAsync(item);
+            }
+            else
+            {
+                item = await dbContext.ServiceTypes.Where(col => col.ServiceTypeId == serviceTypeVM.ServiceTypeId).FirstOrDefaultAsync();
+                if (item == null)
+                    return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Service Type"));
+                item = MapServiceType(serviceTypeVM, item);
+                item.UpdatedDate = DateTime.Now;
+                item.UpdatedBy = userRowId;
+            }
+            await SaveChangesAsync();
+            return new ResponseMessage(isSuccess: true, message: $"{(serviceTypeVM.ServiceTypeId == 0 ? "Service type created successfully" : "serviceTypeVM updated successfully")}", data: item.ServiceTypeId.ToString());
+        }
+
+        public async Task<IEnumerable<ServiceTypeVM>> GetServiceTypes(bool isAll)
+        {
+            if (isAll)
+                return await dbContext.ServiceTypes.Select(row => new ServiceTypeVM()
+                {
+                    ServiceTypeId = row.ServiceTypeId,
+                    ServiceTypeName = row.ServiceTypeName,
+                    ServiceDescription = row.ServiceDescription,
+                    ServiceCharge = row.ServiceCharge,
+                    SacCode = row.SacCode,
+                    IsActive = row.IsActive == 1,
+                    GstModel = row.Gst != null ? new GstVM()
+                    {
+                        GstId = row.Gst.GstId,
+                        SgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.CgstPer,
+                        IgstPer = row.Gst.IgstPer
+                    } : null
+                }).OrderBy(ord => ord.ServiceTypeName).ToListAsync();
+            else
+                return await dbContext.ServiceTypes.Where(col => col.IsActive == 1).Select(row => new ServiceTypeVM()
+                {
+                    ServiceTypeId = row.ServiceTypeId,
+                    ServiceTypeName = row.ServiceTypeName,
+                    ServiceDescription = row.ServiceDescription,
+                    ServiceCharge = row.ServiceCharge,
+                    SacCode = row.SacCode,
+                    IsActive = row.IsActive == 1,
+                    GstModel = row.Gst != null ? new GstVM()
+                    {
+                        GstId = row.Gst.GstId,
+                        SgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.CgstPer,
+                        IgstPer = row.Gst.IgstPer
+                    } : null
+                }).OrderBy(ord => ord.ServiceTypeName).ToListAsync();
+        }
+
+        public async Task<ResponseMessage> DeleteServiceType(int serviceTypeId)
+        {
+            ServiceType? item = await dbContext.ServiceTypes.FirstOrDefaultAsync(col => col.ServiceTypeId == serviceTypeId);
+            if (item != null)
+            {
+                dbContext.ServiceTypes.Remove(item);
+                await SaveChangesAsync();
+                return new ResponseMessage(isSuccess: true, message: string.Format(AppConstants.ITEM_DELETED, "service type"));
+            }
+            else
+                throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Service type"));
+        }
+
+        public async Task<ServiceTypeVM> GetServiceTypeDetails(int serviceTypeId)
+        {
+            ServiceTypeVM? itemVM = await dbContext.ServiceTypes.Where(col => col.ServiceTypeId == serviceTypeId).Select(row => new ServiceTypeVM()
+            {
+                ServiceTypeId = row.ServiceTypeId,
+                ServiceTypeName = row.ServiceTypeName,
+                ServiceDescription = row.ServiceDescription,
+                ServiceCharge = row.ServiceCharge,
+                SacCode = row.SacCode,
+                IsActive = row.IsActive == 1,
+                GstModel = row.Gst != null ? new GstVM()
+                {
+                    GstId = row.Gst.GstId,
+                    SgstPer = row.Gst.SgstPer,
+                    CgstPer = row.Gst.CgstPer,
+                    IgstPer = row.Gst.IgstPer
+                } : null
+            }).FirstOrDefaultAsync();
+
+            if (itemVM != null)
+                return itemVM;
+            else
+                throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Item"));
+        }
 
         #endregion
     }
