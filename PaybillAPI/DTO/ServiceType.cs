@@ -47,7 +47,7 @@ public partial class ServiceType
     public virtual Gst? Gst { get; set; }
 
     [InverseProperty("ServiceType")]
-    public virtual ICollection<SalesServiceItem> SalesServiceItems { get; set; } = new List<SalesServiceItem>();
+    public virtual ICollection<SalesItem> SalesItems { get; set; } = new List<SalesItem>();
 
     [ForeignKey("UpdatedBy")]
     [InverseProperty("ServiceTypeUpdatedByNavigations")]

@@ -7,6 +7,7 @@ namespace PaybillAPI.DTO;
 [Table("sales_items")]
 [Index("ItemId", Name = "fk_sales_item_item_id_idx")]
 [Index("SalesId", Name = "fk_sales_item_sales_id_idx")]
+[Index("ServiceTypeId", Name = "fk_sales_item_service_type_id_idx")]
 public partial class SalesItem
 {
     [Key]
@@ -14,7 +15,9 @@ public partial class SalesItem
 
     public int SalesId { get; set; }
 
-    public int ItemId { get; set; }
+    public int? ItemId { get; set; }
+
+    public int? ServiceTypeId { get; set; }
 
     public float Quantity { get; set; }
 
@@ -58,9 +61,13 @@ public partial class SalesItem
 
     [ForeignKey("ItemId")]
     [InverseProperty("SalesItems")]
-    public virtual Item Item { get; set; } = null!;
+    public virtual Item? Item { get; set; }
 
     [ForeignKey("SalesId")]
     [InverseProperty("SalesItems")]
     public virtual Sale Sales { get; set; } = null!;
+
+    [ForeignKey("ServiceTypeId")]
+    [InverseProperty("SalesItems")]
+    public virtual ServiceType? ServiceType { get; set; }
 }

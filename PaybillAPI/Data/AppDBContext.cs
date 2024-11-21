@@ -27,8 +27,6 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<SalesItemsDeleted> SalesItemsDeleteds { get; set; }
 
-    public virtual DbSet<SalesServiceItem> SalesServiceItems { get; set; }
-
     public virtual DbSet<ServiceType> ServiceTypes { get; set; }
 
     public virtual DbSet<Setting> Settings { get; set; }

@@ -209,5 +209,43 @@ namespace PaybillAPI.Controllers
 
         #endregion
 
+        #region "Service Type"
+
+        [HttpPost]
+        [Route("service/upsert")]
+        public async Task<IActionResult> UpsertServiceType([FromBody] UserParam userParam)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await itemRepository.UpsertServiceType(userParam.ServiceTypeModel!, Convert.ToInt32(User.Identity?.Name)));
+        }
+
+        [HttpGet]
+        [Route("service/list/{isAll}")]
+        public async Task<IActionResult> GetServiceTypes([FromRoute] bool isAll)
+        {
+            return Ok(await itemRepository.GetServiceTypes(isAll));
+        }
+
+        [HttpPost]
+        [Route("service/{serviceTypeId}/details")]
+        public async Task<IActionResult> GetServiceTypeDetails([FromRoute] string serviceTypeId)
+        {
+            serviceTypeId = DataProtection.UrlDecode(serviceTypeId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            return Ok(await itemRepository.GetServiceTypeDetails(int.Parse(serviceTypeId)));
+        }
+
+        [HttpPost]
+        [Route("service/{serviceTypeId}/delete")]
+        public async Task<IActionResult> DeleteServiceType([FromBody] UserParam userParam, [FromRoute] string serviceTypeId)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            serviceTypeId = DataProtection.UrlDecode(serviceTypeId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            return Ok(await itemRepository.DeleteServiceType(int.Parse(serviceTypeId)));
+        }
+
+        #endregion
+
     }
 }

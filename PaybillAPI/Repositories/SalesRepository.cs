@@ -43,9 +43,10 @@ namespace PaybillAPI.Repositories
                     await dbContext.SalesItems.AddAsync(new SalesItem()
                     {
                         SalesId = sale.SalesId,
-                        ItemId = salesItemVM.ItemModel.ItemId,
+                        ItemId = salesItemVM.ItemModel?.ItemId,
+                        ServiceTypeId = salesItemVM.ServiceTypeModel?.ServiceTypeId,
                         Quantity = salesItemVM.Quantity,
-                        Mrp = salesItemVM.ItemModel.Mrp,
+                        Mrp = salesItemVM.ItemModel != null ? salesItemVM.ItemModel.Mrp : salesItemVM.Rate,
                         Rate = salesItemVM.Rate,
                         Amount = salesItemVM.Amount,
                         DiscountInRs = salesItemVM.DiscountInRs,
@@ -192,13 +193,18 @@ namespace PaybillAPI.Repositories
             List<SalesItemVM> list = await dbContext.SalesItems.Where(col => col.SalesId == salesId).Select(row => new SalesItemVM()
             {
                 SalesItemId = row.SalesItemId,
-                ItemModel = new ItemVM()
+                ItemModel = row.Item != null ? new ItemVM()
                 {
-                    ItemId = row.ItemId,
+                    ItemId = row.Item.ItemId,
                     ItemCode = row.Item.ItemCode,
                     ItemName = row.Item.ItemName,
                     Measure = row.Item.Measure
-                },
+                } : null,
+                ServiceTypeModel = row.ServiceType != null ? new ServiceTypeVM()
+                {
+                    ServiceTypeId = row.ServiceType.ServiceTypeId,
+                    ServiceTypeName = row.ServiceType.ServiceTypeName
+                } : null,
                 Quantity = row.Quantity,
                 Rate = row.Rate,
                 Amount = row.Amount,
@@ -210,7 +216,9 @@ namespace PaybillAPI.Repositories
                 CreatedDate = row.CreatedDate.ToString("dd-MMM-yyyy")
             }).ToListAsync();
 
+
             salesVM.SalesItems = list;
+
 
             string? remarks = await dbContext.UnlockRequests.Where(col => col.SalesId == salesId).OrderByDescending(ord => ord.UnlockRequestId).Select(row => row.Remarks).Take(1).FirstOrDefaultAsync();
             if (!string.IsNullOrEmpty(remarks))
@@ -281,9 +289,9 @@ namespace PaybillAPI.Repositories
                 }).ToList(),
                 SalesItems = row.SalesItems.Select(itm => new PrintSalesItem()
                 {
-                    ItemCode = itm.Item.ItemCode,
-                    ItemName = itm.Item.ItemName,
-                    Measure = itm.Item.Measure,
+                    ItemCode = itm.Item != null ? itm.Item.ItemCode : "(Service)",
+                    ItemName = itm.Item != null ? itm.Item.ItemName : itm.ServiceType!.ServiceTypeName,
+                    Measure = itm.Item != null ? itm.Item.Measure : string.Empty,
                     Quantity = itm.Quantity,
                     Mrp = itm.Mrp,
                     Rate = itm.Rate,
@@ -302,6 +310,7 @@ namespace PaybillAPI.Repositories
                     SavingAmount = (itm.Mrp * itm.Quantity) - itm.TaxableAmount
                 }).ToList(),
             }).FirstOrDefaultAsync();
+
 
             return invoice;
         }

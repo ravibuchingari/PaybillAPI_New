@@ -19,8 +19,12 @@
         public double IgstRs { get; set; }
         public double GstAmount { get; set; }
         public double TotalAmount { get; set; }
-        public ItemVM ItemModel { get; set; } = new ItemVM();
+        public ItemVM? ItemModel { get; set; } = null!;
+        public ServiceTypeVM? ServiceTypeModel { get; set; } = null!;
         public string? CreatedDate { get; set; }
         public string? DeletedDate { get; set; }
+        public string? deletedBy { get; set; }
+        public string? deletedRemarks { get; set; }
+        public bool IsSalesItem { get; set; }
     }
 }
