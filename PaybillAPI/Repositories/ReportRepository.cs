@@ -351,14 +351,14 @@ namespace PaybillAPI.Repositories
             var salesTrans = await dbContext.Sales.Where(col => col.Party == null &&
                                                                 !col.SalesType.Equals("credit", StringComparison.CurrentCultureIgnoreCase) &&
                                                                 col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).Select(row => new TransactionVM()
-            {
-                TransactionId = row.SalesId,
-                TransactionDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
-                TransactionRefNo = row.InvoiceNo,
-                TransactionType = TransType.SALES_CASH.ToString(),
-                ReceiptAmount = row.SalesItems.Where(itm => itm.SalesId == row.SalesId).Sum(sm => sm.TotalAmount),
-                PaymentAmount = 0.0
-            }).ToListAsync();
+                                                                {
+                                                                    TransactionId = row.SalesId,
+                                                                    TransactionDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
+                                                                    TransactionRefNo = row.InvoiceNo,
+                                                                    TransactionType = TransType.SALES_CASH.ToString(),
+                                                                    ReceiptAmount = row.SalesItems.Where(itm => itm.SalesId == row.SalesId).Sum(sm => sm.TotalAmount),
+                                                                    PaymentAmount = 0.0
+                                                                }).ToListAsync();
 
             var salesDeletedTrans = await dbContext.SalesItemsDeleteds.Where(col => col.DeletedDate.Date >= fromDate.Date && col.DeletedDate.Date <= toDate.Date).Select(row => new TransactionVM()
             {
@@ -380,7 +380,7 @@ namespace PaybillAPI.Repositories
                 PaymentAmount = row.TotalAmount
             }).ToListAsync();
 
-            var allTransactions = trans.Concat(salesTrans).Concat(salesDeletedTrans).Concat(purchaseDeletedTrans).ToList(); 
+            var allTransactions = trans.Concat(salesTrans).Concat(salesDeletedTrans).Concat(purchaseDeletedTrans).ToList();
             return allTransactions;
         }
 

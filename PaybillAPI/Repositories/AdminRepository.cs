@@ -31,6 +31,7 @@ namespace PaybillAPI.Repositories
                 IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
                 ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
+                IsSoundEnabled = row.IsSoundEnabled == 1,
                 HeaderModel = new PrintHeader()
                 {
                     CompanyName = row.CompanyName,
@@ -81,6 +82,7 @@ namespace PaybillAPI.Repositories
             setting.IsBiometricAuthEnabled = (sbyte)settingVM.IsBiometricAuthEnabled.GetHashCode();
             setting.IsAlertOnMinimumStock = (sbyte)settingVM.IsAlertOnMinimumStock.GetHashCode();
             setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
+            setting.IsSoundEnabled = (sbyte)settingVM.IsSoundEnabled.GetHashCode();
             return setting;
         }
 

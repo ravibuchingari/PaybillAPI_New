@@ -36,6 +36,7 @@ namespace PaybillAPI.ViewModel
         public bool IsAlertOnMinimumStock { get; set; }
         public bool IsSettingsUpdated { get; set; }
         public bool ItemCodeAllowNumberOnly { get; set; }
+        public bool IsSoundEnabled { get; set; }
         public PrintHeader HeaderModel { get; set; } = new PrintHeader();
 
     }

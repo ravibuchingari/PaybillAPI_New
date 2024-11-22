@@ -344,6 +344,7 @@ namespace PaybillAPI.Repositories
                 ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
                 ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
                 IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
+                IsSoundEnabled = row.IsSoundEnabled == 1,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
