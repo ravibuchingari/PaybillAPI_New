@@ -330,5 +330,59 @@ namespace PaybillAPI.Repositories
             }).ToListAsync();
         }
 
+        public async Task<List<TransactionVM>> GetDaybook(DateTime fromDate, DateTime toDate)
+        {
+            var trans = await dbContext.Transactions.Where(col => col.TransactionDate.Date >= fromDate.Date && col.TransactionDate.Date <= toDate.Date).Select(row => new TransactionVM()
+            {
+                TransactionId = row.TransactionId,
+                TransactionDate = row.TransactionDate.ToString("dd-MMM-yyyy"),
+                TransactionRefNo = row.Sales != null ? row.Sales.InvoiceNo : (row.Purchase != null ? row.Purchase.InvoiceNo : row.TransactionId.ToString()),
+                TransactionType = row.TransactionType,
+                ReceiptAmount = row.ReceiptAmount,
+                PaymentAmount = row.PaymentAmount,
+                PartyModel = new PartyVM()
+                {
+                    PartyId = row.Party.PartyId,
+                    PartyName = row.Party.PartyName
+                }
+            }).ToListAsync();
+
+
+            var salesTrans = await dbContext.Sales.Where(col => col.Party == null &&
+                                                                !col.SalesType.Equals("credit", StringComparison.CurrentCultureIgnoreCase) &&
+                                                                col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).Select(row => new TransactionVM()
+            {
+                TransactionId = row.SalesId,
+                TransactionDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
+                TransactionRefNo = row.InvoiceNo,
+                TransactionType = TransType.SALES_CASH.ToString(),
+                ReceiptAmount = row.SalesItems.Where(itm => itm.SalesId == row.SalesId).Sum(sm => sm.TotalAmount),
+                PaymentAmount = 0.0
+            }).ToListAsync();
+
+            var salesDeletedTrans = await dbContext.SalesItemsDeleteds.Where(col => col.DeletedDate.Date >= fromDate.Date && col.DeletedDate.Date <= toDate.Date).Select(row => new TransactionVM()
+            {
+                TransactionId = row.SalesDeletedItemId,
+                TransactionDate = row.DeletedDate.ToString("dd-MMM-yyyy"),
+                TransactionRefNo = "",
+                TransactionType = TransType.SALES_DELETED.ToString(),
+                ReceiptAmount = row.TotalAmount,
+                PaymentAmount = row.TotalAmount
+            }).ToListAsync();
+
+            var purchaseDeletedTrans = await dbContext.PurchaseItemsDeleteds.Where(col => col.DeletedDate.Date >= fromDate.Date && col.DeletedDate.Date <= toDate.Date).Select(row => new TransactionVM()
+            {
+                TransactionId = row.PurchaseDeletedItemId,
+                TransactionDate = row.DeletedDate.ToString("dd-MMM-yyyy"),
+                TransactionRefNo = "",
+                TransactionType = TransType.PURCHASE_DELETED.ToString(),
+                ReceiptAmount = row.TotalAmount,
+                PaymentAmount = row.TotalAmount
+            }).ToListAsync();
+
+            var allTransactions = trans.Concat(salesTrans).Concat(salesDeletedTrans).Concat(purchaseDeletedTrans).ToList(); 
+            return allTransactions;
+        }
+
     }
 }

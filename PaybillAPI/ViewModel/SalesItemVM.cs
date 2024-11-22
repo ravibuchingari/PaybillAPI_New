@@ -25,6 +25,5 @@
         public string? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
         public string? DeletedRemarks { get; set; }
-        public bool IsSalesItem { get; set; }
     }
 }

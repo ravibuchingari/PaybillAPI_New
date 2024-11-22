@@ -12,6 +12,6 @@
         public string? Remarks { get; set; } = string.Empty;
         public string TransactionType { get; set; } = null!;
         public string? CreatedDate { get; set; }
-        public PartyVM PartyModel { get; set; } = new PartyVM();
+        public PartyVM? PartyModel { get; set; } = null!;
     }
 }

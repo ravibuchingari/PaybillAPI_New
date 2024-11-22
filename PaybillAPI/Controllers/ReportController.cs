@@ -109,6 +109,15 @@ namespace PaybillAPI.Controllers
         }
 
         [HttpGet]
+        [Route("trans/daybook/{fromDate}/{toDate}")]
+        public async Task<IActionResult> GetDaybook([FromRoute] string fromDate, [FromRoute] string toDate)
+        {
+            fromDate = DataProtection.UrlDecode(fromDate, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            toDate = DataProtection.UrlDecode(toDate, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            return Ok(await reportRepository.GetDaybook(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
+        [HttpGet]
         [Route("sales/items/deleted")]
         public async Task<IActionResult> GetDeletedSalesItems([FromQuery] string fromDate, [FromQuery] string toDate)
         {
