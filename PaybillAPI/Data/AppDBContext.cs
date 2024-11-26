@@ -13,6 +13,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<Item> Items { get; set; }
 
+    public virtual DbSet<MessageTemplate> MessageTemplates { get; set; }
+
     public virtual DbSet<Party> Parties { get; set; }
 
     public virtual DbSet<Purchase> Purchases { get; set; }

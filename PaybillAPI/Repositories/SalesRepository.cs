@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -146,7 +145,7 @@ namespace PaybillAPI.Repositories
                             CreatedDate = DateTime.Now
                         };
                     }
-                    
+
                     transaction.PaymentAmount = totalSalesAmount;
                     transaction.UpiType = salesVM.UpiType;
                     transaction.Remarks = salesVM.Remarks ?? string.Empty;
@@ -258,7 +257,9 @@ namespace PaybillAPI.Repositories
                 {
                     PartyId = row.Party.PartyId,
                     PartyName = row.Party.PartyName,
-                    PartyAddress = row.Party.PartyAddress
+                    PartyAddress = row.Party.PartyAddress,
+                    PartyMobile = row.Party.PartyMobile,
+                    PartyRemarks = row.Party.PartyRemarks
                 } : null
 
             }).FirstOrDefaultAsync() ?? throw new Exception(string.Format(AppConstants.ITEM_NOT_FOUND, "Sales invoice"));

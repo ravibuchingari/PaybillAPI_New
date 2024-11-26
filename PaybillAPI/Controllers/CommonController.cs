@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
@@ -110,5 +111,25 @@ namespace PaybillAPI.Controllers
         }
 
 
+        [HttpPost]
+        [Route("message/insert")]
+        public async Task<IActionResult> InsUnlockRequest([FromBody] string messageDescription)
+        {
+            return Ok(await adminRepository.InsMessage(messageDescription));
+        }
+
+        [HttpPost]
+        [Route("message/{messageId}/delete")]
+        public async Task<IActionResult> DeleteMessage([FromRoute] int messageId)
+        {
+            return Ok(await adminRepository.DeleteMessage(messageId));
+        }
+
+        [HttpGet]
+        [Route("message/list")]
+        public async Task<IActionResult> GetMessages()
+        {
+            return Ok(await adminRepository.GetMessages());
+        }
     }
 }
