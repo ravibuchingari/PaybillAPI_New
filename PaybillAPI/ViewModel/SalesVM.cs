@@ -15,6 +15,7 @@ namespace PaybillAPI.ViewModel
         public string? Remarks { get; set; } = string.Empty;
         public int CreatedBy { get; set; }
         public bool IsLocked { get; set; }
+        public string? EndUserMobile { get; set; }
         public PartyVM? PartyModel { get; set; }
         public List<SalesItemVM> SalesItems { get; set; } = [];
         public InvoiceSummary? Summary { get; set; }

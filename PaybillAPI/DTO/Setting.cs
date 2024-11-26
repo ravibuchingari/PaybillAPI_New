@@ -5,7 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PaybillAPI.DTO;
 
 [Table("settings")]
+[Index("BalanceMessageId", Name = "fk_settings_balance_message_id_idx")]
 [Index("CreatedBy", Name = "fk_settings_created_by_idx")]
+[Index("FestivalMessageId", Name = "fk_settings_festival_message_id_idx")]
+[Index("SalesMessageId", Name = "fk_settings_sales_message_id_idx")]
+[Index("ServiceMessageId", Name = "fk_settings_service_message_id_idx")]
 [Index("UpdatedBy", Name = "fk_settings_updated_by_idx")]
 public partial class Setting
 {
@@ -95,9 +99,36 @@ public partial class Setting
 
     public sbyte IsSoundEnabled { get; set; }
 
+    [Column("IsSendSMSOnInvoice")]
+    public sbyte IsSendSmsonInvoice { get; set; }
+
+    public int? SalesMessageId { get; set; }
+
+    public int? ServiceMessageId { get; set; }
+
+    public int? BalanceMessageId { get; set; }
+
+    public int? FestivalMessageId { get; set; }
+
+    [ForeignKey("BalanceMessageId")]
+    [InverseProperty("SettingBalanceMessages")]
+    public virtual MessageTemplate? BalanceMessage { get; set; }
+
     [ForeignKey("CreatedBy")]
     [InverseProperty("SettingCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;
+
+    [ForeignKey("FestivalMessageId")]
+    [InverseProperty("SettingFestivalMessages")]
+    public virtual MessageTemplate? FestivalMessage { get; set; }
+
+    [ForeignKey("SalesMessageId")]
+    [InverseProperty("SettingSalesMessages")]
+    public virtual MessageTemplate? SalesMessage { get; set; }
+
+    [ForeignKey("ServiceMessageId")]
+    [InverseProperty("SettingServiceMessages")]
+    public virtual MessageTemplate? ServiceMessage { get; set; }
 
     [ForeignKey("UpdatedBy")]
     [InverseProperty("SettingUpdatedByNavigations")]

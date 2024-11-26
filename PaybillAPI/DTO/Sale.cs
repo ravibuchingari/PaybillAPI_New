@@ -50,6 +50,9 @@ public partial class Sale
     [Column(TypeName = "datetime")]
     public DateTime UpdatedDate { get; set; }
 
+    [StringLength(10)]
+    public string? EndUserMobile { get; set; }
+
     [ForeignKey("CreatedBy")]
     [InverseProperty("SaleCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;

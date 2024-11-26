@@ -32,6 +32,11 @@ namespace PaybillAPI.Repositories
                 IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
                 ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
                 IsSoundEnabled = row.IsSoundEnabled == 1,
+                IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
+                SalesMessageId = row.SalesMessageId,
+                ServiceMessageId = row.ServiceMessageId,
+                BalanceMessageId = row.BalanceMessageId,
+                FestivalMessageId = row.FestivalMessageId,
                 HeaderModel = new PrintHeader()
                 {
                     CompanyName = row.CompanyName,
@@ -83,6 +88,11 @@ namespace PaybillAPI.Repositories
             setting.IsAlertOnMinimumStock = (sbyte)settingVM.IsAlertOnMinimumStock.GetHashCode();
             setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
             setting.IsSoundEnabled = (sbyte)settingVM.IsSoundEnabled.GetHashCode();
+            setting.IsSendSmsonInvoice = (sbyte)settingVM.IsSendSmsonInvoice.GetHashCode();
+            setting.SalesMessageId = settingVM.SalesMessageId;
+            setting.ServiceMessageId = settingVM.ServiceMessageId;
+            setting.BalanceMessageId = settingVM.BalanceMessageId;
+            setting.FestivalMessageId = settingVM.FestivalMessageId;
             return setting;
         }
 

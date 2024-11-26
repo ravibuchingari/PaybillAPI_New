@@ -16,6 +16,7 @@
         public string ServiceGSTCode { get; set; } = string.Empty;
         public bool IsBiometricAuthEnabled { get; set; }
         public bool IsSoundEnabled { get; set; }
+        public bool IsSendSmsonInvoice { get; set; }
         public PrintHeader HeaderModel { get; set; } = null!;
     }
 }

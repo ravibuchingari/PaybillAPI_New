@@ -32,6 +32,7 @@ namespace PaybillAPI.Repositories
                         PaidAmount = salesVM.PaidAmount,
                         BalanceAmount = salesVM.BalanceAmount,
                         IsLocked = 1,
+                        EndUserMobile = salesVM.EndUserMobile,
                         CreatedDate = DateTime.Now,
                         CreatedBy = userRowId,
                         UpdatedDate = DateTime.Now,
@@ -69,6 +70,7 @@ namespace PaybillAPI.Repositories
                     sale.PaidAmount = salesVM.PaidAmount;
                     sale.BalanceAmount = salesVM.BalanceAmount;
                     sale.IsLocked = 1;
+                    sale.EndUserMobile = salesVM.EndUserMobile;
                     sale.UpdatedDate = DateTime.Now;
                     sale.UpdatedBy = userRowId;
                 }
@@ -245,6 +247,7 @@ namespace PaybillAPI.Repositories
                 UpiType = row.UpiType,
                 IsLocked = row.IsLocked == 1,
                 Remarks = row.Remarks,
+                EndUserMobile = row.EndUserMobile,
                 Summary = new InvoiceSummary()
                 {
                     TotalAmount = row.SalesItems.Sum(sm => sm.Amount),
