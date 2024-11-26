@@ -8,6 +8,7 @@ namespace PaybillAPI.DTO;
 [Index("ItemId", Name = "fk_sales_item_item_id_idx")]
 [Index("SalesId", Name = "fk_sales_item_sales_id_idx")]
 [Index("ServiceTypeId", Name = "fk_sales_item_service_type_id_idx")]
+[Index("UpdatedBy", Name = "fk_sales_item_updated_by_idx")]
 public partial class SalesItem
 {
     [Key]
@@ -59,6 +60,11 @@ public partial class SalesItem
     [StringLength(250)]
     public string? DeletedRemarks { get; set; }
 
+    public int? UpdatedBy { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime UpdatedDate { get; set; }
+
     [ForeignKey("ItemId")]
     [InverseProperty("SalesItems")]
     public virtual Item? Item { get; set; }
@@ -70,4 +76,8 @@ public partial class SalesItem
     [ForeignKey("ServiceTypeId")]
     [InverseProperty("SalesItems")]
     public virtual ServiceType? ServiceType { get; set; }
+
+    [ForeignKey("UpdatedBy")]
+    [InverseProperty("SalesItems")]
+    public virtual User? UpdatedByNavigation { get; set; }
 }

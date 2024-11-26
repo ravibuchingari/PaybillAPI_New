@@ -88,7 +88,13 @@ public partial class User
     public virtual ICollection<Purchase> PurchaseUpdatedByNavigations { get; set; } = new List<Purchase>();
 
     [InverseProperty("CreatedByNavigation")]
-    public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
+    public virtual ICollection<Sale> SaleCreatedByNavigations { get; set; } = new List<Sale>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<Sale> SaleUpdatedByNavigations { get; set; } = new List<Sale>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<SalesItem> SalesItems { get; set; } = new List<SalesItem>();
 
     [InverseProperty("DeletedByNavigation")]
     public virtual ICollection<SalesItemsDeleted> SalesItemsDeleteds { get; set; } = new List<SalesItemsDeleted>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -17,68 +18,141 @@ namespace PaybillAPI.Repositories
             using var dbTrans = await dbContext.Database.BeginTransactionAsync();
             try
             {
-                Sale? sale = new()
+                Sale? sale;
+                if (salesVM.SalesId == 0)
                 {
-                    PartyId = salesVM.PartyModel?.PartyId,
-                    InvoiceNo = salesVM.InvoiceNo,
-                    InvoiceDate = DateTime.Parse(salesVM.InvoiceDate),
-                    SalesType = salesVM.SalesType,
-                    PaymentMode = salesVM.PaymentMode,
-                    UpiType = salesVM.UpiType,
-                    Remarks = salesVM.Remarks,
-                    PaidAmount = salesVM.PaidAmount,
-                    BalanceAmount = salesVM.BalanceAmount,
-                    IsLocked = 1,
-                    CreatedDate = DateTime.Now,
-                    CreatedBy = userRowId
-                };
+                    sale = new()
+                    {
+                        PartyId = salesVM.PartyModel?.PartyId,
+                        InvoiceNo = salesVM.InvoiceNo,
+                        InvoiceDate = DateTime.Parse(salesVM.InvoiceDate),
+                        SalesType = salesVM.SalesType,
+                        PaymentMode = salesVM.PaymentMode,
+                        UpiType = salesVM.UpiType,
+                        Remarks = salesVM.Remarks,
+                        PaidAmount = salesVM.PaidAmount,
+                        BalanceAmount = salesVM.BalanceAmount,
+                        IsLocked = 1,
+                        CreatedDate = DateTime.Now,
+                        CreatedBy = userRowId,
+                        UpdatedDate = DateTime.Now,
+                        UpdatedBy = userRowId
+                    };
+                    await dbContext.Sales.AddAsync(sale);
+                    await SaveChangesAsync();
+                }
+                else
+                {
+                    sale = dbContext.Sales.Include(prt => prt.Party).Where(col => col.SalesId == salesVM.SalesId).FirstOrDefault();
+                    if (sale == null)
+                    {
+                        await dbTrans.RollbackAsync();
+                        return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Sales invoice"));
+                    }
 
-                await dbContext.Sales.AddAsync(sale);
-                await SaveChangesAsync();
+                    if (sale.IsLocked == 1)
+                    {
+                        await dbTrans.RollbackAsync();
+                        return new ResponseMessage(isSuccess: false, message: AppConstants.INVOICE_LOCKED_MESSAGE);
+                    }
+
+                    if (salesVM.PartyModel?.PartyId != sale.Party?.PartyId)
+                    {
+                        await dbTrans.RollbackAsync();
+                        return new ResponseMessage(isSuccess: false, message: "Party cannot be modified.");
+                    }
+
+                    sale.InvoiceDate = DateTime.Parse(salesVM.InvoiceDate);
+                    sale.SalesType = salesVM.SalesType;
+                    sale.PaymentMode = salesVM.PaymentMode;
+                    sale.UpiType = salesVM.UpiType;
+                    sale.Remarks = salesVM.Remarks;
+                    sale.PaidAmount = salesVM.PaidAmount;
+                    sale.BalanceAmount = salesVM.BalanceAmount;
+                    sale.IsLocked = 1;
+                    sale.UpdatedDate = DateTime.Now;
+                    sale.UpdatedBy = userRowId;
+                }
+
+
                 double totalSalesAmount = 0.0;
-
+                SalesItem? salesItem = null;
                 foreach (SalesItemVM salesItemVM in salesVM.SalesItems)
                 {
-                    totalSalesAmount += salesItemVM.TotalAmount;
-                    await dbContext.SalesItems.AddAsync(new SalesItem()
+                    if (salesItemVM.SalesItemId > 0)
                     {
-                        SalesId = sale.SalesId,
-                        ItemId = salesItemVM.ItemModel?.ItemId,
-                        ServiceTypeId = salesItemVM.ServiceTypeModel?.ServiceTypeId,
-                        Quantity = salesItemVM.Quantity,
-                        Mrp = salesItemVM.ItemModel != null ? salesItemVM.ItemModel.Mrp : salesItemVM.Rate,
-                        Rate = salesItemVM.Rate,
-                        Amount = salesItemVM.Amount,
-                        DiscountInRs = salesItemVM.DiscountInRs,
-                        TaxableAmount = salesItemVM.TaxableAmount,
-                        CgstPer = salesItemVM.CgstPer,
-                        SgstPer = salesItemVM.SgstPer,
-                        IgstPer = salesItemVM.IgstPer,
-                        GstPer = salesItemVM.GstPer,
-                        CgstRs = salesItemVM.CgstRs,
-                        SgstRs = salesItemVM.SgstRs,
-                        IgstRs = salesItemVM.IgstRs,
-                        GstAmount = salesItemVM.GstAmount,
-                        TotalAmount = salesItemVM.TotalAmount,
-                        PurchasePrice = salesItemVM.ItemModel != null ? salesItemVM.ItemModel!.PurchasePrice : 0,
-                        CreatedDate = DateTime.Now
-                    });
+                        salesItem = await dbContext.SalesItems.Where(col => col.SalesItemId == salesItemVM.SalesItemId).FirstOrDefaultAsync();
+                        if (salesItem == null)
+                        {
+                            await dbTrans.RollbackAsync();
+                            return new ResponseMessage(isSuccess: false, message: "The sales item is deleted by another user. Please reopen the invoice and try again!");
+                        }
+                    }
+                    else
+                    {
+                        salesItem = new SalesItem
+                        {
+                            CreatedDate = DateTime.Now
+                        };
+                    }
+
+                    salesItem.SalesId = sale.SalesId;
+                    salesItem.ItemId = salesItemVM.ItemModel?.ItemId;
+                    salesItem.ServiceTypeId = salesItemVM.ServiceTypeModel?.ServiceTypeId;
+                    salesItem.Quantity = salesItemVM.Quantity;
+                    salesItem.Mrp = salesItemVM.ItemModel != null ? salesItemVM.ItemModel.Mrp : salesItemVM.Rate;
+                    salesItem.Rate = salesItemVM.Rate;
+                    salesItem.Amount = salesItemVM.Amount;
+                    salesItem.DiscountInRs = salesItemVM.DiscountInRs;
+                    salesItem.TaxableAmount = salesItemVM.TaxableAmount;
+                    salesItem.CgstPer = salesItemVM.CgstPer;
+                    salesItem.SgstPer = salesItemVM.SgstPer;
+                    salesItem.IgstPer = salesItemVM.IgstPer;
+                    salesItem.GstPer = salesItemVM.GstPer;
+                    salesItem.CgstRs = salesItemVM.CgstRs;
+                    salesItem.SgstRs = salesItemVM.SgstRs;
+                    salesItem.IgstRs = salesItemVM.IgstRs;
+                    salesItem.GstAmount = salesItemVM.GstAmount;
+                    salesItem.TotalAmount = salesItemVM.TotalAmount;
+                    salesItem.PurchasePrice = salesItemVM.ItemModel != null ? salesItemVM.ItemModel!.PurchasePrice : 0;
+                    salesItem.UpdatedDate = DateTime.Now;
+                    salesItem.UpdatedBy = userRowId;
+
+                    if (salesItemVM.SalesItemId <= 0)
+                        await dbContext.SalesItems.AddAsync(salesItem);
+                    totalSalesAmount += salesItemVM.TotalAmount;
                 }
 
                 if (salesVM.PartyModel != null)
                 {
-                    Transaction transaction = new()
+                    Transaction? transaction;
+                    if (salesVM.SalesId > 0)
                     {
-                        PartyId = salesVM.PartyModel.PartyId,
-                        TransactionDate = DateTime.Now.Date,
-                        PaymentAmount = totalSalesAmount,
-                        PaymentMode = salesVM.PaymentMode,
-                        UpiType = salesVM.UpiType,
-                        Remarks = salesVM.Remarks ?? string.Empty,
-                        SalesId = sale.SalesId,
-                        UpdatedBy = userRowId,
-                        UpdatedDate = DateTime.Now
-                    };
+                        transaction = await dbContext.Transactions.Where(col => col.SalesId == salesVM.SalesId).FirstOrDefaultAsync();
+                        if (transaction == null)
+                        {
+                            await dbTrans.RollbackAsync();
+                            return new ResponseMessage(isSuccess: false, message: "Sales invoice transaction not found. Please reopen the invoice and try again!");
+                        }
+                    }
+                    else
+                    {
+                        transaction = new Transaction
+                        {
+                            TransactionDate = DateTime.Now.Date,
+                            SalesId = sale.SalesId,
+                            PartyId = salesVM.PartyModel.PartyId,
+                            CreatedBy = userRowId,
+                            CreatedDate = DateTime.Now
+                        };
+                    }
+                    
+                    transaction.PaymentAmount = totalSalesAmount;
+                    transaction.UpiType = salesVM.UpiType;
+                    transaction.Remarks = salesVM.Remarks ?? string.Empty;
+                    transaction.UpdatedBy = userRowId;
+                    transaction.UpdatedDate = DateTime.Now;
+
 
                     if (salesVM.SalesType.ToLower().Equals("cash"))
                     {
@@ -93,9 +167,8 @@ namespace PaybillAPI.Repositories
                         transaction.TransactionType = TransType.SALES_CREDIT.ToString();
                     }
 
-                    transaction.CreatedBy = userRowId;
-                    transaction.CreatedDate = DateTime.Now;
-                    await dbContext.AddAsync(transaction);
+                    if (salesVM.SalesId == 0)
+                        await dbContext.AddAsync(transaction);
                 }
 
                 await SaveChangesAsync();

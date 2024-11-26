@@ -75,8 +75,6 @@ public partial class Setting
 
     public sbyte IsAlertOnMinimumStock { get; set; }
 
-    public sbyte IsSoundEnabled { get; set; }
-
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 
@@ -94,6 +92,8 @@ public partial class Setting
     public sbyte IsSavingDetailsRequired { get; set; }
 
     public sbyte IsGstSummaryRequired { get; set; }
+
+    public sbyte IsSoundEnabled { get; set; }
 
     [ForeignKey("CreatedBy")]
     [InverseProperty("SettingCreatedByNavigations")]

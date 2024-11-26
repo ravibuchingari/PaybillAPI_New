@@ -8,6 +8,7 @@ namespace PaybillAPI.DTO;
 [Index("InvoiceNo", Name = "InvoiceNo_UNIQUE", IsUnique = true)]
 [Index("CreatedBy", Name = "fk_sales_created_by_idx")]
 [Index("PartyId", Name = "fk_sales_party_id_idx")]
+[Index("UpdatedBy", Name = "fk_sales_updated_by_idx")]
 public partial class Sale
 {
     [Key]
@@ -44,8 +45,13 @@ public partial class Sale
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
 
+    public int? UpdatedBy { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime UpdatedDate { get; set; }
+
     [ForeignKey("CreatedBy")]
-    [InverseProperty("Sales")]
+    [InverseProperty("SaleCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     [ForeignKey("PartyId")]
@@ -60,4 +66,8 @@ public partial class Sale
 
     [InverseProperty("Sales")]
     public virtual ICollection<UnlockRequest> UnlockRequests { get; set; } = new List<UnlockRequest>();
+
+    [ForeignKey("UpdatedBy")]
+    [InverseProperty("SaleUpdatedByNavigations")]
+    public virtual User? UpdatedByNavigation { get; set; }
 }
