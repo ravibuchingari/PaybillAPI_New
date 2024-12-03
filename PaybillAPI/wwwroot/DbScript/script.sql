@@ -30,7 +30,7 @@ CREATE TABLE `category` (
   `CreatedBy` int NOT NULL,
   `UpdatedBy` int NOT NULL,
   PRIMARY KEY (`categoryId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,6 +120,20 @@ CREATE TABLE `items` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `message_templates`
+--
+
+DROP TABLE IF EXISTS `message_templates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `message_templates` (
+  `MessageId` int NOT NULL AUTO_INCREMENT,
+  `MessageDescription` varchar(500) NOT NULL,
+  PRIMARY KEY (`MessageId`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `parties`
 --
 
@@ -176,7 +190,7 @@ CREATE TABLE `purchase` (
   CONSTRAINT `fk_purchase_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_purchase_partry_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`),
   CONSTRAINT `fk_purchase_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +226,7 @@ CREATE TABLE `purchase_items` (
   KEY `fk_purchase_item_item_id_idx` (`ItemId`),
   CONSTRAINT `fk_purchase_item_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`),
   CONSTRAINT `fk_purchase_item_purchase_id` FOREIGN KEY (`PurchaseId`) REFERENCES `purchase` (`PurchaseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -313,8 +327,10 @@ CREATE TABLE `purchase_items_deleted` (
   `DeletedRemarks` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`purchaseDeletedItemId`),
   KEY `fk_deleted_purchaseitem_item_id_idx` (`ItemId`),
+  KEY `fk_deleted_purchase_item_deleted_ny_idx` (`DeletedBy`),
+  CONSTRAINT `fk_deleted_purchaseitem_deleted_by` FOREIGN KEY (`DeletedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_deleted_purchaseitem_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -338,13 +354,18 @@ CREATE TABLE `sales` (
   `Remarks` varchar(250) DEFAULT NULL,
   `CreatedBy` int NOT NULL,
   `CreatedDate` datetime NOT NULL,
+  `UpdatedBy` int DEFAULT NULL,
+  `UpdatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `EndUserMobile` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`SalesId`),
   UNIQUE KEY `InvoiceNo_UNIQUE` (`InvoiceNo`),
   KEY `fk_sales_party_id_idx` (`PartyId`),
   KEY `fk_sales_created_by_idx` (`CreatedBy`),
+  KEY `fk_sales_updated_by_idx` (`UpdatedBy`),
   CONSTRAINT `fk_sales_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
-  CONSTRAINT `fk_sales_party_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_sales_party_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`),
+  CONSTRAINT `fk_sales_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -382,7 +403,8 @@ DROP TABLE IF EXISTS `sales_items`;
 CREATE TABLE `sales_items` (
   `SalesItemId` int NOT NULL AUTO_INCREMENT,
   `SalesId` int NOT NULL,
-  `ItemId` int NOT NULL,
+  `ItemId` int DEFAULT NULL,
+  `ServiceTypeId` int DEFAULT NULL,
   `Quantity` float NOT NULL,
   `Rate` float NOT NULL,
   `Mrp` float NOT NULL,
@@ -402,12 +424,18 @@ CREATE TABLE `sales_items` (
   `CreatedDate` datetime NOT NULL,
   `DeletedBy` int DEFAULT NULL,
   `DeletedRemarks` varchar(250) DEFAULT NULL,
+  `UpdatedBy` int DEFAULT NULL,
+  `UpdatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`SalesItemId`),
   KEY `fk_sales_item_sales_id_idx` (`SalesId`),
   KEY `fk_sales_item_item_id_idx` (`ItemId`),
+  KEY `fk_sales_item_service_type_id_idx` (`ServiceTypeId`),
+  KEY `fk_sales_item_updated_by_idx` (`UpdatedBy`),
   CONSTRAINT `fk_sales_item_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`),
-  CONSTRAINT `fk_sales_item_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_sales_item_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`),
+  CONSTRAINT `fk_sales_item_service_type_id` FOREIGN KEY (`ServiceTypeId`) REFERENCES `service_types` (`ServiceTypeId`),
+  CONSTRAINT `fk_sales_item_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -419,7 +447,9 @@ CREATE TABLE `sales_items` (
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `sales_items_AFTER_INSERT` AFTER INSERT ON `sales_items` FOR EACH ROW BEGIN
-	update items set ClosingStock = ClosingStock - new.Quantity where ItemId = new.ItemId;
+	if new.ItemId is not null then
+		update items set ClosingStock = ClosingStock - new.Quantity where ItemId = new.ItemId;
+    end if;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -436,7 +466,9 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `sales_items_AFTER_UPDATE` AFTER UPDATE ON `sales_items` FOR EACH ROW BEGIN
-	update items set ClosingStock = ClosingStock + old.Quantity - new.Quantity where ItemId = new.ItemId;
+	if new.ItemId is not null then
+		update items set ClosingStock = ClosingStock + old.Quantity - new.Quantity where ItemId = new.ItemId;
+	end if;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -472,10 +504,11 @@ DELIMITER ;;
     
     end if;
     
+    if old.ItemId is not null then
+		update items set ClosingStock = ClosingStock + old.Quantity where ItemId = old.ItemId;
+	end if;
     
-    update items set ClosingStock = ClosingStock + old.Quantity where ItemId = old.ItemId;
-    
-    INSERT INTO sales_items_deleted (SalesId, ItemId, Quantity, Rate, Mrp, Amount, DiscountInRs, CgstPer, SgstPer, IgstPer, GstPer, CgstRs, SgstRs, IgstRs, GstAmount, TaxableAmount, TotalAmount, CreatedDate, DeletedBy, DeletedRemarks) VALUES(old.SalesId, old.ItemId, old.Quantity, old.Rate, old.Mrp, old.Amount, old.DiscountInRs, old.CgstPer, old.SgstPer, old.IgstPer, old.GstPer, old.CgstRs, old.SgstRs, old.IgstRs, old.GstAmount, old.TaxableAmount, old.TotalAmount, old.CreatedDate, old.DeletedBy, old.DeletedRemarks);
+    INSERT INTO sales_items_deleted (IsSalesItem, SalesId, ItemId, ServiceTypeId, Quantity, Rate, Mrp, Amount, DiscountInRs, CgstPer, SgstPer, IgstPer, GstPer, CgstRs, SgstRs, IgstRs, GstAmount, TaxableAmount, TotalAmount, CreatedDate, DeletedBy, DeletedRemarks) VALUES(1, old.SalesId, old.ItemId, old.ServiceTypeId, old.Quantity, old.Rate, old.Mrp, old.Amount, old.DiscountInRs, old.CgstPer, old.SgstPer, old.IgstPer, old.GstPer, old.CgstRs, old.SgstRs, old.IgstRs, old.GstAmount, old.TaxableAmount, old.TotalAmount, old.CreatedDate, old.DeletedBy, old.DeletedRemarks);
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -492,8 +525,10 @@ DROP TABLE IF EXISTS `sales_items_deleted`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sales_items_deleted` (
   `salesDeletedItemId` int NOT NULL AUTO_INCREMENT,
+  `IsSalesItem` tinyint NOT NULL,
   `SalesId` int NOT NULL,
-  `ItemId` int NOT NULL,
+  `ItemId` int DEFAULT NULL,
+  `ServiceTypeId` int DEFAULT NULL,
   `Quantity` float NOT NULL,
   `Rate` float NOT NULL,
   `Mrp` float NOT NULL,
@@ -511,11 +546,44 @@ CREATE TABLE `sales_items_deleted` (
   `TotalAmount` double NOT NULL,
   `CreatedDate` datetime NOT NULL,
   `DeletedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `DeletedBy` int DEFAULT NULL,
+  `DeletedBy` int NOT NULL,
   `DeletedRemarks` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`salesDeletedItemId`),
   KEY `fk_deleted_salesitem_item_id_idx` (`ItemId`),
-  CONSTRAINT `fk_deleted_salesitem_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`)
+  KEY `fk_deleted_salesitem_service_type_id_idx` (`ServiceTypeId`),
+  KEY `fk_deleted_sales_item_deleted_by_idx` (`DeletedBy`),
+  CONSTRAINT `fk_deleted_sales_item_deleted_by` FOREIGN KEY (`DeletedBy`) REFERENCES `users` (`UserRowId`),
+  CONSTRAINT `fk_deleted_salesitem_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`),
+  CONSTRAINT `fk_deleted_salesitem_service_type_id` FOREIGN KEY (`ServiceTypeId`) REFERENCES `service_types` (`ServiceTypeId`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `service_types`
+--
+
+DROP TABLE IF EXISTS `service_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `service_types` (
+  `ServiceTypeId` int NOT NULL AUTO_INCREMENT,
+  `ServiceTypeName` varchar(100) NOT NULL,
+  `ServiceCharge` double NOT NULL,
+  `ServiceDescription` varchar(500) DEFAULT NULL,
+  `SacCode` varchar(20) DEFAULT NULL,
+  `GstId` int DEFAULT NULL,
+  `IsActive` tinyint NOT NULL,
+  `CreatedBy` int NOT NULL,
+  `UpdatedBy` int NOT NULL,
+  `CreatedDate` datetime NOT NULL,
+  `UpdatedDate` datetime NOT NULL,
+  PRIMARY KEY (`ServiceTypeId`),
+  KEY `fk_service_types_gst_id_idx` (`GstId`),
+  KEY `fk_service_type_createdby_idx` (`CreatedBy`),
+  KEY `fk_service_type_updatedby_idx` (`UpdatedBy`),
+  CONSTRAINT `fk_service_type_createdby` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
+  CONSTRAINT `fk_service_type_updatedby` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`),
+  CONSTRAINT `fk_service_types_gst_id` FOREIGN KEY (`GstId`) REFERENCES `gst` (`GstId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -560,10 +628,28 @@ CREATE TABLE `settings` (
   `IsPaymentDetailsRequired` tinyint NOT NULL DEFAULT '1',
   `IsSavingDetailsRequired` tinyint NOT NULL DEFAULT '1',
   `IsGstSummaryRequired` tinyint NOT NULL DEFAULT '1',
+  `IsSoundEnabled` tinyint NOT NULL DEFAULT '1',
+  `IsSendSMSOnInvoice` tinyint NOT NULL DEFAULT '1',
+  `SalesMessageId` int DEFAULT NULL,
+  `ServiceMessageId` int DEFAULT NULL,
+  `BalanceMessageId` int DEFAULT NULL,
+  `FestivalMessageId` int DEFAULT NULL,
+  `UPIId` varchar(60) DEFAULT NULL,
+  `UPIName` varchar(100) DEFAULT NULL,
+  `UPIMerchantCode` varchar(30) DEFAULT NULL,
+  `isServiceRequestEnabled` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`RowId`),
   KEY `fk_settings_created_by_idx` (`CreatedBy`),
   KEY `fk_settings_updated_by_idx` (`UpdatedBy`),
+  KEY `fk_settings_sales_message_id_idx` (`SalesMessageId`),
+  KEY `fk_settings_service_message_id_idx` (`ServiceMessageId`),
+  KEY `fk_settings_balance_message_id_idx` (`BalanceMessageId`),
+  KEY `fk_settings_festival_message_id_idx` (`FestivalMessageId`),
+  CONSTRAINT `fk_settings_balance_message_id` FOREIGN KEY (`BalanceMessageId`) REFERENCES `message_templates` (`MessageId`),
   CONSTRAINT `fk_settings_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
+  CONSTRAINT `fk_settings_festival_message_id` FOREIGN KEY (`FestivalMessageId`) REFERENCES `message_templates` (`MessageId`),
+  CONSTRAINT `fk_settings_sales_message_id` FOREIGN KEY (`SalesMessageId`) REFERENCES `message_templates` (`MessageId`),
+  CONSTRAINT `fk_settings_service_message_id` FOREIGN KEY (`ServiceMessageId`) REFERENCES `message_templates` (`MessageId`),
   CONSTRAINT `fk_settings_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -604,7 +690,7 @@ CREATE TABLE `transactions` (
   CONSTRAINT `fk_transaction_purchase_id` FOREIGN KEY (`PurchaseId`) REFERENCES `purchase` (`PurchaseId`),
   CONSTRAINT `fk_transaction_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`),
   CONSTRAINT `fk_transaction_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -664,7 +750,7 @@ CREATE TABLE `unlock_requests` (
   CONSTRAINT `fk_request_requested_by` FOREIGN KEY (`RequestedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_request_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`),
   CONSTRAINT `fk_request_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -699,7 +785,7 @@ CREATE TABLE `users` (
   KEY `fk_users_updated_by_idx` (`UpdatedBy`),
   CONSTRAINT `fk_users_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_users_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -719,4 +805,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-17 16:13:37
+-- Dump completed on 2024-12-03 11:57:38

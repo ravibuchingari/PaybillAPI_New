@@ -37,6 +37,7 @@ namespace PaybillAPI.Repositories
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
+                IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
                 HeaderModel = new PrintHeader()
                 {
                     CompanyName = row.CompanyName,
@@ -89,6 +90,7 @@ namespace PaybillAPI.Repositories
             setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
             setting.IsSoundEnabled = (sbyte)settingVM.IsSoundEnabled.GetHashCode();
             setting.IsSendSmsonInvoice = (sbyte)settingVM.IsSendSmsonInvoice.GetHashCode();
+            setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
             setting.SalesMessageId = settingVM.SalesMessageId > 0 ? settingVM.SalesMessageId : null;
             setting.ServiceMessageId = settingVM.ServiceMessageId > 0 ? settingVM.ServiceMessageId : null;
             setting.BalanceMessageId = settingVM.BalanceMessageId > 0 ? settingVM.BalanceMessageId : null;

@@ -1,5 +1,4 @@
-﻿using PaybillAPI.DTO;
-using PaybillAPI.Models;
+﻿using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Repositories.Service

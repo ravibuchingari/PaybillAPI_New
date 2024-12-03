@@ -42,6 +42,7 @@ namespace PaybillAPI.ViewModel
         public int? ServiceMessageId { get; set; }
         public int? BalanceMessageId { get; set; }
         public int? FestivalMessageId { get; set; }
+        public bool IsServiceRequestEnabled { get; set; }
         public PrintHeader HeaderModel { get; set; } = new PrintHeader();
 
     }

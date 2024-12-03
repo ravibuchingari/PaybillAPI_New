@@ -271,6 +271,7 @@ namespace PaybillAPI.Repositories
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
+                IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
@@ -363,6 +364,7 @@ namespace PaybillAPI.Repositories
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
+                IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 

@@ -110,6 +110,21 @@ public partial class Setting
 
     public int? FestivalMessageId { get; set; }
 
+    [Column("UPIId")]
+    [StringLength(60)]
+    public string? Upiid { get; set; }
+
+    [Column("UPIName")]
+    [StringLength(100)]
+    public string? Upiname { get; set; }
+
+    [Column("UPIMerchantCode")]
+    [StringLength(30)]
+    public string? UpimerchantCode { get; set; }
+
+    [Column("isServiceRequestEnabled")]
+    public sbyte IsServiceRequestEnabled { get; set; }
+
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]
     public virtual MessageTemplate? BalanceMessage { get; set; }
