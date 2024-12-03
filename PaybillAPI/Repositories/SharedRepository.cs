@@ -267,10 +267,20 @@ namespace PaybillAPI.Repositories
                 IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
                 IsSoundEnabled = row.IsSoundEnabled == 1,
                 IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
+                SalesMessageId = row.SalesMessageId,
+                ServiceMessageId = row.ServiceMessageId,
+                BalanceMessageId = row.BalanceMessageId,
+                FestivalMessageId = row.FestivalMessageId,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
+
+            IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
+            {
+                MessageId = row.MessageId,
+                MessageDescription = row.MessageDescription
+            }).ToListAsync();
 
             string biometricAuthKey = string.Empty;
 
@@ -300,6 +310,7 @@ namespace PaybillAPI.Repositories
             return new AuthResponseVM()
             {
                 IsSuccess = true,
+                IsBiometricAuthentication = false,
                 User = new UserVM()
                 {
                     UserRowId = user.UserRowId,
@@ -320,7 +331,7 @@ namespace PaybillAPI.Repositories
                     }
                 },
                 Pref = dashboardPref,
-                IsBiometricAuthentication = false
+                MessageTemplates = messages
             };
         }
 
@@ -347,17 +358,28 @@ namespace PaybillAPI.Repositories
                 ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
                 IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
                 IsSoundEnabled = row.IsSoundEnabled == 1,
+                IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
+                SalesMessageId = row.SalesMessageId,
+                ServiceMessageId = row.ServiceMessageId,
+                BalanceMessageId = row.BalanceMessageId,
+                FestivalMessageId = row.FestivalMessageId,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
 
+            IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
+            {
+                MessageId = row.MessageId,
+                MessageDescription = row.MessageDescription
+            }).ToListAsync();
 
             Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
 
             return new AuthResponseVM()
             {
                 IsSuccess = true,
+                IsBiometricAuthentication = true,
                 User = new UserVM()
                 {
                     UserRowId = user.UserRowId,
@@ -378,7 +400,7 @@ namespace PaybillAPI.Repositories
                     }
                 },
                 Pref = dashboardPref,
-                IsBiometricAuthentication = true
+                MessageTemplates = messages
             };
         }
 

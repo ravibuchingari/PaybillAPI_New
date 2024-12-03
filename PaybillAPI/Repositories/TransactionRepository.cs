@@ -13,7 +13,7 @@ namespace PaybillAPI.Repositories
         {
             Transaction transaction = new()
             {
-                PartyId = transactionVM.PartyModel.PartyId,
+                PartyId = transactionVM.PartyModel!.PartyId,
                 TransactionDate = DateTime.Parse(transactionVM.TransactionDate),
                 ReceiptAmount = transactionVM.ReceiptAmount,
                 PaymentAmount = transactionVM.PaymentAmount,

@@ -391,5 +391,26 @@ namespace PaybillAPI.Repositories
 
             return invoice;
         }
+
+        /*public async Task<IEnumerable<MessageTemplate>> GetSalesMessages()
+        {
+            List<MessageTemplate> templates = [];
+            Setting? settings = await dbContext.Settings.Include(sal_msg => sal_msg.SalesMessage).Include(ser_msg => ser_msg.ServiceMessage).FirstOrDefaultAsync();
+            if (settings == null) return templates;
+
+            templates.Add(new MessageTemplate()
+            {
+                MessageId = 1,
+                MessageDescription = settings.SalesMessage != null ? settings.SalesMessage.MessageDescription : string.Empty
+            });
+
+            templates.Add(new MessageTemplate()
+            {
+                MessageId = 2,
+                MessageDescription = settings.ServiceMessage != null ? settings.ServiceMessage.MessageDescription : string.Empty
+            });
+
+            return templates;
+        }*/
     }
 }

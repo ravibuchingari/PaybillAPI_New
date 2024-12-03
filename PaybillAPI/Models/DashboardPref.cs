@@ -17,6 +17,10 @@
         public bool IsBiometricAuthEnabled { get; set; }
         public bool IsSoundEnabled { get; set; }
         public bool IsSendSmsonInvoice { get; set; }
+        public int? SalesMessageId { get; set; }
+        public int? ServiceMessageId { get; set; }
+        public int? BalanceMessageId { get; set; }
+        public int? FestivalMessageId { get; set; }
         public PrintHeader HeaderModel { get; set; } = null!;
     }
 }

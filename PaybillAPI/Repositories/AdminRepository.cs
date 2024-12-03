@@ -89,10 +89,10 @@ namespace PaybillAPI.Repositories
             setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
             setting.IsSoundEnabled = (sbyte)settingVM.IsSoundEnabled.GetHashCode();
             setting.IsSendSmsonInvoice = (sbyte)settingVM.IsSendSmsonInvoice.GetHashCode();
-            setting.SalesMessageId = settingVM.SalesMessageId;
-            setting.ServiceMessageId = settingVM.ServiceMessageId;
-            setting.BalanceMessageId = settingVM.BalanceMessageId;
-            setting.FestivalMessageId = settingVM.FestivalMessageId;
+            setting.SalesMessageId = settingVM.SalesMessageId > 0 ? settingVM.SalesMessageId : null;
+            setting.ServiceMessageId = settingVM.ServiceMessageId > 0 ? settingVM.ServiceMessageId : null;
+            setting.BalanceMessageId = settingVM.BalanceMessageId > 0 ? settingVM.BalanceMessageId : null;
+            setting.FestivalMessageId = settingVM.FestivalMessageId > 0 ? settingVM.FestivalMessageId : null;
             return setting;
         }
 
