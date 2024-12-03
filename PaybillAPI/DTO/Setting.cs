@@ -122,7 +122,6 @@ public partial class Setting
     [StringLength(30)]
     public string? UpimerchantCode { get; set; }
 
-    [Column("isServiceRequestEnabled")]
     public sbyte IsServiceRequestEnabled { get; set; }
 
     [ForeignKey("BalanceMessageId")]
