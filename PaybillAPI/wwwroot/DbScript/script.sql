@@ -637,7 +637,7 @@ CREATE TABLE `settings` (
   `UPIId` varchar(60) DEFAULT NULL,
   `UPIName` varchar(100) DEFAULT NULL,
   `UPIMerchantCode` varchar(30) DEFAULT NULL,
-  `isServiceRequestEnabled` tinyint NOT NULL DEFAULT '0',
+  `IsServiceRequestEnabled` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`RowId`),
   KEY `fk_settings_created_by_idx` (`CreatedBy`),
   KEY `fk_settings_updated_by_idx` (`UpdatedBy`),
@@ -805,4 +805,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-03 11:57:38
+-- Dump completed on 2024-12-03 12:24:40
