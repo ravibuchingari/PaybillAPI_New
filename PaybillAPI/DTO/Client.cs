@@ -45,4 +45,6 @@ public partial class Client
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
+
+    public sbyte MaxBackups { get; set; }
 }

@@ -15,5 +15,6 @@
         public bool IsPremiumUser { get; set; }
         public bool IsActivated { get; set; }
         public string? SecurityKey { get; set; }
+        public int MaxBackups { get; set; }
     }
 }

@@ -197,6 +197,7 @@ namespace PaybillAPI.Repositories
                 client.SubscriptionEndDate = DateTime.Parse(clientVM.SubscriptionEndDate);
                 client.IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode();
                 client.IsActivated = (sbyte)clientVM.IsActivated.GetHashCode();
+                client.MaxBackups = (sbyte)clientVM.MaxBackups;
                 await SaveChangesAsync();
                 return new ResponseMessage(isSuccess: true, message: "Profile has been updated successfully");
             }
@@ -497,6 +498,15 @@ namespace PaybillAPI.Repositories
             }
             await SaveChangesAsync();
             return new ResponseMessage(isSuccess: true, message: isApproved ? "The unlock request was approved successfully." : "The unlock request was rejected.");
+        }
+
+        public async Task<ResponseMessage> GetMaxServerBackups()
+        {
+            var client = await dbContext.Clients.FirstOrDefaultAsync();
+            if (client != null)
+                return new ResponseMessage(isSuccess: true, client.MaxBackups.ToString());
+            else
+                return new ResponseMessage(isSuccess: false, "0");
         }
 
     }

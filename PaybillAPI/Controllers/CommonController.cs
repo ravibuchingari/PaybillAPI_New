@@ -130,5 +130,12 @@ namespace PaybillAPI.Controllers
         {
             return Ok(await adminRepository.GetMessages());
         }
+
+        [HttpPost]
+        [Route("sever/backups/max")]
+        public async Task<IActionResult> GetMaxServerBackups()
+        {
+            return Ok(await sharedRepository.GetMaxServerBackups());
+        }
     }
 }

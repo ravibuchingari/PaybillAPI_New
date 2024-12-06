@@ -143,10 +143,10 @@ namespace PaybillAPI.Controllers
         }
 
         [HttpGet]
-        [Route("item/list/")]
-        public async Task<IActionResult> GetItems([FromQuery] string? filter)
+        [Route("item/{categoryId}/list/")]
+        public async Task<IActionResult> GetItems([FromRoute] int categoryId, [FromQuery] string? filter)
         {
-            return Ok(await itemRepository.GetItems(filter ?? string.Empty));
+            return Ok(await itemRepository.GetItems(categoryId, filter ?? string.Empty));
         }
 
         [HttpGet]

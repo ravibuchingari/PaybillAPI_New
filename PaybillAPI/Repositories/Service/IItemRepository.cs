@@ -13,7 +13,7 @@ namespace PaybillAPI.Repositories.Service
         Task<GstVM> GetGstDetails(int gstId);
         Task<IEnumerable<GstVM>> GetGsts(bool isActive);
         Task<ItemVM> GetItemDetails(int itemId);
-        Task<IEnumerable<ItemVM>> GetItems(string filter);
+        Task<IEnumerable<ItemVM>> GetItems(int categoryId, string filter);
         Task<IEnumerable<ItemVM>> GetMinStockItems();
         Task<IEnumerable<ItemVM>> GetItemsForOffline(bool isAllItems, string? lastUpdatedTime);
         Task<ResponseMessage> UpsertCategory(CategoryVM categoryVM, int userRowId);

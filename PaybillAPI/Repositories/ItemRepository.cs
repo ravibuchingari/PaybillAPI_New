@@ -250,10 +250,10 @@ namespace PaybillAPI.Repositories
             return new ResponseMessage(isSuccess: true, message: $"{(itemVM.ItemId == 0 ? "Item created successfully" : "Item updated successfully")}", data: item.ItemId.ToString());
         }
 
-        public async Task<IEnumerable<ItemVM>> GetItems(string filter)
+        public async Task<IEnumerable<ItemVM>> GetItems(int categoryId, string filter)
         {
             if (filter.Trim().IsNullOrEmpty())
-                return await dbContext.Items.Select(row => new ItemVM()
+                return await dbContext.Items.Where(col => col.CategoryId == (categoryId > 0 ? categoryId : col.CategoryId)).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
@@ -277,7 +277,7 @@ namespace PaybillAPI.Repositories
                     } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
-                return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
+                return await dbContext.Items.Where(col => col.CategoryId == (categoryId > 0 ? categoryId : col.CategoryId) && col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
                                                     col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
                                                     col.Category.CategoryName.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Select(row => new ItemVM()
                                                     {
