@@ -239,7 +239,8 @@ namespace PaybillAPI.Repositories
                                                col.InvoiceDate <= DateTime.Parse(reportParam.ToDate!).Date &&
                                                col.PurchaseType == (reportParam.TransactionType.IsNullOrEmpty() ? col.PurchaseType : reportParam.TransactionType) &&
                                                col.PaymentMode == (reportParam.PaymentMode.IsNullOrEmpty() ? col.PaymentMode : reportParam.PaymentMode) &&
-                                               col.UpiType == (reportParam.UpiType.IsNullOrEmpty() ? col.UpiType : reportParam.UpiType)).OrderBy(ord => ord.InvoiceDate).Select(row => new PurchaseVM
+                                               col.UpiType == (reportParam.UpiType.IsNullOrEmpty() ? col.UpiType : reportParam.UpiType) &&
+                                               col.PartyId == (reportParam.Id.IsNullOrEmpty() ? col.PartyId : int.Parse(reportParam.Id!))).OrderBy(ord => ord.InvoiceDate).Select(row => new PurchaseVM
                                                {
                                                    PurchaseId = row.PurchaseId,
                                                    InvoiceNo = row.InvoiceNo,

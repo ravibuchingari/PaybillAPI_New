@@ -6,6 +6,7 @@ namespace PaybillAPI.DTO;
 
 [Table("purchase")]
 [Index("CreatedBy", Name = "fk_purchase_created_by_idx")]
+[Index("PurchaseOrderId", Name = "fk_purchase_order_id_idx")]
 [Index("PartyId", Name = "fk_purchase_partry_id_idx")]
 [Index("UpdatedBy", Name = "fk_purchase_updated_by_idx")]
 public partial class Purchase
@@ -45,6 +46,8 @@ public partial class Purchase
 
     public int UpdatedBy { get; set; }
 
+    public int? PurchaseOrderId { get; set; }
+
     [ForeignKey("CreatedBy")]
     [InverseProperty("PurchaseCreatedByNavigations")]
     public virtual User CreatedByNavigation { get; set; } = null!;
@@ -55,6 +58,10 @@ public partial class Purchase
 
     [InverseProperty("Purchase")]
     public virtual ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
+
+    [ForeignKey("PurchaseOrderId")]
+    [InverseProperty("Purchases")]
+    public virtual PurchaseOrder? PurchaseOrder { get; set; }
 
     [InverseProperty("Purchase")]
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

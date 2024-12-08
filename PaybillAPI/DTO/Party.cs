@@ -49,6 +49,9 @@ public partial class Party
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     [InverseProperty("Party")]
+    public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
+
+    [InverseProperty("Party")]
     public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
 
     [InverseProperty("Party")]

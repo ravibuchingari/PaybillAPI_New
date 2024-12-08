@@ -77,6 +77,9 @@ public partial class Item
     public virtual ICollection<PurchaseItemsDeleted> PurchaseItemsDeleteds { get; set; } = new List<PurchaseItemsDeleted>();
 
     [InverseProperty("Item")]
+    public virtual ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
+
+    [InverseProperty("Item")]
     public virtual ICollection<SalesItem> SalesItems { get; set; } = new List<SalesItem>();
 
     [InverseProperty("Item")]
