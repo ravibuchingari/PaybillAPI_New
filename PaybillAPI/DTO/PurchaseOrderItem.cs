@@ -14,6 +14,8 @@ public partial class PurchaseOrderItem
 
     public int PurchaseOrderId { get; set; }
 
+    public int ItemId { get; set; }
+
     [Column("quantity")]
     public float Quantity { get; set; }
 
@@ -22,8 +24,6 @@ public partial class PurchaseOrderItem
 
     [Column("amount")]
     public double Amount { get; set; }
-
-    public int ItemId { get; set; }
 
     [ForeignKey("ItemId")]
     [InverseProperty("PurchaseOrderItems")]

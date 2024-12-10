@@ -18,6 +18,9 @@ public partial class Party
     [StringLength(500)]
     public string PartyAddress { get; set; } = null!;
 
+    [StringLength(500)]
+    public string? PartyShippingAddress { get; set; }
+
     [StringLength(10)]
     public string? PartyMobile { get; set; }
 

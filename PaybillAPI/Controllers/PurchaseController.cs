@@ -60,5 +60,6 @@ namespace PaybillAPI.Controllers
             purchaseId = DataProtection.UrlDecode(purchaseId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await purchaseRepository.GetPurchaseInvoiceDetails(int.Parse(purchaseId)));
         }
+
     }
 }

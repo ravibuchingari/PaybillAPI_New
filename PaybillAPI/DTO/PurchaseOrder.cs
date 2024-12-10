@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PaybillAPI.DTO;
 
 [Table("purchase_orders")]
+[Index("CreatedBy", Name = "fk_purchase_order_created_by_idx")]
 [Index("PartyId", Name = "fk_purchase_order_vendor_id_idx")]
 public partial class PurchaseOrder
 {
@@ -18,6 +19,15 @@ public partial class PurchaseOrder
 
     [StringLength(500)]
     public string? Remarks { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime CreatedDate { get; set; }
+
+    public int CreatedBy { get; set; }
+
+    [ForeignKey("CreatedBy")]
+    [InverseProperty("PurchaseOrders")]
+    public virtual User CreatedByNavigation { get; set; } = null!;
 
     [ForeignKey("PartyId")]
     [InverseProperty("PurchaseOrders")]

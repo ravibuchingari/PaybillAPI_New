@@ -10,5 +10,6 @@ namespace PaybillAPI.Repositories.Service
         Task<PurchaseVM> GetPurchaseInvoiceDetails(int purchaseId);
         Task<IEnumerable<PurchaseVM>> GetPurchaseInvoices(DateTime fromDate, DateTime toDate);
         Task<ResponseMessage> UpsertPurchase(PurchaseVM purchaseVM, int userRowId);
+        Task<IEnumerable<PurchaseOrderItemVM>> GetPurchaseOrderItems(int purchaseOrderId);
     }
 }

@@ -124,6 +124,8 @@ public partial class Setting
 
     public sbyte IsServiceRequestEnabled { get; set; }
 
+    public sbyte PurchaseOrderItemCodeRequired { get; set; }
+
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]
     public virtual MessageTemplate? BalanceMessage { get; set; }

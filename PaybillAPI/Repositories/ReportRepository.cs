@@ -385,5 +385,23 @@ namespace PaybillAPI.Repositories
             return allTransactions;
         }
 
+        public async Task<IEnumerable<PurchaseOrderVM>> GetPurchaseOrderList()
+        {
+            return await dbContext.PurchaseOrders.Include(itm => itm.PurchaseOrderItems).Select(row => new PurchaseOrderVM()
+            {
+                PurchaseOrderId = row.PurchaseOrderId,
+                OrderDate = row.OrderDate.ToString("dd-MMM-yyyy"),
+                OrderAmount = row.PurchaseOrderItems.Where(c => c.PurchaseOrderId == row.PurchaseOrderId).Sum(sm => sm.Amount),
+                PurchaseInvoiceNo = row.Purchases.Count > 0 ? row.Purchases.FirstOrDefault()!.InvoiceNo : "",
+                PurchaseInvoiceDate = row.Purchases.Count > 0 ? row.Purchases.FirstOrDefault()!.InvoiceDate.ToString("dd-MMM-yyyy") : "",
+                PartyModel = new PartyVM()
+                {
+                    PartyId = row.PartyId,
+                    PartyName = row.Party.PartyName,
+                    PartyMobile = row.Party.PartyMobile
+                }
+            }).ToListAsync();
+        }
+
     }
 }

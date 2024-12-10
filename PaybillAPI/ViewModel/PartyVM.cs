@@ -7,6 +7,7 @@
         public string PartyName { get; set; } = null!;
 
         public string PartyAddress { get; set; } = null!;
+        public string PartyShippingAddress { get; set; }
 
         public string? PartyMobile { get; set; }
 

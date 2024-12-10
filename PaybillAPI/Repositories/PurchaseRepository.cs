@@ -269,6 +269,25 @@ namespace PaybillAPI.Repositories
 
         }
 
+        public async Task<IEnumerable<PurchaseOrderItemVM>> GetPurchaseOrderItems(int purchaseOrderId)
+        {
+
+            List<PurchaseOrderItemVM> list = await dbContext.PurchaseOrderItems.Where(col => col.PurchaseOrderId == purchaseOrderId).Select(row => new PurchaseOrderItemVM()
+            {
+                PurchaseOrderItemId = row.PurchaseOrderItemId,
+                ItemModel = new ItemVM()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.Item.ItemCode,
+                    ItemName = row.Item.ItemName,
+                    Measure = row.Item.Measure
+                },
+                Quantity = row.Quantity,
+                Rate = row.Rate
+            }).ToListAsync();
+
+            return list;
+        }
 
     }
 }

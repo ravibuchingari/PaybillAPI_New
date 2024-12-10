@@ -131,5 +131,14 @@ namespace PaybillAPI.Controllers
             return Ok(await reportRepository.GetDeletedPurchaseItems(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
         }
 
+        [HttpPost]
+        [Route("purchase/order/list")]
+        public async Task<IActionResult> GetPurchaseOrderList([FromBody] UserParam userParam)
+        {
+            if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
+                return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
+            return Ok(await reportRepository.GetPurchaseOrderList());
+        }
+
     }
 }

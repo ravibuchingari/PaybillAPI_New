@@ -14,6 +14,7 @@ namespace PaybillAPI.Repositories
         {
             party.PartyName = partyVM.PartyName;
             party.PartyAddress = partyVM.PartyAddress;
+            party.PartyShippingAddress = partyVM.PartyShippingAddress;
             party.PartyMobile = partyVM.PartyMobile;
             party.PartyEmail = partyVM.PartyEmail;
             party.PartyGstNo = partyVM.PartyGstNo;
@@ -56,6 +57,7 @@ namespace PaybillAPI.Repositories
                 PartyId = row.PartyId,
                 PartyName = row.PartyName,
                 PartyAddress = row.PartyAddress,
+                PartyShippingAddress = row.PartyShippingAddress ?? string.Empty,
                 PartyMobile = row.PartyMobile,
                 PartyEmail = row.PartyEmail,
                 PartyGstNo = row.PartyGstNo,
@@ -71,6 +73,7 @@ namespace PaybillAPI.Repositories
                 PartyId = row.PartyId,
                 PartyName = row.PartyName,
                 PartyAddress = row.PartyAddress,
+                PartyShippingAddress = row.PartyShippingAddress ?? string.Empty,
                 PartyMobile = row.PartyMobile,
                 PartyEmail = row.PartyEmail,
                 PartyGstNo = row.PartyGstNo,
