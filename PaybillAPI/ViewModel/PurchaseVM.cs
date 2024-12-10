@@ -12,6 +12,7 @@ namespace PaybillAPI.ViewModel
         public string? UpiType { get; set; }
         public string? Remarks { get; set; }
         public bool IsLocked { get; set; }
+        public int PurchaseOrderId { get; set; }
         public List<PurchaseItemVM> PurchaseItems { get; set; } = [];
         public InvoiceSummary? Summary { get; set; }
         public PartyVM PartyModel { get; set; } = new PartyVM();

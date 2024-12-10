@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
+using PaybillAPI.Repositories;
 using PaybillAPI.Repositories.Service;
 
 namespace PaybillAPI.Controllers
@@ -59,6 +60,14 @@ namespace PaybillAPI.Controllers
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             purchaseId = DataProtection.UrlDecode(purchaseId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             return Ok(await purchaseRepository.GetPurchaseInvoiceDetails(int.Parse(purchaseId)));
+        }
+
+        [HttpGet]
+        [Route("purchase/order/items/{purchaseOrderId}")]
+        public async Task<IActionResult> GetPurchaseOrderItems([FromRoute] string purchaseOrderId)
+        {
+            purchaseOrderId = DataProtection.UrlDecode(purchaseOrderId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
+            return Ok(await purchaseRepository.GetPurchaseOrderItems(int.Parse(purchaseOrderId)));
         }
 
     }

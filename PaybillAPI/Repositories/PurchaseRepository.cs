@@ -33,6 +33,7 @@ namespace PaybillAPI.Repositories
                 purchase.Remarks = purchaseVM.Remarks;
                 purchase.UpdatedDate = DateTime.Now;
                 purchase.UpdatedBy = userRowId;
+                purchase.PurchaseOrderId = purchaseVM.PurchaseOrderId > 0 ? purchaseVM.PurchaseOrderId : null;
                 purchase.IsLocked = 1;
                 if (purchaseVM.PurchaseId == 0)
                 {
@@ -269,12 +270,13 @@ namespace PaybillAPI.Repositories
 
         }
 
-        public async Task<IEnumerable<PurchaseOrderItemVM>> GetPurchaseOrderItems(int purchaseOrderId)
+        public async Task<IEnumerable<PurchaseItemVM>> GetPurchaseOrderItems(int purchaseOrderId)
         {
+            int tempId = 100000;
 
-            List<PurchaseOrderItemVM> list = await dbContext.PurchaseOrderItems.Where(col => col.PurchaseOrderId == purchaseOrderId).Select(row => new PurchaseOrderItemVM()
+            List<PurchaseItemVM> list = await dbContext.PurchaseOrderItems.Where(col => col.PurchaseOrderId == purchaseOrderId).Select(row => new PurchaseItemVM()
             {
-                PurchaseOrderItemId = row.PurchaseOrderItemId,
+                PurchaseItemId = tempId * -1,
                 ItemModel = new ItemVM()
                 {
                     ItemId = row.ItemId,
@@ -283,9 +285,23 @@ namespace PaybillAPI.Repositories
                     Measure = row.Item.Measure
                 },
                 Quantity = row.Quantity,
-                Rate = row.Rate
+                Rate = row.Rate,
+                Amount = row.Quantity * row.Rate,
+                DiscountInRs = 0,
+                TaxableAmount = row.Quantity * row.Rate,
+                CgstPer = row.Item.Gst != null ? row.Item.Gst.CgstPer : 0,
+                SgstPer = row.Item.Gst != null ? row.Item.Gst.SgstPer : 0,
+                IgstPer = 0,
             }).ToListAsync();
 
+            foreach (var item in list)
+            {
+                item.CgstRs = item.CgstPer * item.TaxableAmount;
+                item.SgstRs = item.SgstPer * item.TaxableAmount;
+                item.IgstRs = 0;
+                item.GstAmount = item.CgstRs + item.SgstRs;
+                item.TotalAmount = item.TaxableAmount + item.GstAmount;
+            }
             return list;
         }
 
