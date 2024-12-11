@@ -11,7 +11,7 @@ namespace PaybillAPI.Repositories.Service
         Task<IEnumerable<MessageTemplate>> GetMessages();
         Task<SettingVM?> GetSettings();
         Task<IEnumerable<UserVM>> GetUsers();
-        Task<ResponseMessage> InsMessage(string messageDescription);
+        Task<ResponseMessage> InsMessage(int messageId, string messageDescription);
         Task<ResponseMessage> UpdateSettings(int userRowId, SettingVM settingVM);
     }
 }

@@ -145,9 +145,17 @@ namespace PaybillAPI.Repositories
             return new ResponseMessage(isSuccess: true, message: "User account has been deleted successfully.");
         }
 
-        public async Task<ResponseMessage> InsMessage(string messageDescription)
+        public async Task<ResponseMessage> InsMessage(int messageId, string messageDescription)
         {
-            await dbContext.MessageTemplates.AddAsync(new MessageTemplate() { MessageDescription = messageDescription });
+            if (messageId == 0)
+                await dbContext.MessageTemplates.AddAsync(new MessageTemplate() { MessageDescription = messageDescription });
+            else 
+            { 
+                MessageTemplate? message = await dbContext.MessageTemplates.Where(col => col.MessageId == messageId).FirstOrDefaultAsync();
+                if(message == null)
+                    return new ResponseMessage(isSuccess: false, message: "Message template not found.");
+                message.MessageDescription = messageDescription;
+            }
             await SaveChangesAsync();
             return new ResponseMessage(isSuccess: true, message: "Message template saved successfully.");
         }

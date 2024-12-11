@@ -112,9 +112,9 @@ namespace PaybillAPI.Controllers
 
         [HttpPost]
         [Route("message/insert")]
-        public async Task<IActionResult> InsUnlockRequest([FromBody] string messageDescription)
+        public async Task<IActionResult> InsUnlockRequest([FromForm] string messageId, [FromForm] string messageDescription)
         {
-            return Ok(await adminRepository.InsMessage(messageDescription));
+            return Ok(await adminRepository.InsMessage(int.Parse(messageId), messageDescription));
         }
 
         [HttpPost]
