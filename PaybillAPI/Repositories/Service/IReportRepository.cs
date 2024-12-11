@@ -15,6 +15,8 @@ namespace PaybillAPI.Repositories.Service
         Task<List<GSTHSNSummary>> GetGSTSACSummary(DateTime fromDate, DateTime toDate);
         Task<List<TransactionVM>> GetDaybook(DateTime fromDate, DateTime toDate);
         Task<IEnumerable<PurchaseOrderVM>> GetPurchaseOrderList();
+        Task<IEnumerable<InventoryValuation>> GetInventoryValuation(string filter);
+        Task<List<ItemVM>> GetAgedInventory(int inventoryAge);
         //Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
     }
 }

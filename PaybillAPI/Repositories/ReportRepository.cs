@@ -403,5 +403,79 @@ namespace PaybillAPI.Repositories
             }).ToListAsync();
         }
 
+        public async Task<IEnumerable<InventoryValuation>> GetInventoryValuation(string filter)
+        {
+            if(filter.IsNullOrEmpty())
+            {
+                return await dbContext.Items.OrderBy(ord => ord.ItemName).Select(row => new InventoryValuation()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    Measure = row.Measure,
+                    PurchasePrice = row.PurchasePrice,
+                    SalesPrice = row.SalesPrice,
+                    ClosingStock = row.OpeningStock + row.ClosingStock,
+                    PurchaseValue = row.PurchasePrice * (row.OpeningStock + row.ClosingStock),
+                    SalesValue = row.SalesPrice * (row.OpeningStock + row.ClosingStock)
+                }).ToListAsync();
+            }
+            else
+            {
+                return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
+                                                            col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).OrderBy(ord => ord.ItemName).Select(row => new InventoryValuation()
+                {
+                    ItemId = row.ItemId,
+                    ItemCode = row.ItemCode,
+                    ItemName = row.ItemName,
+                    Measure = row.Measure,
+                    PurchasePrice = row.PurchasePrice,
+                    SalesPrice = row.SalesPrice,
+                    ClosingStock = row.OpeningStock + row.ClosingStock,
+                    PurchaseValue = row.PurchasePrice * (row.OpeningStock + row.ClosingStock),
+                    SalesValue = row.SalesPrice * (row.OpeningStock + row.ClosingStock)
+                }).ToListAsync();
+            }
+        }
+
+        public async Task<List<ItemVM>> GetAgedInventory(int inventoryAge)
+        {
+            var matchedItems = await dbContext.SalesItems.Where(col => col.Item != null && col.CreatedDate.Date <= DateTime.Now.Date.AddDays(inventoryAge * -1) && (col.Item.OpeningStock + col.Item.ClosingStock) > 0).OrderBy(ord => ord.CreatedDate).Select(row => new ItemVM()
+            {
+                ItemId = row.Item.ItemId,
+                ItemCode = row.Item.ItemCode,
+                ItemName = row.Item.ItemName,
+                Mrp = row.Item.Mrp,
+                Measure = row.Item.Measure,
+                PurchasePrice = row.Item.PurchasePrice,
+                SalesPrice = row.Item.SalesPrice,
+                ClosingStock = row.Item.ClosingStock + row.Item.OpeningStock,
+                HSncode = row.Item.Hsncode,
+                IsActive = row.Item.IsActive == 1,
+                Age = (int)DateTime.Now.Date.Subtract(row.CreatedDate.Date).TotalDays,
+                UpdatedDate = row.CreatedDate.ToString("dd-MMM-yyyy")
+
+            }).ToListAsync();
+
+            var unmatchedItems = await dbContext.Items.Where(col => col.SalesItems.Count == 0 && col.CreatedDate.Date <= DateTime.Now.Date.AddDays(inventoryAge * -1) && (col.OpeningStock + col.ClosingStock) > 0).OrderBy(ord => ord.CreatedDate).Select(row => new ItemVM()
+            {
+                ItemId = row.ItemId,
+                ItemCode = row.ItemCode,
+                ItemName = row.ItemName,
+                Mrp = row.Mrp,
+                Measure = row.Measure,
+                PurchasePrice = row.PurchasePrice,
+                SalesPrice = row.SalesPrice,
+                ClosingStock = row.ClosingStock + row.OpeningStock,
+                HSncode = row.Hsncode,
+                IsActive = row.IsActive == 1,
+                Age = (int)DateTime.Now.Date.Subtract(row.CreatedDate.Date).TotalDays,
+                UpdatedDate = row.CreatedDate.ToString("dd-MMM-yyyy")
+            }).ToListAsync();
+
+            var allItems = matchedItems;
+            allItems.AddRange(unmatchedItems);
+            return allItems;
+        }
     }
 }

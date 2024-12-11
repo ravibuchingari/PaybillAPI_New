@@ -140,5 +140,18 @@ namespace PaybillAPI.Controllers
             return Ok(await reportRepository.GetPurchaseOrderList());
         }
 
+        [HttpGet]
+        [Route("inventory/valuation")]
+        public async Task<IActionResult> GetInventoryValuation([FromQuery] string filter)
+        {
+            return Ok(await reportRepository.GetInventoryValuation(filter));
+        }
+
+        [HttpGet]
+        [Route("inventory/age")]
+        public async Task<IActionResult> GetAgedInventory([FromQuery] int inventoryAge)
+        {
+            return Ok(await reportRepository.GetAgedInventory(inventoryAge));
+        }
     }
 }

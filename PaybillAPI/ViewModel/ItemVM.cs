@@ -18,6 +18,7 @@
         public CategoryVM? CategoryModel { get; set; }
         public GstVM? GstModel { get; set; }
         public string? UpdatedDate { get; set; }
+        public int Age { get; set; }
 
     }
 }
