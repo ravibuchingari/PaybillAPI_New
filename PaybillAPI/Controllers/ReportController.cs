@@ -142,9 +142,9 @@ namespace PaybillAPI.Controllers
 
         [HttpGet]
         [Route("inventory/valuation")]
-        public async Task<IActionResult> GetInventoryValuation([FromQuery] string filter)
+        public async Task<IActionResult> GetInventoryValuation([FromQuery] string? filter)
         {
-            return Ok(await reportRepository.GetInventoryValuation(filter));
+            return Ok(await reportRepository.GetInventoryValuation(filter ?? string.Empty));
         }
 
         [HttpGet]
