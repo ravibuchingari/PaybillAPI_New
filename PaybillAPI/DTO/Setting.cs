@@ -126,6 +126,8 @@ public partial class Setting
 
     public sbyte PurchaseOrderItemCodeRequired { get; set; }
 
+    public sbyte IsItemSearchImageVisible { get; set; }
+
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]
     public virtual MessageTemplate? BalanceMessage { get; set; }

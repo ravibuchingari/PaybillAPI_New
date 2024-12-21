@@ -273,6 +273,7 @@ namespace PaybillAPI.Repositories
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
                 IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
+                IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
@@ -366,6 +367,7 @@ namespace PaybillAPI.Repositories
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
                 IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
+                IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
