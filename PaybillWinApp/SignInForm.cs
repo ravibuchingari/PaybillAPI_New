@@ -1,4 +1,3 @@
-using MaterialSkin;
 using Microsoft.Extensions.DependencyInjection;
 using PaybillWinApp.Models;
 using PaybillWinApp.Repositories;
@@ -23,6 +22,7 @@ namespace PaybillWinApp
             AppVariables.ApiUrl = Properties.Settings.Default.ApiUrl.Trim();
             if (AppVariables.ApiUrl.Substring(AppVariables.ApiUrl.Length - 1) != "/")
                 AppVariables.ApiUrl = $"{AppVariables.ApiUrl}/";
+            TextBoxUserId.Focus();
         }
 
         private void ButtonClose_Click(object sender, EventArgs e)
@@ -32,6 +32,9 @@ namespace PaybillWinApp
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
+            //if (result is ResponseMessage responseMessage && !responseMessage.IsSuccess) { MessageBox.Show(responseMessage.Message); }
+
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

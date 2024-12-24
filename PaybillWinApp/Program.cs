@@ -27,7 +27,7 @@ namespace PaybillWinApp
 
             AppVariables.ServiceProvider = services.BuildServiceProvider();
 
-            if(Properties.Settings.Default != null && !string.IsNullOrWhiteSpace(Properties.Settings.Default.ApiUrl))
+            if (Properties.Settings.Default != null && !string.IsNullOrWhiteSpace(Properties.Settings.Default.ApiUrl))
             {
                 SignInForm signInForm = AppVariables.ServiceProvider.GetRequiredService<SignInForm>();
 
@@ -42,7 +42,7 @@ namespace PaybillWinApp
             else
             {
                 Application.Run(AppVariables.ServiceProvider.GetRequiredService<ServerForm>());
-            } 
+            }
         }
     }
 }

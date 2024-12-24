@@ -29,95 +29,25 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SignInForm));
-            TextBoxUserId = new MaterialSkin.Controls.MaterialTextBox2();
-            ButtonClose = new MaterialSkin.Controls.MaterialButton();
-            ButtonLogin = new MaterialSkin.Controls.MaterialButton();
             label1 = new Label();
             label2 = new Label();
-            TextBoxPassword = new MaterialSkin.Controls.MaterialTextBox2();
             pictureBox1 = new PictureBox();
             LinkLabelServerConfig = new LinkLabel();
+            panel1 = new Panel();
+            TextBoxUserId = new TextBox();
+            panel2 = new Panel();
+            TextBoxPassword = new TextBox();
+            ButtonClose = new Button();
+            ButtonLogin = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            panel1.SuspendLayout();
+            panel2.SuspendLayout();
             SuspendLayout();
-            // 
-            // TextBoxUserId
-            // 
-            TextBoxUserId.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            TextBoxUserId.AnimateReadOnly = false;
-            TextBoxUserId.BackgroundImageLayout = ImageLayout.None;
-            TextBoxUserId.CharacterCasing = CharacterCasing.Normal;
-            TextBoxUserId.Depth = 0;
-            TextBoxUserId.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            TextBoxUserId.HideSelection = true;
-            TextBoxUserId.LeadingIcon = null;
-            TextBoxUserId.Location = new Point(41, 184);
-            TextBoxUserId.MaxLength = 50;
-            TextBoxUserId.MouseState = MaterialSkin.MouseState.OUT;
-            TextBoxUserId.Name = "TextBoxUserId";
-            TextBoxUserId.PasswordChar = '\0';
-            TextBoxUserId.PrefixSuffixText = null;
-            TextBoxUserId.ReadOnly = false;
-            TextBoxUserId.RightToLeft = RightToLeft.No;
-            TextBoxUserId.SelectedText = "";
-            TextBoxUserId.SelectionLength = 0;
-            TextBoxUserId.SelectionStart = 0;
-            TextBoxUserId.ShortcutsEnabled = true;
-            TextBoxUserId.Size = new Size(480, 48);
-            TextBoxUserId.TabIndex = 1;
-            TextBoxUserId.TabStop = false;
-            TextBoxUserId.TextAlign = HorizontalAlignment.Left;
-            TextBoxUserId.TrailingIcon = null;
-            TextBoxUserId.UseSystemPasswordChar = false;
-            // 
-            // ButtonClose
-            // 
-            ButtonClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            ButtonClose.AutoSize = false;
-            ButtonClose.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ButtonClose.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            ButtonClose.Depth = 0;
-            ButtonClose.HighEmphasis = true;
-            ButtonClose.Icon = null;
-            ButtonClose.Location = new Point(421, 370);
-            ButtonClose.Margin = new Padding(4, 6, 4, 6);
-            ButtonClose.MouseState = MaterialSkin.MouseState.HOVER;
-            ButtonClose.Name = "ButtonClose";
-            ButtonClose.NoAccentTextColor = Color.Empty;
-            ButtonClose.Size = new Size(100, 34);
-            ButtonClose.TabIndex = 5;
-            ButtonClose.Text = "Close";
-            ButtonClose.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            ButtonClose.UseAccentColor = true;
-            ButtonClose.UseVisualStyleBackColor = true;
-            ButtonClose.Click += ButtonClose_Click;
-            // 
-            // ButtonLogin
-            // 
-            ButtonLogin.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            ButtonLogin.AutoSize = false;
-            ButtonLogin.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ButtonLogin.BackColor = Color.Green;
-            ButtonLogin.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            ButtonLogin.Depth = 0;
-            ButtonLogin.HighEmphasis = true;
-            ButtonLogin.Icon = null;
-            ButtonLogin.Location = new Point(312, 370);
-            ButtonLogin.Margin = new Padding(4, 6, 4, 6);
-            ButtonLogin.MouseState = MaterialSkin.MouseState.HOVER;
-            ButtonLogin.Name = "ButtonLogin";
-            ButtonLogin.NoAccentTextColor = Color.Empty;
-            ButtonLogin.Size = new Size(100, 34);
-            ButtonLogin.TabIndex = 4;
-            ButtonLogin.Text = "Login";
-            ButtonLogin.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            ButtonLogin.UseAccentColor = true;
-            ButtonLogin.UseVisualStyleBackColor = false;
-            ButtonLogin.Click += ButtonLogin_Click;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(41, 162);
+            label1.Location = new Point(36, 161);
             label1.Name = "label1";
             label1.Size = new Size(57, 19);
             label1.TabIndex = 0;
@@ -126,46 +56,17 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(41, 244);
+            label2.Location = new Point(36, 245);
             label2.Name = "label2";
             label2.Size = new Size(79, 19);
-            label2.TabIndex = 2;
+            label2.TabIndex = 1;
             label2.Text = "Password";
-            // 
-            // TextBoxPassword
-            // 
-            TextBoxPassword.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            TextBoxPassword.AnimateReadOnly = false;
-            TextBoxPassword.BackgroundImageLayout = ImageLayout.None;
-            TextBoxPassword.CharacterCasing = CharacterCasing.Normal;
-            TextBoxPassword.Depth = 0;
-            TextBoxPassword.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
-            TextBoxPassword.HideSelection = true;
-            TextBoxPassword.LeadingIcon = null;
-            TextBoxPassword.Location = new Point(41, 267);
-            TextBoxPassword.MaxLength = 30;
-            TextBoxPassword.MouseState = MaterialSkin.MouseState.OUT;
-            TextBoxPassword.Name = "TextBoxPassword";
-            TextBoxPassword.PasswordChar = '●';
-            TextBoxPassword.PrefixSuffixText = null;
-            TextBoxPassword.ReadOnly = false;
-            TextBoxPassword.RightToLeft = RightToLeft.No;
-            TextBoxPassword.SelectedText = "";
-            TextBoxPassword.SelectionLength = 0;
-            TextBoxPassword.SelectionStart = 0;
-            TextBoxPassword.ShortcutsEnabled = true;
-            TextBoxPassword.Size = new Size(480, 48);
-            TextBoxPassword.TabIndex = 3;
-            TextBoxPassword.TabStop = false;
-            TextBoxPassword.TextAlign = HorizontalAlignment.Left;
-            TextBoxPassword.TrailingIcon = null;
-            TextBoxPassword.UseSystemPasswordChar = true;
             // 
             // pictureBox1
             // 
             pictureBox1.BorderStyle = BorderStyle.FixedSingle;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(175, 49);
+            pictureBox1.Location = new Point(147, 38);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(213, 71);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -176,29 +77,95 @@
             // 
             LinkLabelServerConfig.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             LinkLabelServerConfig.AutoSize = true;
-            LinkLabelServerConfig.Location = new Point(41, 378);
+            LinkLabelServerConfig.Location = new Point(36, 368);
             LinkLabelServerConfig.Name = "LinkLabelServerConfig";
             LinkLabelServerConfig.Size = new Size(103, 19);
-            LinkLabelServerConfig.TabIndex = 8;
+            LinkLabelServerConfig.TabIndex = 2;
             LinkLabelServerConfig.TabStop = true;
             LinkLabelServerConfig.Text = "Server Config";
             LinkLabelServerConfig.Click += LinkLabelServerConfig_Click;
+            // 
+            // panel1
+            // 
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.BackColor = Color.White;
+            panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(TextBoxUserId);
+            panel1.Location = new Point(36, 185);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(433, 46);
+            panel1.TabIndex = 9;
+            // 
+            // TextBoxUserId
+            // 
+            TextBoxUserId.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TextBoxUserId.BorderStyle = BorderStyle.None;
+            TextBoxUserId.Location = new Point(12, 13);
+            TextBoxUserId.MaxLength = 30;
+            TextBoxUserId.Name = "TextBoxUserId";
+            TextBoxUserId.Size = new Size(406, 20);
+            TextBoxUserId.TabIndex = 0;
+            // 
+            // panel2
+            // 
+            panel2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panel2.BackColor = Color.White;
+            panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Controls.Add(TextBoxPassword);
+            panel2.Location = new Point(36, 269);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(433, 46);
+            panel2.TabIndex = 10;
+            // 
+            // TextBoxPassword
+            // 
+            TextBoxPassword.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TextBoxPassword.BorderStyle = BorderStyle.None;
+            TextBoxPassword.Location = new Point(12, 13);
+            TextBoxPassword.MaxLength = 50;
+            TextBoxPassword.Name = "TextBoxPassword";
+            TextBoxPassword.Size = new Size(407, 20);
+            TextBoxPassword.TabIndex = 0;
+            // 
+            // ButtonClose
+            // 
+            ButtonClose.BackColor = Color.Green;
+            ButtonClose.FlatStyle = FlatStyle.System;
+            ButtonClose.ForeColor = Color.White;
+            ButtonClose.Location = new Point(359, 357);
+            ButtonClose.Name = "ButtonClose";
+            ButtonClose.Size = new Size(110, 40);
+            ButtonClose.TabIndex = 1;
+            ButtonClose.Text = "&Close";
+            ButtonClose.UseVisualStyleBackColor = false;
+            ButtonClose.Click += ButtonClose_Click;
+            // 
+            // ButtonLogin
+            // 
+            ButtonLogin.BackColor = Color.Green;
+            ButtonLogin.FlatStyle = FlatStyle.System;
+            ButtonLogin.ForeColor = Color.White;
+            ButtonLogin.Location = new Point(243, 357);
+            ButtonLogin.Name = "ButtonLogin";
+            ButtonLogin.Size = new Size(110, 40);
+            ButtonLogin.TabIndex = 0;
+            ButtonLogin.Text = "Login";
+            ButtonLogin.UseVisualStyleBackColor = false;
             // 
             // SignInForm
             // 
             AutoScaleDimensions = new SizeF(9F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            CancelButton = ButtonClose;
-            ClientSize = new Size(563, 447);
+            ClientSize = new Size(507, 447);
             ControlBox = false;
+            Controls.Add(ButtonClose);
+            Controls.Add(ButtonLogin);
+            Controls.Add(panel2);
+            Controls.Add(panel1);
             Controls.Add(LinkLabelServerConfig);
             Controls.Add(pictureBox1);
             Controls.Add(label2);
-            Controls.Add(TextBoxPassword);
             Controls.Add(label1);
-            Controls.Add(ButtonLogin);
-            Controls.Add(ButtonClose);
-            Controls.Add(TextBoxUserId);
             Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             FormBorderStyle = FormBorderStyle.None;
             Name = "SignInForm";
@@ -207,18 +174,24 @@
             Text = "Login";
             Load += FormLogin_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-        private MaterialSkin.Controls.MaterialTextBox2 TextBoxUserId;
-        private MaterialSkin.Controls.MaterialButton ButtonClose;
-        private MaterialSkin.Controls.MaterialButton ButtonLogin;
         private Label label1;
         private Label label2;
-        private MaterialSkin.Controls.MaterialTextBox2 TextBoxPassword;
         private PictureBox pictureBox1;
         private LinkLabel LinkLabelServerConfig;
+        private Panel panel1;
+        private TextBox TextBoxUserId;
+        private Panel panel2;
+        private TextBox TextBoxPassword;
+        private Button ButtonClose;
+        private Button ButtonLogin;
     }
 }
