@@ -1,8 +1,10 @@
 ﻿using PaybillWinApp.Repositories;
+using PaybillWinApp.UserControls;
+using System.Drawing.Drawing2D;
 
 namespace PaybillWinApp
 {
-    public partial class ServerForm : Form
+    public partial class ServerForm : RoundedForm
     {
         private readonly ICommonRepository commonRepository;
         private readonly ISharedRepository sharedRepository;
@@ -16,11 +18,11 @@ namespace PaybillWinApp
 
         private void ServerForm_Load(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default != null && Properties.Settings.Default.ApiUrl != null)
-            {
-                TextBoxApiUrl.Text = Properties.Settings.Default.ApiUrl;
-                TextBoxApiUrl.SelectionStart = TextBoxApiUrl.Text.Length;
-            }
+            //if (Properties.Settings.Default != null && Properties.Settings.Default.ApiUrl != null)
+            //{
+            //    TxtMobile.Text = Properties.Settings.Default.ApiUrl;
+            //    TxtMobile.SelectionStart = TxtMobile.Text.Length;
+            //}
         }
 
         private void ButtonClose_Click(object sender, EventArgs e)
@@ -30,13 +32,13 @@ namespace PaybillWinApp
 
         private async void ButtonSet_Click(object sender, EventArgs e)
         {
-            string url = TextBoxApiUrl.Text.Trim();
+            string url = TxtMobile.Text.Trim();
             if (url.Substring(url.Length - 1) != "/")
                 url = $"{url}/";
 
             try
             {
-                string response = await commonRepository.PingServer();
+                string response = await commonRepository.TestServer();
 
                 if (DateTime.Now.Date == Convert.ToDateTime(response).Date)
                 {
@@ -53,6 +55,11 @@ namespace PaybillWinApp
             {
                 sharedRepository.ShowErrorMessage(ex.Message.ToString());
             }
+        }
+
+        private void PnlMobile_Click(object sender, EventArgs e)
+        {
+            TxtMobile.Focus();
         }
     }
 }

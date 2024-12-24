@@ -30,11 +30,11 @@
         {
             label1 = new Label();
             label2 = new Label();
-            TextBoxApiUrl = new TextBox();
-            panel1 = new Panel();
-            button1 = new Button();
+            TxtMobile = new TextBox();
+            PnlMobile = new Panel();
+            BtnValidate = new Button();
             ButtonClose = new Button();
-            panel1.SuspendLayout();
+            PnlMobile.SuspendLayout();
             SuspendLayout();
             // 
             // label1
@@ -42,9 +42,9 @@
             label1.AutoSize = true;
             label1.Location = new Point(31, 89);
             label1.Name = "label1";
-            label1.Size = new Size(82, 20);
+            label1.Size = new Size(61, 20);
             label1.TabIndex = 0;
-            label1.Text = "Server Url";
+            label1.Text = "Mobile";
             // 
             // label2
             // 
@@ -53,48 +53,52 @@
             label2.ForeColor = Color.Black;
             label2.Location = new Point(29, 33);
             label2.Name = "label2";
-            label2.Size = new Size(240, 29);
+            label2.Size = new Size(195, 29);
             label2.TabIndex = 4;
-            label2.Text = "Server Configuration";
+            label2.Text = "Client Validation";
             // 
-            // TextBoxApiUrl
+            // TxtMobile
             // 
-            TextBoxApiUrl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            TextBoxApiUrl.BorderStyle = BorderStyle.None;
-            TextBoxApiUrl.Location = new Point(12, 13);
-            TextBoxApiUrl.Name = "TextBoxApiUrl";
-            TextBoxApiUrl.Size = new Size(630, 21);
-            TextBoxApiUrl.TabIndex = 0;
+            TxtMobile.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TxtMobile.BorderStyle = BorderStyle.None;
+            TxtMobile.Location = new Point(12, 13);
+            TxtMobile.MaxLength = 10;
+            TxtMobile.Name = "TxtMobile";
+            TxtMobile.Size = new Size(317, 21);
+            TxtMobile.TabIndex = 0;
             // 
-            // panel1
+            // PnlMobile
             // 
-            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            panel1.BackColor = Color.White;
-            panel1.Controls.Add(TextBoxApiUrl);
-            panel1.Location = new Point(31, 116);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(654, 47);
-            panel1.TabIndex = 6;
+            PnlMobile.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            PnlMobile.BackColor = Color.White;
+            PnlMobile.Controls.Add(TxtMobile);
+            PnlMobile.Location = new Point(31, 116);
+            PnlMobile.Name = "PnlMobile";
+            PnlMobile.Size = new Size(341, 47);
+            PnlMobile.TabIndex = 6;
+            PnlMobile.Click += PnlMobile_Click;
             // 
-            // button1
+            // BtnValidate
             // 
-            button1.BackColor = Color.Green;
-            button1.FlatStyle = FlatStyle.System;
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(442, 202);
-            button1.Name = "button1";
-            button1.Size = new Size(120, 40);
-            button1.TabIndex = 1;
-            button1.Text = "Con&fig";
-            button1.UseVisualStyleBackColor = false;
-            button1.Click += ButtonSet_Click;
+            BtnValidate.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            BtnValidate.BackColor = Color.Green;
+            BtnValidate.FlatStyle = FlatStyle.System;
+            BtnValidate.ForeColor = Color.White;
+            BtnValidate.Location = new Point(129, 202);
+            BtnValidate.Name = "BtnValidate";
+            BtnValidate.Size = new Size(120, 40);
+            BtnValidate.TabIndex = 1;
+            BtnValidate.Text = "&Validate";
+            BtnValidate.UseVisualStyleBackColor = false;
+            BtnValidate.Click += ButtonSet_Click;
             // 
             // ButtonClose
             // 
+            ButtonClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             ButtonClose.BackColor = Color.Green;
             ButtonClose.FlatStyle = FlatStyle.System;
             ButtonClose.ForeColor = Color.White;
-            ButtonClose.Location = new Point(565, 202);
+            ButtonClose.Location = new Point(252, 202);
             ButtonClose.Name = "ButtonClose";
             ButtonClose.Size = new Size(120, 40);
             ButtonClose.TabIndex = 2;
@@ -106,21 +110,20 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(722, 280);
+            ClientSize = new Size(409, 280);
             Controls.Add(ButtonClose);
-            Controls.Add(button1);
-            Controls.Add(panel1);
+            Controls.Add(BtnValidate);
+            Controls.Add(PnlMobile);
             Controls.Add(label2);
             Controls.Add(label1);
             Font = new Font("Roboto", 10.2F);
             ForeColor = Color.Black;
-            FormBorderStyle = FormBorderStyle.None;
             Name = "ServerForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "ServerForm";
             Load += ServerForm_Load;
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            PnlMobile.ResumeLayout(false);
+            PnlMobile.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -129,9 +132,9 @@
 
         private Label label1;
         private Label label2;
-        private TextBox TextBoxApiUrl;
-        private Panel panel1;
-        private Button button1;
+        private TextBox TxtMobile;
+        private Panel PnlMobile;
+        private Button BtnValidate;
         private Button ButtonClose;
     }
 }

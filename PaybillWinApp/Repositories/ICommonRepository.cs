@@ -1,7 +1,10 @@
-﻿namespace PaybillWinApp.Repositories
+﻿using PaybillWinApp.Models;
+
+namespace PaybillWinApp.Repositories
 {
     public interface ICommonRepository
     {
-        Task<string> PingServer();
+        Task<AuthenticationResponse> Authenticate(AuthRequestVM authRequest);
+        Task<string> TestServer();
     }
 }
