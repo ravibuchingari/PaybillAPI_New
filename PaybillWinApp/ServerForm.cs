@@ -27,7 +27,7 @@ namespace PaybillWinApp
 
         private void ButtonClose_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Environment.Exit(0);
         }
 
         private async void ButtonSet_Click(object sender, EventArgs e)

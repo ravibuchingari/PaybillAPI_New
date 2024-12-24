@@ -38,6 +38,7 @@
             TxtPassword = new TextBox();
             BtnClose = new Button();
             BtnSignIn = new Button();
+            LinkLabelServerConfig = new LinkLabel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -140,7 +141,18 @@
             BtnSignIn.TabIndex = 2;
             BtnSignIn.Text = "Login";
             BtnSignIn.UseVisualStyleBackColor = false;
-            BtnSignIn.Click += ButtonLogin_Click_1;
+            BtnSignIn.Click += ButtonLogin_Click;
+            // 
+            // LinkLabelServerConfig
+            // 
+            LinkLabelServerConfig.AutoSize = true;
+            LinkLabelServerConfig.Location = new Point(36, 370);
+            LinkLabelServerConfig.Name = "LinkLabelServerConfig";
+            LinkLabelServerConfig.Size = new Size(103, 19);
+            LinkLabelServerConfig.TabIndex = 8;
+            LinkLabelServerConfig.TabStop = true;
+            LinkLabelServerConfig.Text = "Config Server";
+            LinkLabelServerConfig.Click += LinkLabelServerConfig_Click;
             // 
             // SignInForm
             // 
@@ -148,6 +160,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(507, 447);
             ControlBox = false;
+            Controls.Add(LinkLabelServerConfig);
             Controls.Add(BtnClose);
             Controls.Add(BtnSignIn);
             Controls.Add(panel2);
@@ -180,5 +193,6 @@
         private TextBox TxtPassword;
         private Button BtnClose;
         private Button BtnSignIn;
+        private LinkLabel LinkLabelServerConfig;
     }
 }

@@ -31,22 +31,14 @@ namespace PaybillWinApp
             Environment.Exit(0);
         }
 
-        private void ButtonLogin_Click(object sender, EventArgs e)
-        {
-            //if (result is ResponseMessage responseMessage && !responseMessage.IsSuccess) { MessageBox.Show(responseMessage.Message); }
-
-
-            this.DialogResult = DialogResult.OK;
-            this.Close();
-        }
-
         private void LinkLabelServerConfig_Click(object sender, EventArgs e)
         {
+            this.Hide();
             ServerForm serverForm = AppVariables.ServiceProvider!.GetRequiredService<ServerForm>();
             serverForm.ShowDialog();
         }
 
-        private async void ButtonLogin_Click_1(object sender, EventArgs e)
+        private async void ButtonLogin_Click(object sender, EventArgs e)
         {
             if (TxtUserId.Text.Trim().Length == 0)
             {
@@ -73,7 +65,7 @@ namespace PaybillWinApp
                 authRequest.ClientId = "132";
                 authRequest.UserId = TxtUserId.Text.Trim();
                 authRequest.Password = TxtPassword.Text.Trim();
-                authRequest.BiometricAuthKey = string.Empty;
+                authRequest.BiometricAuthKey = "";
 
                 AuthenticationResponse response = await commonRepository.Authenticate(authRequest);
 
@@ -130,6 +122,12 @@ namespace PaybillWinApp
         private void panel2_Click(object sender, EventArgs e)
         {
             TxtPassword.Focus();
+        }
+
+        private void LinkLabelServerConfig_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ServerForm serverForm = AppVariables.ServiceProvider!.GetRequiredService<ServerForm>();
+            serverForm.ShowDialog();
         }
     }
 }

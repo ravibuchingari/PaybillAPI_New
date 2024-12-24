@@ -43,7 +43,7 @@
             label1.Location = new Point(31, 89);
             label1.Name = "label1";
             label1.Size = new Size(61, 20);
-            label1.TabIndex = 0;
+            label1.TabIndex = 10;
             label1.Text = "Mobile";
             // 
             // label2
@@ -75,7 +75,8 @@
             PnlMobile.Location = new Point(31, 116);
             PnlMobile.Name = "PnlMobile";
             PnlMobile.Size = new Size(341, 47);
-            PnlMobile.TabIndex = 6;
+            PnlMobile.TabIndex = 0;
+            PnlMobile.TabStop = true;
             PnlMobile.Click += PnlMobile_Click;
             // 
             // BtnValidate
@@ -87,7 +88,7 @@
             BtnValidate.Location = new Point(129, 202);
             BtnValidate.Name = "BtnValidate";
             BtnValidate.Size = new Size(120, 40);
-            BtnValidate.TabIndex = 1;
+            BtnValidate.TabIndex = 2;
             BtnValidate.Text = "&Validate";
             BtnValidate.UseVisualStyleBackColor = false;
             BtnValidate.Click += ButtonSet_Click;
@@ -101,7 +102,7 @@
             ButtonClose.Location = new Point(252, 202);
             ButtonClose.Name = "ButtonClose";
             ButtonClose.Size = new Size(120, 40);
-            ButtonClose.TabIndex = 2;
+            ButtonClose.TabIndex = 3;
             ButtonClose.Text = "&Close";
             ButtonClose.UseVisualStyleBackColor = false;
             ButtonClose.Click += ButtonClose_Click;
