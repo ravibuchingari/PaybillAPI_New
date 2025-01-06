@@ -17,6 +17,10 @@ namespace PaybillAPI.Repositories.Service
         Task<IEnumerable<PurchaseOrderVM>> GetPurchaseOrderList();
         Task<IEnumerable<InventoryValuation>> GetInventoryValuation(string filter);
         Task<List<ItemVM>> GetAgedInventory(int inventoryAge);
+        Task<List<ChartData>> GetDayWiseSalesSummary(DateTime fromDate, DateTime toDate);
+        Task<List<ChartData>> GetMonthWiseSalesSummary(DateTime fromDate, DateTime toDate);
+        Task<List<ChartData>> GetItemWiseSalesSummary(DateTime fromDate, DateTime toDate);
+        Task<List<ChartData>> GetSalesPaymentModeSummary(DateTime fromDate, DateTime toDate);
         //Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
     }
 }

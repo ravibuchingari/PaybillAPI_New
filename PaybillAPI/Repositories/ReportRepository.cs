@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.Command;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
+using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
+using System.Collections.Immutable;
 using System.Data;
 
 namespace PaybillAPI.Repositories
@@ -476,6 +479,63 @@ namespace PaybillAPI.Repositories
             var allItems = matchedItems;
             allItems.AddRange(unmatchedItems);
             return allItems;
+        }
+
+        public async Task<List<ChartData>> GetDayWiseSalesSummary(DateTime fromDate, DateTime toDate)
+        {
+            return await (from sal in dbContext.Sales
+                   join sal_itm in dbContext.SalesItems on sal.SalesId equals sal_itm.SalesId
+                   where sal.InvoiceDate.Date >= fromDate && sal.InvoiceDate.Date <= toDate
+                   group new { sal, sal_itm } by new { InvoiceDate = sal.InvoiceDate.Date } into grp
+                   orderby grp.Key.InvoiceDate
+                   select new ChartData()
+                   {
+                       XLabel = grp.Key.InvoiceDate.ToString("dd-MMM-yyyy"),
+                       YAxis = (float)grp.Sum(x => x.sal_itm.TotalAmount)
+                   }).ToListAsync();
+        }
+
+        public async Task<List<ChartData>> GetMonthWiseSalesSummary(DateTime fromDate, DateTime toDate)
+        {
+            return await (from sal in dbContext.Sales
+                          join sal_itm in dbContext.SalesItems on sal.SalesId equals sal_itm.SalesId
+                          where sal.InvoiceDate.Date >= fromDate && sal.InvoiceDate.Date <= toDate
+                          group new { sal, sal_itm } by new { sal.InvoiceDate.Date.Month, sal.InvoiceDate.Date.Year } into grp
+                          orderby grp.Key.Year, grp.Key.Month
+                          select new ChartData()
+                          {
+                              XLabel = $"{grp.Key.Month}-{grp.Key.Year}",
+                              YAxis = (float)grp.Sum(x => x.sal_itm.TotalAmount)
+                          }).ToListAsync();
+        }
+
+
+        public async Task<List<ChartData>> GetItemWiseSalesSummary(DateTime fromDate, DateTime toDate)
+        {
+            return await (from sal in dbContext.Sales
+                          join sal_itm in dbContext.SalesItems on sal.SalesId equals sal_itm.SalesId
+                          join itm in dbContext.Items on sal_itm.ItemId equals itm.ItemId
+                          where sal.InvoiceDate.Date >= fromDate && sal.InvoiceDate.Date <= toDate
+                          group new { sal, sal_itm, itm } by new { sal_itm.ItemId, itm.ItemName, itm.SalesPrice } into grp
+                          select new ChartData()
+                          {
+                              XLabel = $"{grp.Key.ItemName}({grp.Key.SalesPrice})",
+                              YAxis = grp.Sum(x => x.sal_itm.Quantity)
+                          }).OrderByDescending(ord => ord.YAxis).ToListAsync();
+        }
+
+        public async Task<List<ChartData>> GetSalesPaymentModeSummary(DateTime fromDate, DateTime toDate)
+        {
+            return await (from sal in dbContext.Sales
+                          join sal_itm in dbContext.SalesItems on sal.SalesId equals sal_itm.SalesId
+                          where sal.InvoiceDate.Date >= fromDate && sal.InvoiceDate.Date <= toDate
+                          group new { sal, sal_itm } by new { sal.SalesType, sal.PaymentMode, sal.UpiType } into grp
+                          orderby grp.Key.UpiType
+                          select new ChartData()
+                          {
+                              XLabel = grp.Key.PaymentMode.Equals(PaymentMode.UPI.ToString()) ? grp.Key.UpiType : (string.IsNullOrEmpty(grp.Key.PaymentMode) ? grp.Key.SalesType : grp.Key.PaymentMode),
+                              YAxis = (float)grp.Sum(x => x.sal_itm.TotalAmount)
+                          }).ToListAsync();
         }
     }
 }

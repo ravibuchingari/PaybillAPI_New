@@ -153,5 +153,35 @@ namespace PaybillAPI.Controllers
         {
             return Ok(await reportRepository.GetAgedInventory(inventoryAge));
         }
+
+        [HttpGet]
+        [Route("sales/day/wise/summary")]
+        public async Task<IActionResult> GetDayWiseSalesSummary([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetDayWiseSalesSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
+        [HttpGet]
+        [Route("sales/month/wise/summary")]
+        public async Task<IActionResult> GetMonthWiseSalesSummary([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetMonthWiseSalesSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
+        [HttpGet]
+        [Route("sales/item/wise/summary")]
+        public async Task<IActionResult> GetItemWiseSalesSummary([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetItemWiseSalesSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
+        [HttpGet]
+        [Route("sales/payment/mode/summary")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSalesPaymentModeSummary([FromQuery] string fromDate, [FromQuery] string toDate)
+        {
+            return Ok(await reportRepository.GetSalesPaymentModeSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+        }
+
     }
 }
