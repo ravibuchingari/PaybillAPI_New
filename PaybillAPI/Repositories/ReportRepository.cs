@@ -405,7 +405,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<InventoryValuation>> GetInventoryValuation(string filter)
         {
-            if(filter.IsNullOrEmpty())
+            if (filter.IsNullOrEmpty())
             {
                 return await dbContext.Items.OrderBy(ord => ord.ItemName).Select(row => new InventoryValuation()
                 {
@@ -424,17 +424,17 @@ namespace PaybillAPI.Repositories
             {
                 return await dbContext.Items.Where(col => col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
                                                             col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).OrderBy(ord => ord.ItemName).Select(row => new InventoryValuation()
-                {
-                    ItemId = row.ItemId,
-                    ItemCode = row.ItemCode,
-                    ItemName = row.ItemName,
-                    Measure = row.Measure,
-                    PurchasePrice = row.PurchasePrice,
-                    SalesPrice = row.SalesPrice,
-                    ClosingStock = row.OpeningStock + row.ClosingStock,
-                    PurchaseValue = row.PurchasePrice * (row.OpeningStock + row.ClosingStock),
-                    SalesValue = row.SalesPrice * (row.OpeningStock + row.ClosingStock)
-                }).ToListAsync();
+                                                            {
+                                                                ItemId = row.ItemId,
+                                                                ItemCode = row.ItemCode,
+                                                                ItemName = row.ItemName,
+                                                                Measure = row.Measure,
+                                                                PurchasePrice = row.PurchasePrice,
+                                                                SalesPrice = row.SalesPrice,
+                                                                ClosingStock = row.OpeningStock + row.ClosingStock,
+                                                                PurchaseValue = row.PurchasePrice * (row.OpeningStock + row.ClosingStock),
+                                                                SalesValue = row.SalesPrice * (row.OpeningStock + row.ClosingStock)
+                                                            }).ToListAsync();
             }
         }
 

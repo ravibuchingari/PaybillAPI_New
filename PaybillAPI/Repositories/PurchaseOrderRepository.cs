@@ -38,7 +38,8 @@ namespace PaybillAPI.Repositories
 
                 foreach (PurchaseOrderItemVM purchaseItemVM in purchaseOrderVM.OrderItems!)
                 {
-                    if (purchaseOrder.PurchaseOrderId < 1) {
+                    if (purchaseOrder.PurchaseOrderId < 1)
+                    {
                         await dbContext.PurchaseOrderItems.AddAsync(new PurchaseOrderItem()
                         {
                             PurchaseOrderId = purchaseOrder.PurchaseOrderId,

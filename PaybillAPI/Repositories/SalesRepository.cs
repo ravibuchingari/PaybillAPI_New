@@ -218,6 +218,7 @@ namespace PaybillAPI.Repositories
                 SalesType = row.SalesType,
                 PaymentMode = row.PaymentMode,
                 UpiType = row.UpiType,
+                EndUserMobile = row.EndUserMobile,
                 IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {
@@ -230,7 +231,9 @@ namespace PaybillAPI.Repositories
                 PartyModel = row.Party != null ? new PartyVM()
                 {
                     PartyId = row.Party.PartyId,
-                    PartyName = row.Party.PartyName
+                    PartyName = row.Party.PartyName,
+                    PartyMobile = row.Party.PartyMobile,
+                    PartyEmail = row.Party.PartyEmail
                 } : null
             }).ToListAsync();
         }

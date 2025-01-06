@@ -102,6 +102,10 @@ public partial class Setting
     [Column("IsSendSMSOnInvoice")]
     public sbyte IsSendSmsonInvoice { get; set; }
 
+    public sbyte IsSendWhatsAppMessageOnInvoiceisSendWhatsAppMessageOnInvoice { get; set; }
+
+    public sbyte IsShareInvoiceOnInvoice { get; set; }
+
     public int? SalesMessageId { get; set; }
 
     public int? ServiceMessageId { get; set; }
@@ -124,9 +128,14 @@ public partial class Setting
 
     public sbyte IsServiceRequestEnabled { get; set; }
 
-    public sbyte PurchaseOrderItemCodeRequired { get; set; }
-
     public sbyte IsItemSearchImageVisible { get; set; }
+
+    public sbyte IsBackupOnLogin { get; set; }
+
+    public sbyte IsViewAllItemsOnSearch { get; set; }
+
+    [StringLength(250)]
+    public string? EmailBodyForSalesInvoice { get; set; }
 
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]

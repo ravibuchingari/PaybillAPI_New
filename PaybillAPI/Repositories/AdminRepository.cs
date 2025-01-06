@@ -20,6 +20,7 @@ namespace PaybillAPI.Repositories
                 EmailPassword = row.EmailPassword,
                 IsAutoEmail = row.IsAutoEmail == 1,
                 IsBackupOnExit = row.IsBackupOnExit == 1,
+                
                 IsDiscountEnabled = row.IsDiscountEnabled == 1,
 
                 AddItemOnSelected = row.AddItemOnSelected == 1,
@@ -37,8 +38,15 @@ namespace PaybillAPI.Repositories
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
+                UPIId = row.Upiid,
+                UPIName = row.Upiname,
+                UPIMerchantCode = row.UpimerchantCode,
                 IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
                 IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
+                IsBackupOnLogin = row.IsBackupOnLogin == 1,
+                IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
+                EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
+
                 HeaderModel = new PrintHeader()
                 {
                     CompanyName = row.CompanyName,
@@ -97,6 +105,17 @@ namespace PaybillAPI.Repositories
             setting.ServiceMessageId = settingVM.ServiceMessageId > 0 ? settingVM.ServiceMessageId : null;
             setting.BalanceMessageId = settingVM.BalanceMessageId > 0 ? settingVM.BalanceMessageId : null;
             setting.FestivalMessageId = settingVM.FestivalMessageId > 0 ? settingVM.FestivalMessageId : null;
+
+            setting.Upiid = settingVM.UPIId ?? string.Empty;
+            setting.Upiname = settingVM.UPIName ?? string.Empty;
+            setting.UpimerchantCode = settingVM.UPIMerchantCode ?? string.Empty;
+
+            setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
+            setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
+            setting.IsItemSearchImageVisible = (sbyte)settingVM.IsItemSearchImageVisible.GetHashCode();
+            setting.IsBackupOnLogin = (sbyte)settingVM.IsBackupOnLogin.GetHashCode();
+            setting.IsViewAllItemsOnSearch = (sbyte)settingVM.IsViewAllItemsOnSearch.GetHashCode();
+            setting.EmailBodyForSalesInvoice = settingVM.EmailBodyForSalesInvoice;
             return setting;
         }
 
@@ -151,10 +170,10 @@ namespace PaybillAPI.Repositories
         {
             if (messageId == 0)
                 await dbContext.MessageTemplates.AddAsync(new MessageTemplate() { MessageDescription = messageDescription });
-            else 
-            { 
+            else
+            {
                 MessageTemplate? message = await dbContext.MessageTemplates.Where(col => col.MessageId == messageId).FirstOrDefaultAsync();
-                if(message == null)
+                if (message == null)
                     return new ResponseMessage(isSuccess: false, message: "Message template not found.");
                 message.MessageDescription = messageDescription;
             }

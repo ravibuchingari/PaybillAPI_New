@@ -21,8 +21,14 @@
         public int? ServiceMessageId { get; set; }
         public int? BalanceMessageId { get; set; }
         public int? FestivalMessageId { get; set; }
+        public string? UPIId { get; set; }
+        public string? UPIName { get; set; }
+        public string? UPIMerchantCode { get; set; }
         public bool IsServiceRequestEnabled { get; set; }
         public bool IsItemSearchImageVisible { get; set; }
+        public bool IsBackupOnLogin { get; set; }
+        public bool IsViewAllItemsOnSearch { get; set; }
+        public string? EmailBodyForSalesInvoice { get; set; }
         public PrintHeader HeaderModel { get; set; } = null!;
     }
 }

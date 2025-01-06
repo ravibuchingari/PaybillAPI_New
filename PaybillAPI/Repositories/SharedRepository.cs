@@ -366,8 +366,14 @@ namespace PaybillAPI.Repositories
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
                 FestivalMessageId = row.FestivalMessageId,
+                UPIId = row.Upiid,
+                UPIName = row.Upiname,
+                UPIMerchantCode = row.UpimerchantCode,
                 IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
                 IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
+                IsBackupOnLogin = row.IsBackupOnLogin == 1,
+                IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
+                EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
                 HeaderModel = printHeader,
                 IsSettingsUpdated = true
 
