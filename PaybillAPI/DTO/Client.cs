@@ -47,4 +47,20 @@ public partial class Client
     public DateTime CreatedDate { get; set; }
 
     public sbyte MaxBackups { get; set; }
+
+    public int? CountryId { get; set; }
+
+    [StringLength(5)]
+    public string? CountryLocaleCode { get; set; }
+
+    public sbyte CountryMobileLength { get; set; }
+
+    [StringLength(50)]
+    public string CountryName { get; set; } = null!;
+
+    [StringLength(10)]
+    public string CountryCurrencyCode { get; set; } = null!;
+
+    [StringLength(5)]
+    public string CountryCurrencySymbol { get; set; } = null!;
 }

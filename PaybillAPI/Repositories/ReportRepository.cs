@@ -1,12 +1,9 @@
-﻿using DocumentFormat.OpenXml.Office2016.Drawing.Command;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
-using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
-using System.Collections.Immutable;
 using System.Data;
 
 namespace PaybillAPI.Repositories
@@ -484,15 +481,15 @@ namespace PaybillAPI.Repositories
         public async Task<List<ChartData>> GetDayWiseSalesSummary(DateTime fromDate, DateTime toDate)
         {
             return await (from sal in dbContext.Sales
-                   join sal_itm in dbContext.SalesItems on sal.SalesId equals sal_itm.SalesId
-                   where sal.InvoiceDate.Date >= fromDate && sal.InvoiceDate.Date <= toDate
-                   group new { sal, sal_itm } by new { InvoiceDate = sal.InvoiceDate.Date } into grp
-                   orderby grp.Key.InvoiceDate
-                   select new ChartData()
-                   {
-                       XLabel = grp.Key.InvoiceDate.ToString("dd-MMM-yyyy"),
-                       YAxis = (float)grp.Sum(x => x.sal_itm.TotalAmount)
-                   }).ToListAsync();
+                          join sal_itm in dbContext.SalesItems on sal.SalesId equals sal_itm.SalesId
+                          where sal.InvoiceDate.Date >= fromDate && sal.InvoiceDate.Date <= toDate
+                          group new { sal, sal_itm } by new { InvoiceDate = sal.InvoiceDate.Date } into grp
+                          orderby grp.Key.InvoiceDate
+                          select new ChartData()
+                          {
+                              XLabel = grp.Key.InvoiceDate.ToString("dd-MMM-yyyy"),
+                              YAxis = (float)grp.Sum(x => x.sal_itm.TotalAmount)
+                          }).ToListAsync();
         }
 
         public async Task<List<ChartData>> GetMonthWiseSalesSummary(DateTime fromDate, DateTime toDate)

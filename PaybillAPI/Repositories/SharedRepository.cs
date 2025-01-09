@@ -170,6 +170,12 @@ namespace PaybillAPI.Repositories
                     IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode(),
                     IsActivated = (sbyte)clientVM.IsActivated.GetHashCode(),
                     SecurityKey = clientVM.SecurityKey,
+                    CountryId = clientVM.Country?.CountryId,
+                    CountryName = clientVM.Country?.CountryName ?? string.Empty,
+                    CountryCurrencyCode = clientVM.Country?.CountryCurrencyCode ?? string.Empty,
+                    CountryCurrencySymbol = clientVM.Country?.CountryCurrencySymbol ?? string.Empty,
+                    CountryLocaleCode = clientVM.Country?.CountryLocaleCode ?? string.Empty,
+                    CountryMobileLength = clientVM.Country?.CountryMobileLength ?? 0
                 };
                 await dbContext.Clients.AddAsync(client);
                 await SaveChangesAsync();
@@ -198,6 +204,12 @@ namespace PaybillAPI.Repositories
                 client.IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode();
                 client.IsActivated = (sbyte)clientVM.IsActivated.GetHashCode();
                 client.MaxBackups = (sbyte)clientVM.MaxBackups;
+                client.CountryId = clientVM.Country?.CountryId;
+                client.CountryName = clientVM.Country?.CountryName ?? string.Empty;
+                client.CountryCurrencyCode = clientVM.Country?.CountryCurrencyCode ?? string.Empty;
+                client.CountryCurrencySymbol = clientVM.Country?.CountryCurrencySymbol ?? string.Empty;
+                client.CountryLocaleCode = clientVM.Country?.CountryLocaleCode ?? string.Empty;
+                client.CountryMobileLength = clientVM.Country?.CountryMobileLength ?? 0;
                 await SaveChangesAsync();
                 return new ResponseMessage(isSuccess: true, message: "Profile has been updated successfully");
             }
@@ -330,7 +342,16 @@ namespace PaybillAPI.Repositories
                         ClientUniqueId = client.ClientUniqueId,
                         ClientId = client.ClientId,
                         IsPremiumUser = client.IsPremiumUser == 1,
-                        IsActivated = client.IsActivated == 1
+                        IsActivated = client.IsActivated == 1,
+                        Country = new CountryModel()
+                        {
+                            CountryId = client?.CountryId ?? 0,
+                            CountryName = client?.CountryName ?? string.Empty,
+                            CountryCurrencyCode = client?.CountryCurrencyCode ?? string.Empty,
+                            CountryCurrencySymbol = client?.CountryCurrencySymbol ?? string.Empty,
+                            CountryLocaleCode = client?.CountryLocaleCode ?? string.Empty,
+                            CountryMobileLength = client?.CountryMobileLength ?? 0,
+                        }
                     }
                 },
                 Pref = dashboardPref,
@@ -407,7 +428,16 @@ namespace PaybillAPI.Repositories
                         ClientUniqueId = client.ClientUniqueId,
                         ClientId = client.ClientId,
                         IsPremiumUser = client.IsPremiumUser == 1,
-                        IsActivated = client.IsActivated == 1
+                        IsActivated = client.IsActivated == 1,
+                        Country = new CountryModel()
+                        {
+                            CountryId = client?.CountryId ?? 0,
+                            CountryName = client?.CountryName ?? string.Empty,
+                            CountryCurrencyCode = client?.CountryCurrencyCode ?? string.Empty,
+                            CountryCurrencySymbol = client?.CountryCurrencySymbol ?? string.Empty,
+                            CountryLocaleCode = client?.CountryLocaleCode ?? string.Empty,
+                            CountryMobileLength = client?.CountryMobileLength ?? 0,
+                        }
                     }
                 },
                 Pref = dashboardPref,

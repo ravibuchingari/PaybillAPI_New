@@ -20,7 +20,7 @@ namespace PaybillAPI.Repositories
                 EmailPassword = row.EmailPassword,
                 IsAutoEmail = row.IsAutoEmail == 1,
                 IsBackupOnExit = row.IsBackupOnExit == 1,
-                
+
                 IsDiscountEnabled = row.IsDiscountEnabled == 1,
 
                 AddItemOnSelected = row.AddItemOnSelected == 1,

@@ -1,4 +1,6 @@
-﻿namespace PaybillAPI.ViewModel
+﻿using PaybillAPI.Models;
+
+namespace PaybillAPI.ViewModel
 {
     public class ClientVM
     {
@@ -16,5 +18,6 @@
         public bool IsActivated { get; set; }
         public string? SecurityKey { get; set; }
         public int MaxBackups { get; set; }
+        public CountryModel? Country { get; set; }
     }
 }

@@ -353,10 +353,12 @@ namespace PaybillAPI.Repositories
         {
             return await dbContext.Items.Where(col => col.IsActive == 1 && (col.OpeningStock + col.ClosingStock) < col.MinimumStock).Select(row => new ItemVM()
             {
+                ItemId = row.ItemId,
                 ItemCode = row.ItemCode,
                 ItemName = row.ItemName,
                 Mrp = row.Mrp,
                 SalesPrice = row.SalesPrice,
+                PurchasePrice = row.PurchasePrice,
                 ClosingStock = row.ClosingStock + row.OpeningStock,
                 Measure = row.Measure
             }).ToListAsync();

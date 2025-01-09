@@ -1,5 +1,4 @@
 ﻿using PaybillAPI.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace PaybillAPI.ViewModel
 {
