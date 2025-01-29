@@ -34,6 +34,8 @@ namespace PaybillAPI.Repositories
                 ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
                 IsSoundEnabled = row.IsSoundEnabled == 1,
                 IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
+                IsSendWhatsAppMessageOnInvoice = row.IsSendWhatsAppMessageOnInvoice == 1,
+                IsShareInvoiceOnInvoice = row.IsShareInvoiceOnInvoice == 1,
                 SalesMessageId = row.SalesMessageId,
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
@@ -99,6 +101,10 @@ namespace PaybillAPI.Repositories
             setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
             setting.IsSoundEnabled = (sbyte)settingVM.IsSoundEnabled.GetHashCode();
             setting.IsSendSmsonInvoice = (sbyte)settingVM.IsSendSmsonInvoice.GetHashCode();
+            setting.IsSendWhatsAppMessageOnInvoice = (sbyte)settingVM.IsSendWhatsAppMessageOnInvoice.GetHashCode();
+            setting.IsShareInvoiceOnInvoice = (sbyte)settingVM.IsShareInvoiceOnInvoice.GetHashCode();
+
+
             setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
             setting.IsItemSearchImageVisible = (sbyte)settingVM.IsItemSearchImageVisible.GetHashCode();
             setting.SalesMessageId = settingVM.SalesMessageId > 0 ? settingVM.SalesMessageId : null;

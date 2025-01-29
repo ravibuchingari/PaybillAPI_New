@@ -24,6 +24,8 @@ namespace PaybillAPI.ViewModel
         public bool ItemCodeAllowNumberOnly { get; set; }
         public bool IsSoundEnabled { get; set; }
         public bool IsSendSmsonInvoice { get; set; }
+        public bool IsSendWhatsAppMessageOnInvoice { get; set; }
+        public bool IsShareInvoiceOnInvoice { get; set; }
         public int? SalesMessageId { get; set; }
         public int? ServiceMessageId { get; set; }
         public int? BalanceMessageId { get; set; }

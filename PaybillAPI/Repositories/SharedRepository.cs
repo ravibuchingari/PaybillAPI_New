@@ -250,6 +250,43 @@ namespace PaybillAPI.Repositories
             return printHeader;
         }
 
+        private async Task<DashboardPref> GetDashboardPref()
+        {
+            DashboardPref dashboardPref = await dbContext.Settings.Select(row => new DashboardPref()
+            {
+                IsAutoEmail = row.IsAutoEmail == 1,
+                IsBackupOnExit = row.IsBackupOnExit == 1,
+                IsBackupOnLogin = row.IsBackupOnLogin == 1,
+                IsDiscountEnabled = row.IsDiscountEnabled == 1,
+                AddItemOnSelected = row.AddItemOnSelected == 1,
+                IsCreateContactOnParty = row.IsCreateContactOnParty == 1,
+                IsCompressBackup = row.IsCompressBackup == 1,
+                IsShadowMenuButton = row.IsShadowMenuButton == 1,
+                IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
+                ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
+                ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
+                IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
+                IsSoundEnabled = row.IsSoundEnabled == 1,
+                IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
+                IsSendWhatsAppMessageOnInvoice = row.IsSendWhatsAppMessageOnInvoice == 1,
+                IsShareInvoiceOnInvoice = row.IsShareInvoiceOnInvoice == 1,
+                UPIId = row.Upiid,
+                UPIName = row.Upiname,
+                UPIMerchantCode = row.UpimerchantCode,
+                SalesMessageId = row.SalesMessageId,
+                ServiceMessageId = row.ServiceMessageId,
+                BalanceMessageId = row.BalanceMessageId,
+                FestivalMessageId = row.FestivalMessageId,
+                IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
+                IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
+                IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
+                EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
+                IsSettingsUpdated = true
+
+            }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
+            return dashboardPref;
+        }
+
         public async Task<AuthResponseVM> UserAuthentication(AuthRequestVM authRequest)
         {
             User? user = await dbContext.Users.Where(col => col.UserId == authRequest.UserId && col.IsActive == 1).FirstOrDefaultAsync();
@@ -264,32 +301,8 @@ namespace PaybillAPI.Repositories
             string securityKey = SharedMethod.GenerateUniqueID();
 
 
-            PrintHeader printHeader = await GetPrintHeader();
-            DashboardPref dashboardPref = await dbContext.Settings.Select(row => new DashboardPref()
-            {
-                IsAutoEmail = row.IsAutoEmail == 1,
-                IsBackupOnExit = row.IsBackupOnExit == 1,
-                IsDiscountEnabled = row.IsDiscountEnabled == 1,
-                AddItemOnSelected = row.AddItemOnSelected == 1,
-                IsCreateContactOnParty = row.IsCreateContactOnParty == 1,
-                IsCompressBackup = row.IsCompressBackup == 1,
-                IsShadowMenuButton = row.IsShadowMenuButton == 1,
-                IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
-                ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
-                ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
-                IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
-                IsSoundEnabled = row.IsSoundEnabled == 1,
-                IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
-                SalesMessageId = row.SalesMessageId,
-                ServiceMessageId = row.ServiceMessageId,
-                BalanceMessageId = row.BalanceMessageId,
-                FestivalMessageId = row.FestivalMessageId,
-                IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
-                IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
-                HeaderModel = printHeader,
-                IsSettingsUpdated = true
-
-            }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
+            DashboardPref dashboardPref = await GetDashboardPref();
+            dashboardPref.HeaderModel = await GetPrintHeader();
 
             IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
             {
@@ -367,38 +380,8 @@ namespace PaybillAPI.Repositories
             if (user == null)
                 return new AuthResponseVM() { IsSuccess = false, Message = error };
 
-            PrintHeader printHeader = await GetPrintHeader();
-            DashboardPref dashboardPref = await dbContext.Settings.Select(row => new DashboardPref()
-            {
-                IsAutoEmail = row.IsAutoEmail == 1,
-                IsBackupOnExit = row.IsBackupOnExit == 1,
-                IsDiscountEnabled = row.IsDiscountEnabled == 1,
-                AddItemOnSelected = row.AddItemOnSelected == 1,
-                IsCreateContactOnParty = row.IsCreateContactOnParty == 1,
-                IsCompressBackup = row.IsCompressBackup == 1,
-                IsShadowMenuButton = row.IsShadowMenuButton == 1,
-                IsAlertOnMinimumStock = row.IsAlertOnMinimumStock == 1,
-                ItemCodeAllowNumberOnly = row.ItemCodeAllowNumberOnly == 1,
-                ServiceGSTCode = !string.IsNullOrEmpty(row.Gstin) && row.Gstin.Length > 1 ? row.Gstin.Substring(0, 2) : "",
-                IsBiometricAuthEnabled = row.IsBiometricAuthEnabled == 1,
-                IsSoundEnabled = row.IsSoundEnabled == 1,
-                IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
-                SalesMessageId = row.SalesMessageId,
-                ServiceMessageId = row.ServiceMessageId,
-                BalanceMessageId = row.BalanceMessageId,
-                FestivalMessageId = row.FestivalMessageId,
-                UPIId = row.Upiid,
-                UPIName = row.Upiname,
-                UPIMerchantCode = row.UpimerchantCode,
-                IsServiceRequestEnabled = row.IsServiceRequestEnabled == 1,
-                IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
-                IsBackupOnLogin = row.IsBackupOnLogin == 1,
-                IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
-                EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
-                HeaderModel = printHeader,
-                IsSettingsUpdated = true
-
-            }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
+            DashboardPref dashboardPref = await GetDashboardPref();
+            dashboardPref.HeaderModel = await GetPrintHeader(); 
 
             IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
             {

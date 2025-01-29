@@ -378,7 +378,12 @@ namespace PaybillAPI.Repositories
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
-                    UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss")
+                    UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                    CategoryModel = new CategoryVM()
+                    {
+                        CategoryId = row.CategoryId,
+                        CategoryName = row.Category.CategoryName
+                    },
                 }).ToListAsync();
             }
             else
@@ -395,7 +400,12 @@ namespace PaybillAPI.Repositories
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
-                    UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss")
+                    UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                    CategoryModel = new CategoryVM()
+                    {
+                        CategoryId = row.CategoryId,
+                        CategoryName = row.Category.CategoryName
+                    },
                 }).ToListAsync();
 
                 return result;

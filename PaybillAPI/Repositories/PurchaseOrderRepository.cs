@@ -4,6 +4,7 @@ using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PaybillAPI.Repositories
 {
@@ -36,18 +37,28 @@ namespace PaybillAPI.Repositories
 
                 await SaveChangesAsync();
 
-                foreach (PurchaseOrderItemVM purchaseItemVM in purchaseOrderVM.OrderItems!)
+                foreach (PurchaseOrderItemVM item in purchaseOrderVM.OrderItems!)
                 {
-                    if (purchaseOrder.PurchaseOrderId < 1)
+                    if (item.PurchaseOrderItemId < 1)
                     {
                         await dbContext.PurchaseOrderItems.AddAsync(new PurchaseOrderItem()
                         {
                             PurchaseOrderId = purchaseOrder.PurchaseOrderId,
-                            ItemId = purchaseItemVM.ItemModel!.ItemId,
-                            Quantity = purchaseItemVM.Quantity,
-                            Rate = purchaseItemVM.Rate,
-                            Amount = purchaseItemVM.Quantity * purchaseItemVM.Rate,
+                            ItemId = item.ItemModel!.ItemId,
+                            Quantity = item.Quantity,
+                            Rate = item.Rate,
+                            Amount = item.Quantity * item.Rate,
                         });
+                    }
+                    else
+                    {
+                        var temp = await dbContext.PurchaseOrderItems.Where(col => col.PurchaseOrderId == purchaseOrder.PurchaseOrderId && col.PurchaseOrderItemId == item.PurchaseOrderItemId).FirstOrDefaultAsync();
+                        if(temp != null)
+                        {
+                            temp.Quantity = item.Quantity;
+                            temp.Rate = item.Rate;
+                            temp.Amount = item.Quantity * item.Rate;
+                        }
                     }
                 }
                 await SaveChangesAsync();

@@ -102,6 +102,9 @@ public partial class Setting
     [Column("IsSendSMSOnInvoice")]
     public sbyte IsSendSmsonInvoice { get; set; }
 
+    [Column("IsSendWhatsAppMessageOnInvoice")]
+    public sbyte IsSendWhatsAppMessageOnInvoice { get; set; }
+
     public sbyte IsSendWhatsAppMessageOnInvoiceisSendWhatsAppMessageOnInvoice { get; set; }
 
     public sbyte IsShareInvoiceOnInvoice { get; set; }

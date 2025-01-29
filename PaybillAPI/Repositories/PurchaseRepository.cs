@@ -272,11 +272,11 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<PurchaseItemVM>> GetPurchaseOrderItems(int purchaseOrderId)
         {
-            int tempId = 100000;
+            int tempId = -10000;
 
             List<PurchaseItemVM> list = await dbContext.PurchaseOrderItems.Where(col => col.PurchaseOrderId == purchaseOrderId).Select(row => new PurchaseItemVM()
             {
-                PurchaseItemId = tempId * -1,
+                PurchaseItemId = 0,
                 ItemModel = new ItemVM()
                 {
                     ItemId = row.ItemId,
@@ -296,9 +296,11 @@ namespace PaybillAPI.Repositories
 
             foreach (var item in list)
             {
-                item.CgstRs = item.CgstPer * item.TaxableAmount;
-                item.SgstRs = item.SgstPer * item.TaxableAmount;
+                item.PurchaseItemId = --tempId;
+                item.CgstRs = item.CgstPer * item.TaxableAmount / 100;
+                item.SgstRs = item.SgstPer * item.TaxableAmount / 100;
                 item.IgstRs = 0;
+                item.GstPer = item.CgstPer + item.SgstPer;
                 item.GstAmount = item.CgstRs + item.SgstRs;
                 item.TotalAmount = item.TaxableAmount + item.GstAmount;
             }
