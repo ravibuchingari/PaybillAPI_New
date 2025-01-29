@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+﻿-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: paybill_api
 -- ------------------------------------------------------
@@ -56,6 +56,12 @@ CREATE TABLE `client` (
   `SecurityKey` varchar(60) DEFAULT NULL,
   `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `MaxBackups` tinyint NOT NULL DEFAULT '0',
+  `CountryId` int DEFAULT '28',
+  `CountryLocaleCode` varchar(5) DEFAULT 'in',
+  `CountryMobileLength` tinyint NOT NULL DEFAULT '10',
+  `CountryName` varchar(50) NOT NULL DEFAULT 'India',
+  `CountryCurrencyCode` varchar(10) NOT NULL DEFAULT 'Rs',
+  `CountryCurrencySymbol` varchar(5) NOT NULL DEFAULT '₹',
   PRIMARY KEY (`ClientUniqueId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -195,7 +201,7 @@ CREATE TABLE `purchase` (
   CONSTRAINT `fk_purchase_order_id` FOREIGN KEY (`PurchaseOrderId`) REFERENCES `purchase_orders` (`PurchaseOrderId`),
   CONSTRAINT `fk_purchase_partry_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`),
   CONSTRAINT `fk_purchase_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,7 +237,7 @@ CREATE TABLE `purchase_items` (
   KEY `fk_purchase_item_item_id_idx` (`ItemId`),
   CONSTRAINT `fk_purchase_item_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`),
   CONSTRAINT `fk_purchase_item_purchase_id` FOREIGN KEY (`PurchaseId`) REFERENCES `purchase` (`PurchaseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -357,7 +363,7 @@ CREATE TABLE `purchase_order_items` (
   KEY `fk_purchase_order_items_item_id_idx` (`ItemId`),
   CONSTRAINT `fk_purchase_order_items_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`),
   CONSTRAINT `fk_purchase_order_items_order_id` FOREIGN KEY (`PurchaseOrderId`) REFERENCES `purchase_orders` (`PurchaseOrderId`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -379,7 +385,7 @@ CREATE TABLE `purchase_orders` (
   KEY `fk_purchase_order_created_by_idx` (`CreatedBy`),
   CONSTRAINT `fk_purchase_order_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_purchase_order_vendor_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -414,7 +420,7 @@ CREATE TABLE `sales` (
   CONSTRAINT `fk_sales_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_sales_party_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`),
   CONSTRAINT `fk_sales_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -484,7 +490,7 @@ CREATE TABLE `sales_items` (
   CONSTRAINT `fk_sales_item_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`),
   CONSTRAINT `fk_sales_item_service_type_id` FOREIGN KEY (`ServiceTypeId`) REFERENCES `service_types` (`ServiceTypeId`),
   CONSTRAINT `fk_sales_item_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -679,6 +685,8 @@ CREATE TABLE `settings` (
   `IsGstSummaryRequired` tinyint NOT NULL DEFAULT '1',
   `IsSoundEnabled` tinyint NOT NULL DEFAULT '1',
   `IsSendSMSOnInvoice` tinyint NOT NULL DEFAULT '1',
+  `IsSendWhatsAppMessageOnInvoiceisSendWhatsAppMessageOnInvoice` tinyint NOT NULL DEFAULT '0',
+  `IsShareInvoiceOnInvoice` tinyint NOT NULL DEFAULT '0',
   `SalesMessageId` int DEFAULT NULL,
   `ServiceMessageId` int DEFAULT NULL,
   `BalanceMessageId` int DEFAULT NULL,
@@ -687,7 +695,11 @@ CREATE TABLE `settings` (
   `UPIName` varchar(100) DEFAULT NULL,
   `UPIMerchantCode` varchar(30) DEFAULT NULL,
   `IsServiceRequestEnabled` tinyint NOT NULL DEFAULT '0',
-  `PurchaseOrderItemCodeRequired` tinyint NOT NULL DEFAULT '1',
+  `IsItemSearchImageVisible` tinyint NOT NULL DEFAULT '0',
+  `IsBackupOnLogin` tinyint NOT NULL DEFAULT '0',
+  `IsViewAllItemsOnSearch` tinyint NOT NULL DEFAULT '0',
+  `EmailBodyForSalesInvoice` varchar(250) DEFAULT NULL,
+  `IsSendWhatsAppMessageOnInvoice` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`RowId`),
   KEY `fk_settings_created_by_idx` (`CreatedBy`),
   KEY `fk_settings_updated_by_idx` (`UpdatedBy`),
@@ -740,7 +752,7 @@ CREATE TABLE `transactions` (
   CONSTRAINT `fk_transaction_purchase_id` FOREIGN KEY (`PurchaseId`) REFERENCES `purchase` (`PurchaseId`),
   CONSTRAINT `fk_transaction_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`),
   CONSTRAINT `fk_transaction_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -800,7 +812,7 @@ CREATE TABLE `unlock_requests` (
   CONSTRAINT `fk_request_requested_by` FOREIGN KEY (`RequestedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_request_sales_id` FOREIGN KEY (`SalesId`) REFERENCES `sales` (`SalesId`),
   CONSTRAINT `fk_request_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -835,7 +847,7 @@ CREATE TABLE `users` (
   KEY `fk_users_updated_by_idx` (`UpdatedBy`),
   CONSTRAINT `fk_users_created_by` FOREIGN KEY (`CreatedBy`) REFERENCES `users` (`UserRowId`),
   CONSTRAINT `fk_users_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -855,4 +867,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-11 13:18:17
+-- Dump completed on 2025-01-29 10:58:54
