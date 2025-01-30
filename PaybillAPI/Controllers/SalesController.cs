@@ -38,7 +38,7 @@ namespace PaybillAPI.Controllers
         {
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
-            return Ok(await salesRepository.GetSalesInvoices(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await salesRepository.GetSalesInvoices(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpPost]

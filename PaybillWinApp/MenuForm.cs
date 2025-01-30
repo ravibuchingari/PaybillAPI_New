@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace PayBillApp.WinApp
 {
@@ -13,6 +14,7 @@ namespace PayBillApp.WinApp
         private readonly int borderSize = 1;
         private readonly Color borderColor = Color.WhiteSmoke;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int SelectedItem { get; set; }
 
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]

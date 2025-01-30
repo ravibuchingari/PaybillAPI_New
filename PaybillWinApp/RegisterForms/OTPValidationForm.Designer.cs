@@ -47,6 +47,7 @@
             label8 = new Label();
             LblApiUrl = new Label();
             PicEditApiUrl = new PictureBox();
+            TxtServiceUrl = new UserControls.TextBoxCustom();
             ((System.ComponentModel.ISupportInitialize)PicEditApiUrl).BeginInit();
             SuspendLayout();
             // 
@@ -243,11 +244,20 @@
             PicEditApiUrl.TabIndex = 23;
             PicEditApiUrl.TabStop = false;
             // 
+            // TxtServiceUrl
+            // 
+            TxtServiceUrl.BackColor = SystemColors.Info;
+            TxtServiceUrl.Location = new Point(539, 281);
+            TxtServiceUrl.Name = "TxtServiceUrl";
+            TxtServiceUrl.Size = new Size(463, 44);
+            TxtServiceUrl.TabIndex = 24;
+            // 
             // OTPValidationForm
             // 
             AutoScaleDimensions = new SizeF(10F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1048, 452);
+            Controls.Add(TxtServiceUrl);
             Controls.Add(PicEditApiUrl);
             Controls.Add(LblApiUrl);
             Controls.Add(label8);
@@ -296,5 +306,6 @@
         private Label label8;
         private Label LblApiUrl;
         private PictureBox PicEditApiUrl;
+        private UserControls.TextBoxCustom TxtServiceUrl;
     }
 }

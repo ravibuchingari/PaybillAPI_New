@@ -46,7 +46,7 @@ namespace PaybillWinApp.UserControls
             e.Graphics.DrawPath(pen, GetRoundedRectanglePath(this.ClientRectangle, borderRadius));
         }
 
-        private GraphicsPath GetRoundedRectanglePath(Rectangle rect, int radius)
+        private static GraphicsPath GetRoundedRectanglePath(Rectangle rect, int radius)
         {
             GraphicsPath path = new();
             path.StartFigure();

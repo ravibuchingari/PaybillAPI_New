@@ -16,21 +16,21 @@ namespace PaybillAPI.Controllers
         [Route("sales/gst/return/detailed")]
         public async Task<IActionResult> GetGSTReturnDetailed([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
         [Route("sales/gst/hsn/summary")]
         public async Task<IActionResult> GetGSTHSNSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetGSTHSNSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetGSTHSNSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
         [Route("sales/gst/sac/summary")]
         public async Task<IActionResult> GetGSTSACSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetGSTSACSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetGSTSACSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpPost]
@@ -114,21 +114,21 @@ namespace PaybillAPI.Controllers
         {
             fromDate = DataProtection.UrlDecode(fromDate, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             toDate = DataProtection.UrlDecode(toDate, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await reportRepository.GetDaybook(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetDaybook(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
         [Route("sales/items/deleted")]
         public async Task<IActionResult> GetDeletedSalesItems([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetDeletedSalesItems(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetDeletedSalesItems(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
         [Route("purchase/items/deleted")]
         public async Task<IActionResult> GetDeletedPurchaseItems([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetDeletedPurchaseItems(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetDeletedPurchaseItems(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpPost]
@@ -158,21 +158,21 @@ namespace PaybillAPI.Controllers
         [Route("sales/day/wise/summary")]
         public async Task<IActionResult> GetDayWiseSalesSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetDayWiseSalesSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetDayWiseSalesSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
         [Route("sales/month/wise/summary")]
         public async Task<IActionResult> GetMonthWiseSalesSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetMonthWiseSalesSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetMonthWiseSalesSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
         [Route("sales/item/wise/summary")]
         public async Task<IActionResult> GetItemWiseSalesSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetItemWiseSalesSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetItemWiseSalesSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
         [HttpGet]
@@ -180,7 +180,7 @@ namespace PaybillAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetSalesPaymentModeSummary([FromQuery] string fromDate, [FromQuery] string toDate)
         {
-            return Ok(await reportRepository.GetSalesPaymentModeSummary(DateTime.Parse(fromDate), DateTime.Parse(toDate)));
+            return Ok(await reportRepository.GetSalesPaymentModeSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
     }

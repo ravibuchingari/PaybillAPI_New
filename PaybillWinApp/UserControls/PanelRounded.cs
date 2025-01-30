@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace PayBillApp.WinApp.UserControls
 {
@@ -11,6 +12,7 @@ namespace PayBillApp.WinApp.UserControls
         private readonly float penWidth = 2.0F;
         private Pen pen = new(Color.White, 2.0F);
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int Edge
         {
             get
@@ -24,6 +26,7 @@ namespace PayBillApp.WinApp.UserControls
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color BorderColor
         {
             get
