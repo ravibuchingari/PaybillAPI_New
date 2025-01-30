@@ -95,6 +95,7 @@
             TxtUserId.Name = "TxtUserId";
             TxtUserId.Size = new Size(406, 20);
             TxtUserId.TabIndex = 0;
+            TxtUserId.Text = "admin";
             // 
             // panel2
             // 
@@ -117,6 +118,7 @@
             TxtPassword.Name = "TxtPassword";
             TxtPassword.Size = new Size(407, 20);
             TxtPassword.TabIndex = 0;
+            TxtPassword.Text = "admin";
             TxtPassword.UseSystemPasswordChar = true;
             // 
             // BtnClose

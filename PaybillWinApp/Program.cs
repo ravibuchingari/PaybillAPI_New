@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PayBillApp.WinApp;
 using PaybillWinApp.Models;
 using PaybillWinApp.RegisterForms;
 using PaybillWinApp.Repositories;
@@ -19,10 +20,10 @@ namespace PaybillWinApp
             ApplicationConfiguration.Initialize();
 
             var services = new ServiceCollection();
-            services.AddTransient<PaybillMDI>();
             services.AddTransient<SignInForm>();
             services.AddTransient<ClientValidationForm>();
             services.AddTransient<OTPValidationForm>();
+            services.AddTransient<SalesInvoiceForm>();
 
 
             services.AddSingleton<ISharedRepository, SharedRepository>();
@@ -42,8 +43,8 @@ namespace PaybillWinApp
 
                 if (signInForm.DialogResult == DialogResult.OK)
                 {
-                    PaybillMDI paybillMDI = AppVariables.ServiceProvider.GetRequiredService<PaybillMDI>();
-                    Application.Run(paybillMDI);
+                    SalesInvoiceForm salesInvoiceForm = AppVariables.ServiceProvider.GetRequiredService<SalesInvoiceForm>();
+                    Application.Run(salesInvoiceForm);
                 }
             }
             else
