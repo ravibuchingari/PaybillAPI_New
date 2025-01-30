@@ -52,7 +52,7 @@ namespace PaybillWinApp.RegisterForms
                     ClientVM? clientModel = JsonConvert.DeserializeObject<ClientVM>(responseMessage.Data?.ToString()!);
                     if (clientModel != null)
                     {
-                        if(!clientModel.IsApiService)
+                        if (!clientModel.IsApiService)
                         {
                             sharedRepository.ShowInfoMessage("You are not permitted to access the desktop user. Please contact the service provider");
                             TxtMobile.SelectAll();
@@ -65,7 +65,7 @@ namespace PaybillWinApp.RegisterForms
                         otpForm.Show();
                     }
                     else
-                        sharedRepository.ShowInfoMessage("Unable to get the client details. Please try again!");  
+                        sharedRepository.ShowInfoMessage("Unable to get the client details. Please try again!");
                 }
                 else
                     sharedRepository.ShowInfoMessage(responseMessage.Message);
@@ -75,7 +75,7 @@ namespace PaybillWinApp.RegisterForms
                 Cursor.Current = Cursors.Default;
                 sharedRepository.ShowErrorMessage(ex.Message.ToString());
             }
-            
+
         }
 
         private void PnlMobile_Click(object sender, EventArgs e)
@@ -87,6 +87,12 @@ namespace PaybillWinApp.RegisterForms
         {
             if (!char.IsNumber(e.KeyChar) && e.KeyChar != 8 && e.KeyChar != 13)
                 e.Handled = true;
+        }
+
+        private void TxtMobile_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                BtnValidate.PerformClick();
         }
     }
 }

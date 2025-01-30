@@ -61,7 +61,7 @@ namespace PaybillWinApp.RegisterForms
 
             Application.DoEvents();
             Cursor.Current = Cursors.WaitCursor;
-            
+
             try
             {
                 clientModel.Otp = DataProtection.UrlEncode(TxtOTP.Text, AppVariables.PAYBILL_API_AES_KEY_AND_IV);
@@ -87,6 +87,34 @@ namespace PaybillWinApp.RegisterForms
         private void ButtonClose_Click(object sender, EventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        public static bool IsValidUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return false;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            return result;
+        }
+
+        private void PicEditApiUrl_Click(object sender, EventArgs e)
+        {
+            InputForm inputForm = new("API Url")
+            {
+                ServiceUrl = LblApiUrl.Text
+            };
+            if (inputForm.ShowDialog() == DialogResult.OK)
+            {
+                if (IsValidUrl(inputForm.ServiceUrl))
+                {
+                    string url = inputForm.ServiceUrl;
+                    if (!url[^1..].Equals("/"))
+                        url = $"{url}/";
+                    LblApiUrl.Text = url;
+                }
+                else
+                    sharedRepository.ShowErrorMessage("Not a valid API", "API Error");
+            }
         }
     }
 }

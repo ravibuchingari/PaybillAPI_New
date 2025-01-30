@@ -66,6 +66,7 @@
             TxtMobile.Name = "TxtMobile";
             TxtMobile.Size = new Size(315, 21);
             TxtMobile.TabIndex = 0;
+            TxtMobile.KeyDown += TxtMobile_KeyDown;
             TxtMobile.KeyPress += TxtMobile_KeyPress;
             // 
             // PnlMobile
