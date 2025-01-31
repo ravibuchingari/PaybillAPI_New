@@ -137,6 +137,8 @@ public partial class Setting
 
     public sbyte IsViewAllItemsOnSearch { get; set; }
 
+    public sbyte IsSalesPriceEdited { get; set; }
+
     [StringLength(250)]
     public string? EmailBodyForSalesInvoice { get; set; }
 

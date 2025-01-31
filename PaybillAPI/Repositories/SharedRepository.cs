@@ -281,6 +281,7 @@ namespace PaybillAPI.Repositories
                 IsItemSearchImageVisible = row.IsItemSearchImageVisible == 1,
                 IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
                 EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
+                IsSalesPriceEdited = row.IsSalesPriceEdited == 1,
                 IsSettingsUpdated = true
 
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };

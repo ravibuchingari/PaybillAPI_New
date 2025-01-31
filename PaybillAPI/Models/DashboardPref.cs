@@ -31,6 +31,7 @@
         public bool IsBackupOnLogin { get; set; }
         public bool IsViewAllItemsOnSearch { get; set; }
         public string? EmailBodyForSalesInvoice { get; set; }
+        public bool IsSalesPriceEdited { get; set; }
         public PrintHeader HeaderModel { get; set; } = null!;
     }
 }

@@ -48,6 +48,7 @@ namespace PaybillAPI.Repositories
                 IsBackupOnLogin = row.IsBackupOnLogin == 1,
                 IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
                 EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
+                IsSalesPriceEdited = row.IsSalesPriceEdited == 1,
 
                 HeaderModel = new PrintHeader()
                 {
@@ -122,6 +123,7 @@ namespace PaybillAPI.Repositories
             setting.IsBackupOnLogin = (sbyte)settingVM.IsBackupOnLogin.GetHashCode();
             setting.IsViewAllItemsOnSearch = (sbyte)settingVM.IsViewAllItemsOnSearch.GetHashCode();
             setting.EmailBodyForSalesInvoice = settingVM.EmailBodyForSalesInvoice;
+            setting.IsSalesPriceEdited = (sbyte)settingVM.IsSalesPriceEdited.GetHashCode();
             return setting;
         }
 
