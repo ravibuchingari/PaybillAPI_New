@@ -4,7 +4,6 @@ using PaybillAPI.DTO;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;
 using PaybillAPI.ViewModel;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PaybillAPI.Repositories
 {
@@ -53,7 +52,7 @@ namespace PaybillAPI.Repositories
                     else
                     {
                         var temp = await dbContext.PurchaseOrderItems.Where(col => col.PurchaseOrderId == purchaseOrder.PurchaseOrderId && col.PurchaseOrderItemId == item.PurchaseOrderItemId).FirstOrDefaultAsync();
-                        if(temp != null)
+                        if (temp != null)
                         {
                             temp.Quantity = item.Quantity;
                             temp.Rate = item.Rate;

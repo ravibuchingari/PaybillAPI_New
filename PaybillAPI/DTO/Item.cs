@@ -46,6 +46,9 @@ public partial class Item
 
     public double MinimumStock { get; set; }
 
+    [StringLength(20)]
+    public string? Shelf { get; set; }
+
     public sbyte IsActive { get; set; }
 
     [Column(TypeName = "datetime")]

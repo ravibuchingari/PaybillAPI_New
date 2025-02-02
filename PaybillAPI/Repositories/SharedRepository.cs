@@ -382,7 +382,7 @@ namespace PaybillAPI.Repositories
                 return new AuthResponseVM() { IsSuccess = false, Message = error };
 
             DashboardPref dashboardPref = await GetDashboardPref();
-            dashboardPref.HeaderModel = await GetPrintHeader(); 
+            dashboardPref.HeaderModel = await GetPrintHeader();
 
             IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
             {
