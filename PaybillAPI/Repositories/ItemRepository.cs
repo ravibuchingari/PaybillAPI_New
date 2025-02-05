@@ -222,6 +222,7 @@ namespace PaybillAPI.Repositories
             item.OpeningStock = itemVM.OpeningStock;
             item.MinimumStock = itemVM.MinimumStock;
             item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
+            item.Shelf = itemVM.Shelf ?? string.Empty;
             return item;
         }
 
@@ -319,6 +320,7 @@ namespace PaybillAPI.Repositories
                 Measure = row.Measure,
                 OpeningStock = row.OpeningStock,
                 ClosingStock = row.OpeningStock + row.ClosingStock,
+                Shelf = row.Shelf,
                 IsActive = row.IsActive == 1,
                 CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
                 GstModel = row.Gst != null ? new GstVM()
@@ -378,6 +380,7 @@ namespace PaybillAPI.Repositories
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
+                    Shelf = row.Shelf,
                     UpdatedDate = row.UpdatedDate.ToString("yyyy-MM-dd HH:mm:ss"),
                     CategoryModel = new CategoryVM()
                     {
@@ -426,7 +429,8 @@ namespace PaybillAPI.Repositories
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
-                    ClosingStock = row.OpeningStock + row.ClosingStock
+                    ClosingStock = row.OpeningStock + row.ClosingStock,
+                    Shelf = row.Shelf,
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
                 return await dbContext.Items.Where(col => col.IsActive == 1 && (col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || col.AliasName!.StartsWith(filter, StringComparison.OrdinalIgnoreCase))).Select(row => new ItemVM()
@@ -439,7 +443,8 @@ namespace PaybillAPI.Repositories
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
                     Measure = row.Measure,
-                    ClosingStock = row.OpeningStock + row.ClosingStock
+                    ClosingStock = row.OpeningStock + row.ClosingStock,
+                    Shelf = row.Shelf,
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
         }
 
@@ -456,6 +461,7 @@ namespace PaybillAPI.Repositories
                 PurchasePrice = row.PurchasePrice,
                 HSncode = row.Hsncode,
                 Measure = row.Measure,
+                Shelf = row.Shelf,
                 OpeningStock = row.OpeningStock,
                 ClosingStock = row.OpeningStock + row.ClosingStock,
                 IsActive = row.IsActive == 1,

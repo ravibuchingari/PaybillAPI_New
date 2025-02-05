@@ -49,6 +49,7 @@ namespace PaybillAPI.Repositories
                 IsViewAllItemsOnSearch = row.IsViewAllItemsOnSearch == 1,
                 EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
                 IsSalesPriceEdited = row.IsSalesPriceEdited == 1,
+                IsCurrencyDecimalNotRequired = row.IsCurrencyDecimalNotRequired == 1,
 
                 HeaderModel = new PrintHeader()
                 {
@@ -124,6 +125,7 @@ namespace PaybillAPI.Repositories
             setting.IsViewAllItemsOnSearch = (sbyte)settingVM.IsViewAllItemsOnSearch.GetHashCode();
             setting.EmailBodyForSalesInvoice = settingVM.EmailBodyForSalesInvoice;
             setting.IsSalesPriceEdited = (sbyte)settingVM.IsSalesPriceEdited.GetHashCode();
+            setting.IsCurrencyDecimalNotRequired = (sbyte)settingVM.IsCurrencyDecimalNotRequired.GetHashCode();
             return setting;
         }
 

@@ -141,6 +141,8 @@ public partial class Setting
 
     public sbyte IsSalesPriceEdited { get; set; }
 
+    public sbyte IsCurrencyDecimalNotRequired { get; set; }
+
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]
     public virtual MessageTemplate? BalanceMessage { get; set; }

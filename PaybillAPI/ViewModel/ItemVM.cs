@@ -15,6 +15,7 @@
         public double ClosingStock { get; set; }
         public double MinimumStock { get; set; }
         public bool IsActive { get; set; }
+        public string? Shelf { get; set; }
         public CategoryVM? CategoryModel { get; set; }
         public GstVM? GstModel { get; set; }
         public string? UpdatedDate { get; set; }
