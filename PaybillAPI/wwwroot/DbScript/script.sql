@@ -109,6 +109,7 @@ CREATE TABLE `items` (
   `OpeningStock` double NOT NULL,
   `ClosingStock` double NOT NULL,
   `MinimumStock` double NOT NULL,
+  `Shelf` varchar(20) DEFAULT NULL,
   `IsActive` tinyint NOT NULL,
   `CreatedDate` datetime NOT NULL,
   `UpdatedDate` datetime NOT NULL,
@@ -700,6 +701,8 @@ CREATE TABLE `settings` (
   `IsViewAllItemsOnSearch` tinyint NOT NULL DEFAULT '0',
   `EmailBodyForSalesInvoice` varchar(250) DEFAULT NULL,
   `IsSendWhatsAppMessageOnInvoice` tinyint NOT NULL DEFAULT '0',
+  `IsSalesPriceEdited` tinyint NOT NULL DEFAULT '0',
+  `IsCurrencyDecimalNotRequired` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`RowId`),
   KEY `fk_settings_created_by_idx` (`CreatedBy`),
   KEY `fk_settings_updated_by_idx` (`UpdatedBy`),
@@ -867,4 +870,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-29 10:58:54
+-- Dump completed on 2025-02-05 16:57:14
