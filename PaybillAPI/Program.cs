@@ -1,6 +1,5 @@
 using Authentication.JWTAuthenticationManager;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.Middlewares;
 using PaybillAPI.Repositories;
@@ -8,6 +7,8 @@ using PaybillAPI.Repositories.Service;
 using PaybillAPI.Service;
 using Serilog;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
