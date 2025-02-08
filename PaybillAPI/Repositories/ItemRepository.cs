@@ -253,7 +253,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<ItemVM>> GetItems(int categoryId, string filter)
         {
-            if (filter.Trim().IsNullOrEmpty())
+            if (string.IsNullOrEmpty(filter.Trim()))
                 return await dbContext.Items.Where(col => col.CategoryId == (categoryId > 0 ? categoryId : col.CategoryId)).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
@@ -368,7 +368,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<ItemVM>> GetItemsForOffline(bool isAllItems, string? lastUpdatedTime)
         {
-            if (isAllItems || lastUpdatedTime.IsNullOrEmpty())
+            if (isAllItems || string.IsNullOrEmpty(lastUpdatedTime))
             {
                 return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
                 {
@@ -418,7 +418,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<ItemVM>> SearchItems(string filter)
         {
-            if (filter.Trim().IsNullOrEmpty())
+            if (string.IsNullOrEmpty(filter.Trim()))
                 return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,

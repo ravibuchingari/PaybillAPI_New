@@ -27,7 +27,7 @@ namespace PaybillAPI.Controllers
         public async Task<IActionResult> CreateUserIfNotExists([FromBody] UserVM user)
         {
             string key = User.Identity?.Name!;
-            if (user.SecurityKey.IsNullOrEmpty() || !key.Equals(user.SecurityKey))
+            if (string.IsNullOrEmpty(user.SecurityKey) || !key.Equals(user.SecurityKey))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
 
             user.Password = DataProtection.DecryptWithIV(user.Password, AppConstants.PAYBILL_API_AES_KEY_AND_IV);

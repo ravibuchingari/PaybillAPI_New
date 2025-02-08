@@ -172,9 +172,9 @@ namespace PaybillAPI.Repositories
 
             var list = await dbContext.Sales.Include(itm => itm.SalesItems).Where(col => col.InvoiceDate.Date >= DateTime.Parse(reportParam.FromDate!).Date &&
                                                col.InvoiceDate <= DateTime.Parse(reportParam.ToDate!).Date &&
-                                               col.SalesType == (reportParam.TransactionType.IsNullOrEmpty() ? col.SalesType : reportParam.TransactionType) &&
-                                               col.PaymentMode == (reportParam.PaymentMode.IsNullOrEmpty() ? col.PaymentMode : reportParam.PaymentMode) &&
-                                               col.UpiType == (reportParam.UpiType.IsNullOrEmpty() ? col.UpiType : reportParam.UpiType)).OrderBy(ord => ord.InvoiceDate).Select(row => new SalesVM
+                                               col.SalesType == (string.IsNullOrEmpty(reportParam.TransactionType) ? col.SalesType : reportParam.TransactionType) &&
+                                               col.PaymentMode == (string.IsNullOrEmpty(reportParam.PaymentMode) ? col.PaymentMode : reportParam.PaymentMode) &&
+                                               col.UpiType == (string.IsNullOrEmpty(reportParam.UpiType) ? col.UpiType : reportParam.UpiType)).OrderBy(ord => ord.InvoiceDate).Select(row => new SalesVM
                                                {
                                                    SalesId = row.SalesId,
                                                    InvoiceNo = row.InvoiceNo,
@@ -237,10 +237,10 @@ namespace PaybillAPI.Repositories
 
             var list = await dbContext.Purchases.Include(itm => itm.PurchaseItems).Where(col => col.InvoiceDate.Date >= DateTime.Parse(reportParam.FromDate!).Date &&
                                                col.InvoiceDate <= DateTime.Parse(reportParam.ToDate!).Date &&
-                                               col.PurchaseType == (reportParam.TransactionType.IsNullOrEmpty() ? col.PurchaseType : reportParam.TransactionType) &&
-                                               col.PaymentMode == (reportParam.PaymentMode.IsNullOrEmpty() ? col.PaymentMode : reportParam.PaymentMode) &&
-                                               col.UpiType == (reportParam.UpiType.IsNullOrEmpty() ? col.UpiType : reportParam.UpiType) &&
-                                               col.PartyId == (reportParam.Id.IsNullOrEmpty() ? col.PartyId : int.Parse(reportParam.Id!))).OrderBy(ord => ord.InvoiceDate).Select(row => new PurchaseVM
+                                               col.PurchaseType == (string.IsNullOrEmpty(reportParam.TransactionType) ? col.PurchaseType : reportParam.TransactionType) &&
+                                               col.PaymentMode == (string.IsNullOrEmpty(reportParam.PaymentMode) ? col.PaymentMode : reportParam.PaymentMode) &&
+                                               col.UpiType == (string.IsNullOrEmpty(reportParam.UpiType) ? col.UpiType : reportParam.UpiType) &&
+                                               col.PartyId == (string.IsNullOrEmpty(reportParam.Id) ? col.PartyId : int.Parse(reportParam.Id!))).OrderBy(ord => ord.InvoiceDate).Select(row => new PurchaseVM
                                                {
                                                    PurchaseId = row.PurchaseId,
                                                    InvoiceNo = row.InvoiceNo,
@@ -405,7 +405,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<InventoryValuation>> GetInventoryValuation(string filter)
         {
-            if (filter.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(filter))
             {
                 return await dbContext.Items.OrderBy(ord => ord.ItemName).Select(row => new InventoryValuation()
                 {
