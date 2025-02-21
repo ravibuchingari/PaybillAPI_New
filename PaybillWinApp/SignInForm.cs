@@ -94,6 +94,14 @@ namespace PaybillWinApp
                 {
                     AppVariables.User = response.User;
                     AppVariables.DashboardPref = response.Pref;
+                    AppVariables.UserParameter = new UserParam()
+                    {
+                        UserRowId = response.User.UserRowId,
+                        SecurityKey = response.User.SecurityKey!,
+                        ClientUniqueId = response.User.Client?.ClientUniqueId!,
+                        ClientId = response.User.Client?.ClientId!
+                    };
+
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }

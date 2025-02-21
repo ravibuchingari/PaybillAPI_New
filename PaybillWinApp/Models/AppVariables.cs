@@ -11,6 +11,7 @@ namespace PaybillWinApp.Models
         public static readonly string[] PAYBILL_API_AES_KEY_AND_IV = ["PgUpwEBhCapsVkScrLKEySGNSkEYPgDn", "NumPrtScnLockvhI"];
         public static UserVM User = new();
         public static DashboardPrefVM DashboardPref = new();
+        public static UserParam UserParameter = new();
         public static ServiceProvider? ServiceProvider { get; set; }
     }
 }
