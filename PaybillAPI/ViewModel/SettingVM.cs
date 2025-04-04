@@ -41,6 +41,7 @@ namespace PaybillAPI.ViewModel
         public string? EmailBodyForSalesInvoice { get; set; }
         public bool IsSalesPriceEdited { get; set; }
         public bool IsCurrencyDecimalNotRequired { get; set; }
+        public string LocalLanguageCode { get; set; } = null!;
         public PrintHeader HeaderModel { get; set; } = new PrintHeader();
 
     }

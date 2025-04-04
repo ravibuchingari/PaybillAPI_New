@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.Models;
 using PaybillAPI.Repositories.Service;

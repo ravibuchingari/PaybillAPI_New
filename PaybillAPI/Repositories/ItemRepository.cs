@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -213,6 +212,7 @@ namespace PaybillAPI.Repositories
                 item.GstId = itemVM.GstModel.GstId;
             item.ItemCode = itemVM.ItemCode;
             item.ItemName = itemVM.ItemName;
+            item.ItemLocalName = itemVM.ItemLocalName;
             item.AliasName = itemVM.AliasName ?? "";
             item.Mrp = itemVM.Mrp;
             item.SalesPrice = itemVM.SalesPrice;
@@ -259,6 +259,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -285,6 +286,7 @@ namespace PaybillAPI.Repositories
                                                         ItemId = row.ItemId,
                                                         ItemCode = row.ItemCode,
                                                         ItemName = row.ItemName,
+                                                        ItemLocalName = row.ItemLocalName,
                                                         AliasName = row.AliasName,
                                                         Mrp = row.Mrp,
                                                         SalesPrice = row.SalesPrice,
@@ -312,6 +314,7 @@ namespace PaybillAPI.Repositories
                 ItemId = row.ItemId,
                 ItemCode = row.ItemCode,
                 ItemName = row.ItemName,
+                ItemLocalName = row.ItemLocalName,
                 AliasName = row.AliasName,
                 Mrp = row.Mrp,
                 SalesPrice = row.SalesPrice,
@@ -375,6 +378,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -398,6 +402,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -424,6 +429,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -438,6 +444,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -455,6 +462,7 @@ namespace PaybillAPI.Repositories
                 ItemId = row.ItemId,
                 ItemCode = row.ItemCode,
                 ItemName = row.ItemName,
+                ItemLocalName = row.ItemLocalName,
                 AliasName = row.AliasName,
                 Mrp = row.Mrp,
                 SalesPrice = row.SalesPrice,
