@@ -9,6 +9,7 @@ using PaybillAPI.Service;
 using Serilog;
 using System.Text.Json;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 var jwtParameters = new JwtTokenParameter()

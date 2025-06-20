@@ -24,6 +24,9 @@ public partial class Item
     [StringLength(100)]
     public string ItemName { get; set; } = null!;
 
+    [StringLength(100)]
+    public string ItemLocalName { get; set; } = null!;
+
     [StringLength(250)]
     public string? AliasName { get; set; }
 

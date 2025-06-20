@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PayBillApp.WinApp.Models;
 using PayBillApp.WinApp.UserControls;
+using PaybillWinApp;
+using PaybillWinApp.MasterForms;
 using PaybillWinApp.Models;
 using PaybillWinApp.Repositories;
 using System;
@@ -209,28 +212,29 @@ namespace PayBillApp.WinApp
 
         private void BtnMenu_Click(object sender, EventArgs e)
         {
-            MenuForm menuForm = new();
-            menuForm.ShowDialog();
-            if (menuForm.DialogResult == DialogResult.OK)
-            {
-                switch (menuForm.SelectedItem)
-                {
-                    case (int)EnumClass.MenuItem.ViewSales:
-                        btnViewSales.PerformClick();
-                        break;
-                    case (int)EnumClass.MenuItem.LoadUtilities:
-                        GetUtilities();
-                        break;
-                    case (int)EnumClass.MenuItem.Reset:
-                        ResetForm();
-                        break;
-                    case (int)EnumClass.MenuItem.Minimize:
-                        this.WindowState = FormWindowState.Minimized;
-                        break;
-                    default:
-                        break;
-                }
-            }
+            MenuStrip.Show(btnMenu, 0, 0);
+            //MenuForm menuForm = new();
+            //menuForm.ShowDialog();
+            //if (menuForm.DialogResult == DialogResult.OK)
+            //{
+            //    switch (menuForm.SelectedItem)
+            //    {
+            //        case (int)EnumClass.MenuItem.ViewSales:
+            //            btnViewSales.PerformClick();
+            //            break;
+            //        case (int)EnumClass.MenuItem.LoadUtilities:
+            //            GetUtilities();
+            //            break;
+            //        case (int)EnumClass.MenuItem.Reset:
+            //            ResetForm();
+            //            break;
+            //        case (int)EnumClass.MenuItem.Minimize:
+            //            this.WindowState = FormWindowState.Minimized;
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //}
         }
 
         private void ResetForm()
@@ -876,6 +880,12 @@ namespace PayBillApp.WinApp
             //{
             //    MessageBox.Show(ex.Message, ConstantVariables.MESSAGE_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
             //}
+        }
+
+        private void MenuItemCategory_Click(object sender, EventArgs e)
+        {
+            CategoryForm categoryForm = AppVariables.ServiceProvider?.GetRequiredService<CategoryForm>()!;
+            categoryForm.ShowDialog();
         }
     }
 }

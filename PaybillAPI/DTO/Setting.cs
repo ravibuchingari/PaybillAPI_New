@@ -143,6 +143,9 @@ public partial class Setting
 
     public sbyte IsCurrencyDecimalNotRequired { get; set; }
 
+    [StringLength(2)]
+    public string LocalLanguageCode { get; set; } = null!;
+
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]
     public virtual MessageTemplate? BalanceMessage { get; set; }

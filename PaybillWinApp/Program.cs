@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PayBillApp.WinApp;
+using PaybillWinApp.MasterForms;
 using PaybillWinApp.Models;
 using PaybillWinApp.RegisterForms;
 using PaybillWinApp.Repositories;
@@ -24,12 +25,14 @@ namespace PaybillWinApp
             services.AddTransient<ClientValidationForm>();
             services.AddTransient<OTPValidationForm>();
             services.AddTransient<SalesInvoiceForm>();
+            services.AddTransient<CategoryForm>();
 
 
             services.AddSingleton<ISharedRepository, SharedRepository>();
             services.AddSingleton<ICommonRepository, CommonRepository>();
             services.AddSingleton<IProviderRepository, ProviderRepository>();
             services.AddSingleton<ISQLiteHelper, SQLiteHelper>();
+            services.AddSingleton<IItemRepository, ItemRepository>();
 
             AppVariables.ServiceProvider = services.BuildServiceProvider();
 

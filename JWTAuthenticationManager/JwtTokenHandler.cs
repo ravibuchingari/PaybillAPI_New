@@ -9,10 +9,10 @@ namespace Authentication.JWTAuthenticationManager
     {
         public async Task<AuthenticationResponse> GenerateToken(AuthenticationResponse authenticationResponse, bool isTemporary = false)
         {
-            if (authenticationResponse.UserRowId.IsNullOrEmpty() ||
-                authenticationResponse.UserId.IsNullOrEmpty() ||
-                authenticationResponse.UserRole.IsNullOrEmpty() ||
-                authenticationResponse.SecurityKey.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(authenticationResponse.UserRowId) ||
+                string.IsNullOrEmpty(authenticationResponse.UserId) ||
+                string.IsNullOrEmpty(authenticationResponse.UserRole) ||
+                string.IsNullOrEmpty(authenticationResponse.SecurityKey))
                 return new AuthenticationResponse() { IsSuccess = false, Message = "User authentication failed." };
 
             byte[] tokenKey = Encoding.ASCII.GetBytes(jwtTokenParameter.JwtSecurityKey);

@@ -5,6 +5,7 @@
         public int ItemId { get; set; }
         public string ItemCode { get; set; } = null!;
         public string ItemName { get; set; } = null!;
+        public string ItemLocalName { get; set; } = null!;
         public string? AliasName { get; set; }
         public float Mrp { get; set; }
         public float SalesPrice { get; set; }

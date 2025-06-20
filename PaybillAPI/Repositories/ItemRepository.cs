@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -213,6 +212,7 @@ namespace PaybillAPI.Repositories
                 item.GstId = itemVM.GstModel.GstId;
             item.ItemCode = itemVM.ItemCode;
             item.ItemName = itemVM.ItemName;
+            item.ItemLocalName = itemVM.ItemLocalName;
             item.AliasName = itemVM.AliasName ?? "";
             item.Mrp = itemVM.Mrp;
             item.SalesPrice = itemVM.SalesPrice;
@@ -253,12 +253,13 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<ItemVM>> GetItems(int categoryId, string filter)
         {
-            if (filter.Trim().IsNullOrEmpty())
+            if (string.IsNullOrEmpty(filter.Trim()))
                 return await dbContext.Items.Where(col => col.CategoryId == (categoryId > 0 ? categoryId : col.CategoryId)).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -285,6 +286,7 @@ namespace PaybillAPI.Repositories
                                                         ItemId = row.ItemId,
                                                         ItemCode = row.ItemCode,
                                                         ItemName = row.ItemName,
+                                                        ItemLocalName = row.ItemLocalName,
                                                         AliasName = row.AliasName,
                                                         Mrp = row.Mrp,
                                                         SalesPrice = row.SalesPrice,
@@ -312,6 +314,7 @@ namespace PaybillAPI.Repositories
                 ItemId = row.ItemId,
                 ItemCode = row.ItemCode,
                 ItemName = row.ItemName,
+                ItemLocalName = row.ItemLocalName,
                 AliasName = row.AliasName,
                 Mrp = row.Mrp,
                 SalesPrice = row.SalesPrice,
@@ -368,13 +371,14 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<ItemVM>> GetItemsForOffline(bool isAllItems, string? lastUpdatedTime)
         {
-            if (isAllItems || lastUpdatedTime.IsNullOrEmpty())
+            if (isAllItems || string.IsNullOrEmpty(lastUpdatedTime))
             {
                 return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -398,6 +402,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -418,12 +423,13 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<ItemVM>> SearchItems(string filter)
         {
-            if (filter.Trim().IsNullOrEmpty())
+            if (string.IsNullOrEmpty(filter.Trim()))
                 return await dbContext.Items.Where(col => col.IsActive == 1).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -438,6 +444,7 @@ namespace PaybillAPI.Repositories
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
                     ItemName = row.ItemName,
+                    ItemLocalName = row.ItemLocalName,
                     AliasName = row.AliasName,
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
@@ -455,6 +462,7 @@ namespace PaybillAPI.Repositories
                 ItemId = row.ItemId,
                 ItemCode = row.ItemCode,
                 ItemName = row.ItemName,
+                ItemLocalName = row.ItemLocalName,
                 AliasName = row.AliasName,
                 Mrp = row.Mrp,
                 SalesPrice = row.SalesPrice,

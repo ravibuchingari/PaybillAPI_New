@@ -50,6 +50,7 @@ namespace PaybillAPI.Repositories
                 EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
                 IsSalesPriceEdited = row.IsSalesPriceEdited == 1,
                 IsCurrencyDecimalNotRequired = row.IsCurrencyDecimalNotRequired == 1,
+                LocalLanguageCode = row.LocalLanguageCode,
 
                 HeaderModel = new PrintHeader()
                 {
@@ -126,6 +127,8 @@ namespace PaybillAPI.Repositories
             setting.EmailBodyForSalesInvoice = settingVM.EmailBodyForSalesInvoice;
             setting.IsSalesPriceEdited = (sbyte)settingVM.IsSalesPriceEdited.GetHashCode();
             setting.IsCurrencyDecimalNotRequired = (sbyte)settingVM.IsCurrencyDecimalNotRequired.GetHashCode();
+
+            setting.LocalLanguageCode = settingVM.LocalLanguageCode;
             return setting;
         }
 

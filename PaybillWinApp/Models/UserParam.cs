@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PaybillWinApp.Models
+{
+    public class UserParam
+    {
+        public int UserRowId { get; set; }
+        public string SecurityKey { get; set; } = null!;
+        public string ClientUniqueId { get; set; } = null!;
+        public string ClientId { get; set; } = null!;
+        public string? remarks { get; set; } = string.Empty;
+        //public SettingVM? SettingModel { get; set; }
+        public CategoryVM? CategoryModel { get; set; }
+        //public GstVM? GstModel { get; set; }
+        //public ItemVM? ItemModel { get; set; }
+        //public ServiceTypeVM? ServiceTypeModel { get; set; }
+        //public PartyVM? PartyModel { get; set; }
+        //public PurchaseVM? PurchaseModel { get; set; }
+        //public SalesVM? SalesModel { get; set; }
+        //public TransactionVM? TransactionModel { get; set; }
+        public UserVM? UserModel { get; set; }
+        //public PurchaseOrderVM? PurchaseOrderModel { get; set; }
+    }
+}

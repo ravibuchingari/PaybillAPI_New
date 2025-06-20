@@ -28,1248 +28,1338 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SalesInvoiceForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblClientName = new System.Windows.Forms.Label();
-            this.chkBarcodeOnly = new System.Windows.Forms.CheckBox();
-            this.lblInvoiceNo = new System.Windows.Forms.Label();
-            this.lblInvoiceDate = new System.Windows.Forms.Label();
-            this.panelRounded1 = new PayBillApp.WinApp.UserControls.PanelRounded();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.txtQuantity = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.btnAddItem = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.pnlKeypboard = new System.Windows.Forms.TableLayoutPanel();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnMenu = new System.Windows.Forms.Button();
-            this.button37 = new System.Windows.Forms.Button();
-            this.button36 = new System.Windows.Forms.Button();
-            this.button35 = new System.Windows.Forms.Button();
-            this.button34 = new System.Windows.Forms.Button();
-            this.button33 = new System.Windows.Forms.Button();
-            this.button32 = new System.Windows.Forms.Button();
-            this.button31 = new System.Windows.Forms.Button();
-            this.button30 = new System.Windows.Forms.Button();
-            this.button29 = new System.Windows.Forms.Button();
-            this.button28 = new System.Windows.Forms.Button();
-            this.button27 = new System.Windows.Forms.Button();
-            this.button26 = new System.Windows.Forms.Button();
-            this.button25 = new System.Windows.Forms.Button();
-            this.button24 = new System.Windows.Forms.Button();
-            this.button23 = new System.Windows.Forms.Button();
-            this.button22 = new System.Windows.Forms.Button();
-            this.button21 = new System.Windows.Forms.Button();
-            this.button20 = new System.Windows.Forms.Button();
-            this.button19 = new System.Windows.Forms.Button();
-            this.button18 = new System.Windows.Forms.Button();
-            this.button17 = new System.Windows.Forms.Button();
-            this.button16 = new System.Windows.Forms.Button();
-            this.button15 = new System.Windows.Forms.Button();
-            this.button14 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
-            this.btnSpace = new System.Windows.Forms.Button();
-            this.button12 = new System.Windows.Forms.Button();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.btnBack = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.chkCapsLock = new System.Windows.Forms.CheckBox();
-            this.pnlParticulars = new System.Windows.Forms.FlowLayoutPanel();
-            this.gvwItems = new System.Windows.Forms.DataGridView();
-            this.ItemId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemMRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemAaliasNname = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemDiscountPer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ItemGSTPer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LocalLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pnlProcess = new System.Windows.Forms.Panel();
-            this.btnExitProcess = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.btnEditItem = new System.Windows.Forms.Button();
-            this.btnResetForm = new System.Windows.Forms.Button();
-            this.pnlCashReceived = new PayBillApp.WinApp.UserControls.PanelRounded();
-            this.lblBalance = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lblCashReceived = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lblInvoiceAmount = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.btnViewSales = new System.Windows.Forms.Button();
-            this.btnClear = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.panelRounded1.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.pnlKeypboard.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gvwItems)).BeginInit();
-            this.pnlProcess.SuspendLayout();
-            this.pnlCashReceived.SuspendLayout();
-            this.SuspendLayout();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            pictureBox1 = new PictureBox();
+            lblClientName = new Label();
+            chkBarcodeOnly = new CheckBox();
+            lblInvoiceNo = new Label();
+            lblInvoiceDate = new Label();
+            panelRounded1 = new UserControls.PanelRounded();
+            groupBox3 = new GroupBox();
+            txtQuantity = new TextBox();
+            groupBox2 = new GroupBox();
+            txtSearch = new TextBox();
+            btnAddItem = new Button();
+            groupBox1 = new GroupBox();
+            pnlKeypboard = new TableLayoutPanel();
+            btnExit = new Button();
+            btnSave = new Button();
+            btnMenu = new Button();
+            button37 = new Button();
+            button36 = new Button();
+            button35 = new Button();
+            button34 = new Button();
+            button33 = new Button();
+            button32 = new Button();
+            button31 = new Button();
+            button30 = new Button();
+            button29 = new Button();
+            button28 = new Button();
+            button27 = new Button();
+            button26 = new Button();
+            button25 = new Button();
+            button24 = new Button();
+            button23 = new Button();
+            button22 = new Button();
+            button21 = new Button();
+            button20 = new Button();
+            button19 = new Button();
+            button18 = new Button();
+            button17 = new Button();
+            button16 = new Button();
+            button15 = new Button();
+            button14 = new Button();
+            button13 = new Button();
+            btnSpace = new Button();
+            button12 = new Button();
+            button11 = new Button();
+            button10 = new Button();
+            button9 = new Button();
+            button8 = new Button();
+            btnBack = new Button();
+            button6 = new Button();
+            button5 = new Button();
+            button4 = new Button();
+            button3 = new Button();
+            button2 = new Button();
+            button7 = new Button();
+            chkCapsLock = new CheckBox();
+            pnlParticulars = new FlowLayoutPanel();
+            gvwItems = new DataGridView();
+            ItemId = new DataGridViewTextBoxColumn();
+            ItemCode = new DataGridViewTextBoxColumn();
+            ItemName = new DataGridViewTextBoxColumn();
+            ItemMRP = new DataGridViewTextBoxColumn();
+            ItemPrice = new DataGridViewTextBoxColumn();
+            ItemAaliasNname = new DataGridViewTextBoxColumn();
+            ItemDiscountPer = new DataGridViewTextBoxColumn();
+            ItemGSTPer = new DataGridViewTextBoxColumn();
+            LocalLanguage = new DataGridViewTextBoxColumn();
+            pnlProcess = new Panel();
+            btnExitProcess = new Button();
+            label1 = new Label();
+            btnEditItem = new Button();
+            btnResetForm = new Button();
+            pnlCashReceived = new UserControls.PanelRounded();
+            lblBalance = new Label();
+            label6 = new Label();
+            lblCashReceived = new Label();
+            label4 = new Label();
+            lblInvoiceAmount = new Label();
+            label2 = new Label();
+            btnViewSales = new Button();
+            btnClear = new Button();
+            MenuStrip = new ContextMenuStrip(components);
+            MenuItemMaster = new ToolStripMenuItem();
+            MenuItemCategory = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripMenuItem();
+            toolStripMenuItem4 = new ToolStripMenuItem();
+            toolStripMenuItem6 = new ToolStripMenuItem();
+            MenuItemVendor = new ToolStripMenuItem();
+            MenuItemMessage = new ToolStripMenuItem();
+            MenuItemUser = new ToolStripMenuItem();
+            MenuItemSales = new ToolStripMenuItem();
+            MenuItemPurchase = new ToolStripMenuItem();
+            MenuItemUtilities = new ToolStripMenuItem();
+            MenuItemReports = new ToolStripMenuItem();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            panelRounded1.SuspendLayout();
+            groupBox3.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox1.SuspendLayout();
+            pnlKeypboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)gvwItems).BeginInit();
+            pnlProcess.SuspendLayout();
+            pnlCashReceived.SuspendLayout();
+            MenuStrip.SuspendLayout();
+            SuspendLayout();
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(1328, 8);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(117, 99);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
+            pictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pictureBox1.BackColor = SystemColors.Control;
+            pictureBox1.BorderStyle = BorderStyle.Fixed3D;
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(1328, 8);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(117, 99);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.TabIndex = 5;
+            pictureBox1.TabStop = false;
             // 
             // lblClientName
             // 
-            this.lblClientName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblClientName.BackColor = System.Drawing.SystemColors.Control;
-            this.lblClientName.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblClientName.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblClientName.Location = new System.Drawing.Point(923, 8);
-            this.lblClientName.Name = "lblClientName";
-            this.lblClientName.Size = new System.Drawing.Size(399, 56);
-            this.lblClientName.TabIndex = 6;
-            this.lblClientName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblClientName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblClientName.BackColor = SystemColors.Control;
+            lblClientName.BorderStyle = BorderStyle.Fixed3D;
+            lblClientName.Font = new Font("Microsoft Sans Serif", 18F);
+            lblClientName.Location = new Point(923, 8);
+            lblClientName.Name = "lblClientName";
+            lblClientName.Size = new Size(399, 56);
+            lblClientName.TabIndex = 6;
+            lblClientName.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // chkBarcodeOnly
             // 
-            this.chkBarcodeOnly.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkBarcodeOnly.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkBarcodeOnly.BackColor = System.Drawing.Color.DarkGreen;
-            this.chkBarcodeOnly.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.chkBarcodeOnly.ForeColor = System.Drawing.Color.White;
-            this.chkBarcodeOnly.Location = new System.Drawing.Point(923, 72);
-            this.chkBarcodeOnly.Name = "chkBarcodeOnly";
-            this.chkBarcodeOnly.Size = new System.Drawing.Size(107, 33);
-            this.chkBarcodeOnly.TabIndex = 7;
-            this.chkBarcodeOnly.Text = "Barcode Only";
-            this.chkBarcodeOnly.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.chkBarcodeOnly.UseVisualStyleBackColor = false;
-            this.chkBarcodeOnly.Click += new System.EventHandler(this.ChkBarcodeOnly_Click);
+            chkBarcodeOnly.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkBarcodeOnly.Appearance = Appearance.Button;
+            chkBarcodeOnly.BackColor = Color.DarkGreen;
+            chkBarcodeOnly.FlatStyle = FlatStyle.Popup;
+            chkBarcodeOnly.ForeColor = Color.White;
+            chkBarcodeOnly.Location = new Point(923, 72);
+            chkBarcodeOnly.Name = "chkBarcodeOnly";
+            chkBarcodeOnly.Size = new Size(107, 33);
+            chkBarcodeOnly.TabIndex = 7;
+            chkBarcodeOnly.Text = "Barcode Only";
+            chkBarcodeOnly.TextAlign = ContentAlignment.MiddleCenter;
+            chkBarcodeOnly.UseVisualStyleBackColor = false;
+            chkBarcodeOnly.Click += ChkBarcodeOnly_Click;
             // 
             // lblInvoiceNo
             // 
-            this.lblInvoiceNo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblInvoiceNo.BackColor = System.Drawing.SystemColors.Control;
-            this.lblInvoiceNo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblInvoiceNo.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblInvoiceNo.ForeColor = System.Drawing.Color.White;
-            this.lblInvoiceNo.Location = new System.Drawing.Point(1036, 72);
-            this.lblInvoiceNo.Name = "lblInvoiceNo";
-            this.lblInvoiceNo.Size = new System.Drawing.Size(138, 33);
-            this.lblInvoiceNo.TabIndex = 8;
-            this.lblInvoiceNo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblInvoiceNo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblInvoiceNo.BackColor = SystemColors.Control;
+            lblInvoiceNo.BorderStyle = BorderStyle.Fixed3D;
+            lblInvoiceNo.Font = new Font("Roboto", 10F, FontStyle.Bold);
+            lblInvoiceNo.ForeColor = Color.White;
+            lblInvoiceNo.Location = new Point(1036, 72);
+            lblInvoiceNo.Name = "lblInvoiceNo";
+            lblInvoiceNo.Size = new Size(138, 33);
+            lblInvoiceNo.TabIndex = 8;
+            lblInvoiceNo.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblInvoiceDate
             // 
-            this.lblInvoiceDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblInvoiceDate.BackColor = System.Drawing.SystemColors.Control;
-            this.lblInvoiceDate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblInvoiceDate.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblInvoiceDate.Location = new System.Drawing.Point(1182, 72);
-            this.lblInvoiceDate.Name = "lblInvoiceDate";
-            this.lblInvoiceDate.Size = new System.Drawing.Size(141, 33);
-            this.lblInvoiceDate.TabIndex = 9;
-            this.lblInvoiceDate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblInvoiceDate.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblInvoiceDate.BackColor = SystemColors.Control;
+            lblInvoiceDate.BorderStyle = BorderStyle.Fixed3D;
+            lblInvoiceDate.Font = new Font("Roboto", 10F);
+            lblInvoiceDate.Location = new Point(1182, 72);
+            lblInvoiceDate.Name = "lblInvoiceDate";
+            lblInvoiceDate.Size = new Size(141, 33);
+            lblInvoiceDate.TabIndex = 9;
+            lblInvoiceDate.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // panelRounded1
             // 
-            this.panelRounded1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelRounded1.BackColor = System.Drawing.Color.White;
-            this.panelRounded1.BorderColor = System.Drawing.Color.White;
-            this.panelRounded1.Controls.Add(this.groupBox3);
-            this.panelRounded1.Controls.Add(this.groupBox2);
-            this.panelRounded1.Controls.Add(this.btnAddItem);
-            this.panelRounded1.Edge = 20;
-            this.panelRounded1.Location = new System.Drawing.Point(10, 8);
-            this.panelRounded1.Name = "panelRounded1";
-            this.panelRounded1.Size = new System.Drawing.Size(901, 99);
-            this.panelRounded1.TabIndex = 10;
+            panelRounded1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panelRounded1.BackColor = Color.White;
+            panelRounded1.Controls.Add(groupBox3);
+            panelRounded1.Controls.Add(groupBox2);
+            panelRounded1.Controls.Add(btnAddItem);
+            panelRounded1.Location = new Point(10, 8);
+            panelRounded1.Name = "panelRounded1";
+            panelRounded1.Size = new Size(901, 99);
+            panelRounded1.TabIndex = 10;
             // 
             // groupBox3
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.txtQuantity);
-            this.groupBox3.Location = new System.Drawing.Point(714, 6);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(71, 79);
-            this.groupBox3.TabIndex = 6;
-            this.groupBox3.TabStop = false;
+            groupBox3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            groupBox3.Controls.Add(txtQuantity);
+            groupBox3.Location = new Point(714, 6);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(71, 79);
+            groupBox3.TabIndex = 6;
+            groupBox3.TabStop = false;
             // 
             // txtQuantity
             // 
-            this.txtQuantity.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtQuantity.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtQuantity.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtQuantity.Location = new System.Drawing.Point(6, 26);
-            this.txtQuantity.Name = "txtQuantity";
-            this.txtQuantity.Size = new System.Drawing.Size(59, 42);
-            this.txtQuantity.TabIndex = 0;
-            this.txtQuantity.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtQuantity.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TxtQuantity_KeyDown);
-            this.txtQuantity.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtQuantity_KeyPress);
+            txtQuantity.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            txtQuantity.BorderStyle = BorderStyle.None;
+            txtQuantity.Font = new Font("Microsoft Sans Serif", 21.75F);
+            txtQuantity.Location = new Point(6, 26);
+            txtQuantity.Name = "txtQuantity";
+            txtQuantity.Size = new Size(59, 42);
+            txtQuantity.TabIndex = 0;
+            txtQuantity.TextAlign = HorizontalAlignment.Center;
+            txtQuantity.KeyDown += TxtQuantity_KeyDown;
+            txtQuantity.KeyPress += TxtQuantity_KeyPress;
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.txtSearch);
-            this.groupBox2.Location = new System.Drawing.Point(13, 6);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(696, 79);
-            this.groupBox2.TabIndex = 5;
-            this.groupBox2.TabStop = false;
+            groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(txtSearch);
+            groupBox2.Location = new Point(13, 6);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(696, 79);
+            groupBox2.TabIndex = 5;
+            groupBox2.TabStop = false;
             // 
             // txtSearch
             // 
-            this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtSearch.Location = new System.Drawing.Point(17, 26);
-            this.txtSearch.MaxLength = 50;
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(663, 42);
-            this.txtSearch.TabIndex = 0;
+            txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            txtSearch.BorderStyle = BorderStyle.None;
+            txtSearch.Font = new Font("Microsoft Sans Serif", 21.75F);
+            txtSearch.Location = new Point(17, 26);
+            txtSearch.MaxLength = 50;
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(663, 42);
+            txtSearch.TabIndex = 0;
             // 
             // btnAddItem
             // 
-            this.btnAddItem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.btnAddItem.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnAddItem.ForeColor = System.Drawing.Color.Gray;
-            this.btnAddItem.Location = new System.Drawing.Point(789, 12);
-            this.btnAddItem.Name = "btnAddItem";
-            this.btnAddItem.Size = new System.Drawing.Size(97, 74);
-            this.btnAddItem.TabIndex = 2;
-            this.btnAddItem.Text = "ADD";
-            this.btnAddItem.UseVisualStyleBackColor = false;
-            this.btnAddItem.Click += new System.EventHandler(this.BtnAddItem_Click);
+            btnAddItem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAddItem.BackColor = Color.FromArgb(224, 224, 224);
+            btnAddItem.Font = new Font("Roboto", 10F, FontStyle.Bold);
+            btnAddItem.ForeColor = Color.Gray;
+            btnAddItem.Location = new Point(789, 12);
+            btnAddItem.Name = "btnAddItem";
+            btnAddItem.Size = new Size(97, 74);
+            btnAddItem.TabIndex = 2;
+            btnAddItem.Text = "ADD";
+            btnAddItem.UseVisualStyleBackColor = false;
+            btnAddItem.Click += BtnAddItem_Click;
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.pnlKeypboard);
-            this.groupBox1.Location = new System.Drawing.Point(10, 106);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(901, 620);
-            this.groupBox1.TabIndex = 11;
-            this.groupBox1.TabStop = false;
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(pnlKeypboard);
+            groupBox1.Location = new Point(10, 106);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(901, 620);
+            groupBox1.TabIndex = 11;
+            groupBox1.TabStop = false;
             // 
             // pnlKeypboard
             // 
-            this.pnlKeypboard.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlKeypboard.ColumnCount = 6;
-            this.pnlKeypboard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.pnlKeypboard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66666F));
-            this.pnlKeypboard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66666F));
-            this.pnlKeypboard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66666F));
-            this.pnlKeypboard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66666F));
-            this.pnlKeypboard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66666F));
-            this.pnlKeypboard.Controls.Add(this.btnExit, 5, 6);
-            this.pnlKeypboard.Controls.Add(this.btnSave, 4, 6);
-            this.pnlKeypboard.Controls.Add(this.btnMenu, 3, 6);
-            this.pnlKeypboard.Controls.Add(this.button37, 1, 6);
-            this.pnlKeypboard.Controls.Add(this.button36, 0, 6);
-            this.pnlKeypboard.Controls.Add(this.button35, 5, 5);
-            this.pnlKeypboard.Controls.Add(this.button34, 4, 5);
-            this.pnlKeypboard.Controls.Add(this.button33, 3, 5);
-            this.pnlKeypboard.Controls.Add(this.button32, 2, 5);
-            this.pnlKeypboard.Controls.Add(this.button31, 1, 5);
-            this.pnlKeypboard.Controls.Add(this.button30, 0, 5);
-            this.pnlKeypboard.Controls.Add(this.button29, 5, 4);
-            this.pnlKeypboard.Controls.Add(this.button28, 4, 4);
-            this.pnlKeypboard.Controls.Add(this.button27, 3, 4);
-            this.pnlKeypboard.Controls.Add(this.button26, 2, 4);
-            this.pnlKeypboard.Controls.Add(this.button25, 1, 4);
-            this.pnlKeypboard.Controls.Add(this.button24, 0, 4);
-            this.pnlKeypboard.Controls.Add(this.button23, 5, 3);
-            this.pnlKeypboard.Controls.Add(this.button22, 4, 3);
-            this.pnlKeypboard.Controls.Add(this.button21, 3, 3);
-            this.pnlKeypboard.Controls.Add(this.button20, 2, 3);
-            this.pnlKeypboard.Controls.Add(this.button19, 1, 3);
-            this.pnlKeypboard.Controls.Add(this.button18, 0, 3);
-            this.pnlKeypboard.Controls.Add(this.button17, 5, 2);
-            this.pnlKeypboard.Controls.Add(this.button16, 4, 2);
-            this.pnlKeypboard.Controls.Add(this.button15, 3, 2);
-            this.pnlKeypboard.Controls.Add(this.button14, 2, 2);
-            this.pnlKeypboard.Controls.Add(this.button13, 1, 2);
-            this.pnlKeypboard.Controls.Add(this.btnSpace, 5, 1);
-            this.pnlKeypboard.Controls.Add(this.button12, 4, 1);
-            this.pnlKeypboard.Controls.Add(this.button11, 3, 1);
-            this.pnlKeypboard.Controls.Add(this.button10, 2, 1);
-            this.pnlKeypboard.Controls.Add(this.button9, 1, 1);
-            this.pnlKeypboard.Controls.Add(this.button8, 0, 1);
-            this.pnlKeypboard.Controls.Add(this.btnBack, 5, 0);
-            this.pnlKeypboard.Controls.Add(this.button6, 4, 0);
-            this.pnlKeypboard.Controls.Add(this.button5, 3, 0);
-            this.pnlKeypboard.Controls.Add(this.button4, 2, 0);
-            this.pnlKeypboard.Controls.Add(this.button3, 1, 0);
-            this.pnlKeypboard.Controls.Add(this.button2, 0, 0);
-            this.pnlKeypboard.Controls.Add(this.button7, 0, 2);
-            this.pnlKeypboard.Controls.Add(this.chkCapsLock, 2, 6);
-            this.pnlKeypboard.Location = new System.Drawing.Point(7, 16);
-            this.pnlKeypboard.Name = "pnlKeypboard";
-            this.pnlKeypboard.RowCount = 7;
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.95F));
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.95F));
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.82F));
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.82F));
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.82F));
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.82F));
-            this.pnlKeypboard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.82F));
-            this.pnlKeypboard.Size = new System.Drawing.Size(886, 597);
-            this.pnlKeypboard.TabIndex = 0;
+            pnlKeypboard.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlKeypboard.ColumnCount = 6;
+            pnlKeypboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            pnlKeypboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66666F));
+            pnlKeypboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66666F));
+            pnlKeypboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66666F));
+            pnlKeypboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66666F));
+            pnlKeypboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66666F));
+            pnlKeypboard.Controls.Add(btnExit, 5, 6);
+            pnlKeypboard.Controls.Add(btnSave, 4, 6);
+            pnlKeypboard.Controls.Add(btnMenu, 3, 6);
+            pnlKeypboard.Controls.Add(button37, 1, 6);
+            pnlKeypboard.Controls.Add(button36, 0, 6);
+            pnlKeypboard.Controls.Add(button35, 5, 5);
+            pnlKeypboard.Controls.Add(button34, 4, 5);
+            pnlKeypboard.Controls.Add(button33, 3, 5);
+            pnlKeypboard.Controls.Add(button32, 2, 5);
+            pnlKeypboard.Controls.Add(button31, 1, 5);
+            pnlKeypboard.Controls.Add(button30, 0, 5);
+            pnlKeypboard.Controls.Add(button29, 5, 4);
+            pnlKeypboard.Controls.Add(button28, 4, 4);
+            pnlKeypboard.Controls.Add(button27, 3, 4);
+            pnlKeypboard.Controls.Add(button26, 2, 4);
+            pnlKeypboard.Controls.Add(button25, 1, 4);
+            pnlKeypboard.Controls.Add(button24, 0, 4);
+            pnlKeypboard.Controls.Add(button23, 5, 3);
+            pnlKeypboard.Controls.Add(button22, 4, 3);
+            pnlKeypboard.Controls.Add(button21, 3, 3);
+            pnlKeypboard.Controls.Add(button20, 2, 3);
+            pnlKeypboard.Controls.Add(button19, 1, 3);
+            pnlKeypboard.Controls.Add(button18, 0, 3);
+            pnlKeypboard.Controls.Add(button17, 5, 2);
+            pnlKeypboard.Controls.Add(button16, 4, 2);
+            pnlKeypboard.Controls.Add(button15, 3, 2);
+            pnlKeypboard.Controls.Add(button14, 2, 2);
+            pnlKeypboard.Controls.Add(button13, 1, 2);
+            pnlKeypboard.Controls.Add(btnSpace, 5, 1);
+            pnlKeypboard.Controls.Add(button12, 4, 1);
+            pnlKeypboard.Controls.Add(button11, 3, 1);
+            pnlKeypboard.Controls.Add(button10, 2, 1);
+            pnlKeypboard.Controls.Add(button9, 1, 1);
+            pnlKeypboard.Controls.Add(button8, 0, 1);
+            pnlKeypboard.Controls.Add(btnBack, 5, 0);
+            pnlKeypboard.Controls.Add(button6, 4, 0);
+            pnlKeypboard.Controls.Add(button5, 3, 0);
+            pnlKeypboard.Controls.Add(button4, 2, 0);
+            pnlKeypboard.Controls.Add(button3, 1, 0);
+            pnlKeypboard.Controls.Add(button2, 0, 0);
+            pnlKeypboard.Controls.Add(button7, 0, 2);
+            pnlKeypboard.Controls.Add(chkCapsLock, 2, 6);
+            pnlKeypboard.Location = new Point(7, 16);
+            pnlKeypboard.Name = "pnlKeypboard";
+            pnlKeypboard.RowCount = 7;
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 17.95F));
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 17.95F));
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 12.82F));
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 12.82F));
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 12.82F));
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 12.82F));
+            pnlKeypboard.RowStyles.Add(new RowStyle(SizeType.Percent, 12.82F));
+            pnlKeypboard.Size = new Size(886, 597);
+            pnlKeypboard.TabIndex = 0;
             // 
             // btnExit
             // 
-            this.btnExit.BackColor = System.Drawing.Color.DarkRed;
-            this.btnExit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnExit.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnExit.ForeColor = System.Drawing.Color.White;
-            this.btnExit.Location = new System.Drawing.Point(738, 521);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(145, 73);
-            this.btnExit.TabIndex = 41;
-            this.btnExit.Tag = "0";
-            this.btnExit.Text = "EXIT";
-            this.btnExit.UseVisualStyleBackColor = false;
-            this.btnExit.Click += new System.EventHandler(this.BtnExit_Click);
+            btnExit.BackColor = Color.DarkRed;
+            btnExit.Dock = DockStyle.Fill;
+            btnExit.Font = new Font("Roboto", 10F, FontStyle.Bold);
+            btnExit.ForeColor = Color.White;
+            btnExit.Location = new Point(738, 521);
+            btnExit.Name = "btnExit";
+            btnExit.Size = new Size(145, 73);
+            btnExit.TabIndex = 41;
+            btnExit.Tag = "0";
+            btnExit.Text = "EXIT";
+            btnExit.UseVisualStyleBackColor = false;
+            btnExit.Click += BtnExit_Click;
             // 
             // btnSave
             // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(81)))), ((int)(((byte)(181)))));
-            this.btnSave.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSave.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(591, 521);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(141, 73);
-            this.btnSave.TabIndex = 40;
-            this.btnSave.Tag = "0";
-            this.btnSave.Text = "&SAVE";
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
+            btnSave.BackColor = Color.FromArgb(63, 81, 181);
+            btnSave.Dock = DockStyle.Fill;
+            btnSave.Font = new Font("Roboto", 10F, FontStyle.Bold);
+            btnSave.ForeColor = Color.White;
+            btnSave.Location = new Point(591, 521);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new Size(141, 73);
+            btnSave.TabIndex = 40;
+            btnSave.Tag = "0";
+            btnSave.Text = "&SAVE";
+            btnSave.UseVisualStyleBackColor = false;
+            btnSave.Click += BtnSave_Click;
             // 
             // btnMenu
             // 
-            this.btnMenu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnMenu.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnMenu.Image = ((System.Drawing.Image)(resources.GetObject("btnMenu.Image")));
-            this.btnMenu.Location = new System.Drawing.Point(444, 521);
-            this.btnMenu.Name = "btnMenu";
-            this.btnMenu.Size = new System.Drawing.Size(141, 73);
-            this.btnMenu.TabIndex = 39;
-            this.btnMenu.Tag = "0";
-            this.btnMenu.UseVisualStyleBackColor = true;
-            this.btnMenu.Click += new System.EventHandler(this.BtnMenu_Click);
+            btnMenu.Dock = DockStyle.Fill;
+            btnMenu.Font = new Font("Microsoft Sans Serif", 14F);
+            btnMenu.Image = (Image)resources.GetObject("btnMenu.Image");
+            btnMenu.Location = new Point(444, 521);
+            btnMenu.Name = "btnMenu";
+            btnMenu.Size = new Size(141, 73);
+            btnMenu.TabIndex = 39;
+            btnMenu.Tag = "0";
+            btnMenu.UseVisualStyleBackColor = true;
+            btnMenu.Click += BtnMenu_Click;
             // 
             // button37
             // 
-            this.button37.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button37.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button37.Location = new System.Drawing.Point(150, 521);
-            this.button37.Name = "button37";
-            this.button37.Size = new System.Drawing.Size(141, 73);
-            this.button37.TabIndex = 37;
-            this.button37.Tag = "char";
-            this.button37.Text = "Z";
-            this.button37.UseVisualStyleBackColor = true;
-            this.button37.Click += new System.EventHandler(this.BtnChars_Click);
+            button37.Dock = DockStyle.Fill;
+            button37.Font = new Font("Microsoft Sans Serif", 18F);
+            button37.Location = new Point(150, 521);
+            button37.Name = "button37";
+            button37.Size = new Size(141, 73);
+            button37.TabIndex = 37;
+            button37.Tag = "char";
+            button37.Text = "Z";
+            button37.UseVisualStyleBackColor = true;
+            button37.Click += BtnChars_Click;
             // 
             // button36
             // 
-            this.button36.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button36.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button36.Location = new System.Drawing.Point(3, 521);
-            this.button36.Name = "button36";
-            this.button36.Size = new System.Drawing.Size(141, 73);
-            this.button36.TabIndex = 36;
-            this.button36.Tag = "char";
-            this.button36.Text = "Y";
-            this.button36.UseVisualStyleBackColor = true;
-            this.button36.Click += new System.EventHandler(this.BtnChars_Click);
+            button36.Dock = DockStyle.Fill;
+            button36.Font = new Font("Microsoft Sans Serif", 18F);
+            button36.Location = new Point(3, 521);
+            button36.Name = "button36";
+            button36.Size = new Size(141, 73);
+            button36.TabIndex = 36;
+            button36.Tag = "char";
+            button36.Text = "Y";
+            button36.UseVisualStyleBackColor = true;
+            button36.Click += BtnChars_Click;
             // 
             // button35
             // 
-            this.button35.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button35.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button35.Location = new System.Drawing.Point(738, 445);
-            this.button35.Name = "button35";
-            this.button35.Size = new System.Drawing.Size(145, 70);
-            this.button35.TabIndex = 35;
-            this.button35.Tag = "char";
-            this.button35.Text = "X";
-            this.button35.UseVisualStyleBackColor = true;
-            this.button35.Click += new System.EventHandler(this.BtnChars_Click);
+            button35.Dock = DockStyle.Fill;
+            button35.Font = new Font("Microsoft Sans Serif", 18F);
+            button35.Location = new Point(738, 445);
+            button35.Name = "button35";
+            button35.Size = new Size(145, 70);
+            button35.TabIndex = 35;
+            button35.Tag = "char";
+            button35.Text = "X";
+            button35.UseVisualStyleBackColor = true;
+            button35.Click += BtnChars_Click;
             // 
             // button34
             // 
-            this.button34.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button34.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button34.Location = new System.Drawing.Point(591, 445);
-            this.button34.Name = "button34";
-            this.button34.Size = new System.Drawing.Size(141, 70);
-            this.button34.TabIndex = 34;
-            this.button34.Tag = "char";
-            this.button34.Text = "W";
-            this.button34.UseVisualStyleBackColor = true;
-            this.button34.Click += new System.EventHandler(this.BtnChars_Click);
+            button34.Dock = DockStyle.Fill;
+            button34.Font = new Font("Microsoft Sans Serif", 18F);
+            button34.Location = new Point(591, 445);
+            button34.Name = "button34";
+            button34.Size = new Size(141, 70);
+            button34.TabIndex = 34;
+            button34.Tag = "char";
+            button34.Text = "W";
+            button34.UseVisualStyleBackColor = true;
+            button34.Click += BtnChars_Click;
             // 
             // button33
             // 
-            this.button33.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button33.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button33.Location = new System.Drawing.Point(444, 445);
-            this.button33.Name = "button33";
-            this.button33.Size = new System.Drawing.Size(141, 70);
-            this.button33.TabIndex = 33;
-            this.button33.Tag = "char";
-            this.button33.Text = "V";
-            this.button33.UseVisualStyleBackColor = true;
-            this.button33.Click += new System.EventHandler(this.BtnChars_Click);
+            button33.Dock = DockStyle.Fill;
+            button33.Font = new Font("Microsoft Sans Serif", 18F);
+            button33.Location = new Point(444, 445);
+            button33.Name = "button33";
+            button33.Size = new Size(141, 70);
+            button33.TabIndex = 33;
+            button33.Tag = "char";
+            button33.Text = "V";
+            button33.UseVisualStyleBackColor = true;
+            button33.Click += BtnChars_Click;
             // 
             // button32
             // 
-            this.button32.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button32.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button32.Location = new System.Drawing.Point(297, 445);
-            this.button32.Name = "button32";
-            this.button32.Size = new System.Drawing.Size(141, 70);
-            this.button32.TabIndex = 32;
-            this.button32.Tag = "char";
-            this.button32.Text = "U";
-            this.button32.UseVisualStyleBackColor = true;
-            this.button32.Click += new System.EventHandler(this.BtnChars_Click);
+            button32.Dock = DockStyle.Fill;
+            button32.Font = new Font("Microsoft Sans Serif", 18F);
+            button32.Location = new Point(297, 445);
+            button32.Name = "button32";
+            button32.Size = new Size(141, 70);
+            button32.TabIndex = 32;
+            button32.Tag = "char";
+            button32.Text = "U";
+            button32.UseVisualStyleBackColor = true;
+            button32.Click += BtnChars_Click;
             // 
             // button31
             // 
-            this.button31.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button31.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button31.Location = new System.Drawing.Point(150, 445);
-            this.button31.Name = "button31";
-            this.button31.Size = new System.Drawing.Size(141, 70);
-            this.button31.TabIndex = 31;
-            this.button31.Tag = "char";
-            this.button31.Text = "T";
-            this.button31.UseVisualStyleBackColor = true;
-            this.button31.Click += new System.EventHandler(this.BtnChars_Click);
+            button31.Dock = DockStyle.Fill;
+            button31.Font = new Font("Microsoft Sans Serif", 18F);
+            button31.Location = new Point(150, 445);
+            button31.Name = "button31";
+            button31.Size = new Size(141, 70);
+            button31.TabIndex = 31;
+            button31.Tag = "char";
+            button31.Text = "T";
+            button31.UseVisualStyleBackColor = true;
+            button31.Click += BtnChars_Click;
             // 
             // button30
             // 
-            this.button30.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button30.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button30.Location = new System.Drawing.Point(3, 445);
-            this.button30.Name = "button30";
-            this.button30.Size = new System.Drawing.Size(141, 70);
-            this.button30.TabIndex = 30;
-            this.button30.Tag = "char";
-            this.button30.Text = "S";
-            this.button30.UseVisualStyleBackColor = true;
-            this.button30.Click += new System.EventHandler(this.BtnChars_Click);
+            button30.Dock = DockStyle.Fill;
+            button30.Font = new Font("Microsoft Sans Serif", 18F);
+            button30.Location = new Point(3, 445);
+            button30.Name = "button30";
+            button30.Size = new Size(141, 70);
+            button30.TabIndex = 30;
+            button30.Tag = "char";
+            button30.Text = "S";
+            button30.UseVisualStyleBackColor = true;
+            button30.Click += BtnChars_Click;
             // 
             // button29
             // 
-            this.button29.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button29.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button29.Location = new System.Drawing.Point(738, 369);
-            this.button29.Name = "button29";
-            this.button29.Size = new System.Drawing.Size(145, 70);
-            this.button29.TabIndex = 29;
-            this.button29.Tag = "char";
-            this.button29.Text = "R";
-            this.button29.UseVisualStyleBackColor = true;
-            this.button29.Click += new System.EventHandler(this.BtnChars_Click);
+            button29.Dock = DockStyle.Fill;
+            button29.Font = new Font("Microsoft Sans Serif", 18F);
+            button29.Location = new Point(738, 369);
+            button29.Name = "button29";
+            button29.Size = new Size(145, 70);
+            button29.TabIndex = 29;
+            button29.Tag = "char";
+            button29.Text = "R";
+            button29.UseVisualStyleBackColor = true;
+            button29.Click += BtnChars_Click;
             // 
             // button28
             // 
-            this.button28.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button28.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button28.Location = new System.Drawing.Point(591, 369);
-            this.button28.Name = "button28";
-            this.button28.Size = new System.Drawing.Size(141, 70);
-            this.button28.TabIndex = 28;
-            this.button28.Tag = "char";
-            this.button28.Text = "Q";
-            this.button28.UseVisualStyleBackColor = true;
-            this.button28.Click += new System.EventHandler(this.BtnChars_Click);
+            button28.Dock = DockStyle.Fill;
+            button28.Font = new Font("Microsoft Sans Serif", 18F);
+            button28.Location = new Point(591, 369);
+            button28.Name = "button28";
+            button28.Size = new Size(141, 70);
+            button28.TabIndex = 28;
+            button28.Tag = "char";
+            button28.Text = "Q";
+            button28.UseVisualStyleBackColor = true;
+            button28.Click += BtnChars_Click;
             // 
             // button27
             // 
-            this.button27.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button27.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button27.Location = new System.Drawing.Point(444, 369);
-            this.button27.Name = "button27";
-            this.button27.Size = new System.Drawing.Size(141, 70);
-            this.button27.TabIndex = 27;
-            this.button27.Tag = "char";
-            this.button27.Text = "P";
-            this.button27.UseVisualStyleBackColor = true;
-            this.button27.Click += new System.EventHandler(this.BtnChars_Click);
+            button27.Dock = DockStyle.Fill;
+            button27.Font = new Font("Microsoft Sans Serif", 18F);
+            button27.Location = new Point(444, 369);
+            button27.Name = "button27";
+            button27.Size = new Size(141, 70);
+            button27.TabIndex = 27;
+            button27.Tag = "char";
+            button27.Text = "P";
+            button27.UseVisualStyleBackColor = true;
+            button27.Click += BtnChars_Click;
             // 
             // button26
             // 
-            this.button26.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button26.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button26.Location = new System.Drawing.Point(297, 369);
-            this.button26.Name = "button26";
-            this.button26.Size = new System.Drawing.Size(141, 70);
-            this.button26.TabIndex = 26;
-            this.button26.Tag = "char";
-            this.button26.Text = "O";
-            this.button26.UseVisualStyleBackColor = true;
-            this.button26.Click += new System.EventHandler(this.BtnChars_Click);
+            button26.Dock = DockStyle.Fill;
+            button26.Font = new Font("Microsoft Sans Serif", 18F);
+            button26.Location = new Point(297, 369);
+            button26.Name = "button26";
+            button26.Size = new Size(141, 70);
+            button26.TabIndex = 26;
+            button26.Tag = "char";
+            button26.Text = "O";
+            button26.UseVisualStyleBackColor = true;
+            button26.Click += BtnChars_Click;
             // 
             // button25
             // 
-            this.button25.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button25.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button25.Location = new System.Drawing.Point(150, 369);
-            this.button25.Name = "button25";
-            this.button25.Size = new System.Drawing.Size(141, 70);
-            this.button25.TabIndex = 25;
-            this.button25.Tag = "char";
-            this.button25.Text = "N";
-            this.button25.UseVisualStyleBackColor = true;
-            this.button25.Click += new System.EventHandler(this.BtnChars_Click);
+            button25.Dock = DockStyle.Fill;
+            button25.Font = new Font("Microsoft Sans Serif", 18F);
+            button25.Location = new Point(150, 369);
+            button25.Name = "button25";
+            button25.Size = new Size(141, 70);
+            button25.TabIndex = 25;
+            button25.Tag = "char";
+            button25.Text = "N";
+            button25.UseVisualStyleBackColor = true;
+            button25.Click += BtnChars_Click;
             // 
             // button24
             // 
-            this.button24.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button24.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button24.Location = new System.Drawing.Point(3, 369);
-            this.button24.Name = "button24";
-            this.button24.Size = new System.Drawing.Size(141, 70);
-            this.button24.TabIndex = 24;
-            this.button24.Tag = "char";
-            this.button24.Text = "M";
-            this.button24.UseVisualStyleBackColor = true;
-            this.button24.Click += new System.EventHandler(this.BtnChars_Click);
+            button24.Dock = DockStyle.Fill;
+            button24.Font = new Font("Microsoft Sans Serif", 18F);
+            button24.Location = new Point(3, 369);
+            button24.Name = "button24";
+            button24.Size = new Size(141, 70);
+            button24.TabIndex = 24;
+            button24.Tag = "char";
+            button24.Text = "M";
+            button24.UseVisualStyleBackColor = true;
+            button24.Click += BtnChars_Click;
             // 
             // button23
             // 
-            this.button23.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button23.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button23.Location = new System.Drawing.Point(738, 293);
-            this.button23.Name = "button23";
-            this.button23.Size = new System.Drawing.Size(145, 70);
-            this.button23.TabIndex = 23;
-            this.button23.Tag = "char";
-            this.button23.Text = "L";
-            this.button23.UseVisualStyleBackColor = true;
-            this.button23.Click += new System.EventHandler(this.BtnChars_Click);
+            button23.Dock = DockStyle.Fill;
+            button23.Font = new Font("Microsoft Sans Serif", 18F);
+            button23.Location = new Point(738, 293);
+            button23.Name = "button23";
+            button23.Size = new Size(145, 70);
+            button23.TabIndex = 23;
+            button23.Tag = "char";
+            button23.Text = "L";
+            button23.UseVisualStyleBackColor = true;
+            button23.Click += BtnChars_Click;
             // 
             // button22
             // 
-            this.button22.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button22.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button22.Location = new System.Drawing.Point(591, 293);
-            this.button22.Name = "button22";
-            this.button22.Size = new System.Drawing.Size(141, 70);
-            this.button22.TabIndex = 22;
-            this.button22.Tag = "char";
-            this.button22.Text = "K";
-            this.button22.UseVisualStyleBackColor = true;
-            this.button22.Click += new System.EventHandler(this.BtnChars_Click);
+            button22.Dock = DockStyle.Fill;
+            button22.Font = new Font("Microsoft Sans Serif", 18F);
+            button22.Location = new Point(591, 293);
+            button22.Name = "button22";
+            button22.Size = new Size(141, 70);
+            button22.TabIndex = 22;
+            button22.Tag = "char";
+            button22.Text = "K";
+            button22.UseVisualStyleBackColor = true;
+            button22.Click += BtnChars_Click;
             // 
             // button21
             // 
-            this.button21.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button21.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button21.Location = new System.Drawing.Point(444, 293);
-            this.button21.Name = "button21";
-            this.button21.Size = new System.Drawing.Size(141, 70);
-            this.button21.TabIndex = 21;
-            this.button21.Tag = "char";
-            this.button21.Text = "J";
-            this.button21.UseVisualStyleBackColor = true;
-            this.button21.Click += new System.EventHandler(this.BtnChars_Click);
+            button21.Dock = DockStyle.Fill;
+            button21.Font = new Font("Microsoft Sans Serif", 18F);
+            button21.Location = new Point(444, 293);
+            button21.Name = "button21";
+            button21.Size = new Size(141, 70);
+            button21.TabIndex = 21;
+            button21.Tag = "char";
+            button21.Text = "J";
+            button21.UseVisualStyleBackColor = true;
+            button21.Click += BtnChars_Click;
             // 
             // button20
             // 
-            this.button20.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button20.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button20.Location = new System.Drawing.Point(297, 293);
-            this.button20.Name = "button20";
-            this.button20.Size = new System.Drawing.Size(141, 70);
-            this.button20.TabIndex = 20;
-            this.button20.Tag = "char";
-            this.button20.Text = "I";
-            this.button20.UseVisualStyleBackColor = true;
-            this.button20.Click += new System.EventHandler(this.BtnChars_Click);
+            button20.Dock = DockStyle.Fill;
+            button20.Font = new Font("Microsoft Sans Serif", 18F);
+            button20.Location = new Point(297, 293);
+            button20.Name = "button20";
+            button20.Size = new Size(141, 70);
+            button20.TabIndex = 20;
+            button20.Tag = "char";
+            button20.Text = "I";
+            button20.UseVisualStyleBackColor = true;
+            button20.Click += BtnChars_Click;
             // 
             // button19
             // 
-            this.button19.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button19.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button19.Location = new System.Drawing.Point(150, 293);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(141, 70);
-            this.button19.TabIndex = 19;
-            this.button19.Tag = "char";
-            this.button19.Text = "H";
-            this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.BtnChars_Click);
+            button19.Dock = DockStyle.Fill;
+            button19.Font = new Font("Microsoft Sans Serif", 18F);
+            button19.Location = new Point(150, 293);
+            button19.Name = "button19";
+            button19.Size = new Size(141, 70);
+            button19.TabIndex = 19;
+            button19.Tag = "char";
+            button19.Text = "H";
+            button19.UseVisualStyleBackColor = true;
+            button19.Click += BtnChars_Click;
             // 
             // button18
             // 
-            this.button18.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button18.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button18.Location = new System.Drawing.Point(3, 293);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(141, 70);
-            this.button18.TabIndex = 18;
-            this.button18.Tag = "char";
-            this.button18.Text = "G";
-            this.button18.UseVisualStyleBackColor = true;
-            this.button18.Click += new System.EventHandler(this.BtnChars_Click);
+            button18.Dock = DockStyle.Fill;
+            button18.Font = new Font("Microsoft Sans Serif", 18F);
+            button18.Location = new Point(3, 293);
+            button18.Name = "button18";
+            button18.Size = new Size(141, 70);
+            button18.TabIndex = 18;
+            button18.Tag = "char";
+            button18.Text = "G";
+            button18.UseVisualStyleBackColor = true;
+            button18.Click += BtnChars_Click;
             // 
             // button17
             // 
-            this.button17.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button17.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button17.Location = new System.Drawing.Point(738, 217);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(145, 70);
-            this.button17.TabIndex = 17;
-            this.button17.Tag = "char";
-            this.button17.Text = "F";
-            this.button17.UseVisualStyleBackColor = true;
-            this.button17.Click += new System.EventHandler(this.BtnChars_Click);
+            button17.Dock = DockStyle.Fill;
+            button17.Font = new Font("Microsoft Sans Serif", 18F);
+            button17.Location = new Point(738, 217);
+            button17.Name = "button17";
+            button17.Size = new Size(145, 70);
+            button17.TabIndex = 17;
+            button17.Tag = "char";
+            button17.Text = "F";
+            button17.UseVisualStyleBackColor = true;
+            button17.Click += BtnChars_Click;
             // 
             // button16
             // 
-            this.button16.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button16.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button16.Location = new System.Drawing.Point(591, 217);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(141, 70);
-            this.button16.TabIndex = 16;
-            this.button16.Tag = "char";
-            this.button16.Text = "E";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.BtnChars_Click);
+            button16.Dock = DockStyle.Fill;
+            button16.Font = new Font("Microsoft Sans Serif", 18F);
+            button16.Location = new Point(591, 217);
+            button16.Name = "button16";
+            button16.Size = new Size(141, 70);
+            button16.TabIndex = 16;
+            button16.Tag = "char";
+            button16.Text = "E";
+            button16.UseVisualStyleBackColor = true;
+            button16.Click += BtnChars_Click;
             // 
             // button15
             // 
-            this.button15.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button15.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button15.Location = new System.Drawing.Point(444, 217);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(141, 70);
-            this.button15.TabIndex = 15;
-            this.button15.Tag = "char";
-            this.button15.Text = "D";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.BtnChars_Click);
+            button15.Dock = DockStyle.Fill;
+            button15.Font = new Font("Microsoft Sans Serif", 18F);
+            button15.Location = new Point(444, 217);
+            button15.Name = "button15";
+            button15.Size = new Size(141, 70);
+            button15.TabIndex = 15;
+            button15.Tag = "char";
+            button15.Text = "D";
+            button15.UseVisualStyleBackColor = true;
+            button15.Click += BtnChars_Click;
             // 
             // button14
             // 
-            this.button14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button14.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button14.Location = new System.Drawing.Point(297, 217);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(141, 70);
-            this.button14.TabIndex = 14;
-            this.button14.Tag = "char";
-            this.button14.Text = "C";
-            this.button14.UseVisualStyleBackColor = true;
-            this.button14.Click += new System.EventHandler(this.BtnChars_Click);
+            button14.Dock = DockStyle.Fill;
+            button14.Font = new Font("Microsoft Sans Serif", 18F);
+            button14.Location = new Point(297, 217);
+            button14.Name = "button14";
+            button14.Size = new Size(141, 70);
+            button14.TabIndex = 14;
+            button14.Tag = "char";
+            button14.Text = "C";
+            button14.UseVisualStyleBackColor = true;
+            button14.Click += BtnChars_Click;
             // 
             // button13
             // 
-            this.button13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button13.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button13.Location = new System.Drawing.Point(150, 217);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(141, 70);
-            this.button13.TabIndex = 13;
-            this.button13.Tag = "char";
-            this.button13.Text = "B";
-            this.button13.UseVisualStyleBackColor = true;
-            this.button13.Click += new System.EventHandler(this.BtnChars_Click);
+            button13.Dock = DockStyle.Fill;
+            button13.Font = new Font("Microsoft Sans Serif", 18F);
+            button13.Location = new Point(150, 217);
+            button13.Name = "button13";
+            button13.Size = new Size(141, 70);
+            button13.TabIndex = 13;
+            button13.Tag = "char";
+            button13.Text = "B";
+            button13.UseVisualStyleBackColor = true;
+            button13.Click += BtnChars_Click;
             // 
             // btnSpace
             // 
-            this.btnSpace.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSpace.Font = new System.Drawing.Font("Roboto", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnSpace.Location = new System.Drawing.Point(738, 110);
-            this.btnSpace.Name = "btnSpace";
-            this.btnSpace.Size = new System.Drawing.Size(145, 101);
-            this.btnSpace.TabIndex = 11;
-            this.btnSpace.Tag = "0";
-            this.btnSpace.Text = "Space";
-            this.btnSpace.UseVisualStyleBackColor = true;
-            this.btnSpace.Click += new System.EventHandler(this.BtnSpace_Click);
+            btnSpace.Dock = DockStyle.Fill;
+            btnSpace.Font = new Font("Roboto", 12F);
+            btnSpace.Location = new Point(738, 110);
+            btnSpace.Name = "btnSpace";
+            btnSpace.Size = new Size(145, 101);
+            btnSpace.TabIndex = 11;
+            btnSpace.Tag = "0";
+            btnSpace.Text = "Space";
+            btnSpace.UseVisualStyleBackColor = true;
+            btnSpace.Click += BtnSpace_Click;
             // 
             // button12
             // 
-            this.button12.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button12.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button12.Location = new System.Drawing.Point(591, 110);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(141, 101);
-            this.button12.TabIndex = 10;
-            this.button12.Tag = "0";
-            this.button12.Text = "0";
-            this.button12.UseVisualStyleBackColor = true;
-            this.button12.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button12.Dock = DockStyle.Fill;
+            button12.Font = new Font("Roboto", 30F);
+            button12.Location = new Point(591, 110);
+            button12.Name = "button12";
+            button12.Size = new Size(141, 101);
+            button12.TabIndex = 10;
+            button12.Tag = "0";
+            button12.Text = "0";
+            button12.UseVisualStyleBackColor = true;
+            button12.Click += BtnNumbers_Click;
             // 
             // button11
             // 
-            this.button11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button11.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button11.Location = new System.Drawing.Point(444, 110);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(141, 101);
-            this.button11.TabIndex = 9;
-            this.button11.Tag = "0";
-            this.button11.Text = "9";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button11.Dock = DockStyle.Fill;
+            button11.Font = new Font("Roboto", 30F);
+            button11.Location = new Point(444, 110);
+            button11.Name = "button11";
+            button11.Size = new Size(141, 101);
+            button11.TabIndex = 9;
+            button11.Tag = "0";
+            button11.Text = "9";
+            button11.UseVisualStyleBackColor = true;
+            button11.Click += BtnNumbers_Click;
             // 
             // button10
             // 
-            this.button10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button10.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button10.Location = new System.Drawing.Point(297, 110);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(141, 101);
-            this.button10.TabIndex = 8;
-            this.button10.Tag = "0";
-            this.button10.Text = "8";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button10.Dock = DockStyle.Fill;
+            button10.Font = new Font("Roboto", 30F);
+            button10.Location = new Point(297, 110);
+            button10.Name = "button10";
+            button10.Size = new Size(141, 101);
+            button10.TabIndex = 8;
+            button10.Tag = "0";
+            button10.Text = "8";
+            button10.UseVisualStyleBackColor = true;
+            button10.Click += BtnNumbers_Click;
             // 
             // button9
             // 
-            this.button9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button9.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button9.Location = new System.Drawing.Point(150, 110);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(141, 101);
-            this.button9.TabIndex = 7;
-            this.button9.Tag = "0";
-            this.button9.Text = "7";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button9.Dock = DockStyle.Fill;
+            button9.Font = new Font("Roboto", 30F);
+            button9.Location = new Point(150, 110);
+            button9.Name = "button9";
+            button9.Size = new Size(141, 101);
+            button9.TabIndex = 7;
+            button9.Tag = "0";
+            button9.Text = "7";
+            button9.UseVisualStyleBackColor = true;
+            button9.Click += BtnNumbers_Click;
             // 
             // button8
             // 
-            this.button8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button8.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button8.Location = new System.Drawing.Point(3, 110);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(141, 101);
-            this.button8.TabIndex = 6;
-            this.button8.Tag = "0";
-            this.button8.Text = "6";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button8.Dock = DockStyle.Fill;
+            button8.Font = new Font("Roboto", 30F);
+            button8.Location = new Point(3, 110);
+            button8.Name = "button8";
+            button8.Size = new Size(141, 101);
+            button8.TabIndex = 6;
+            button8.Tag = "0";
+            button8.Text = "6";
+            button8.UseVisualStyleBackColor = true;
+            button8.Click += BtnNumbers_Click;
             // 
             // btnBack
             // 
-            this.btnBack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnBack.Font = new System.Drawing.Font("Roboto", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnBack.Location = new System.Drawing.Point(738, 3);
-            this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(145, 101);
-            this.btnBack.TabIndex = 5;
-            this.btnBack.Tag = "0";
-            this.btnBack.Text = "Back";
-            this.btnBack.UseVisualStyleBackColor = true;
-            this.btnBack.Click += new System.EventHandler(this.BtnBack_Click);
+            btnBack.Dock = DockStyle.Fill;
+            btnBack.Font = new Font("Roboto", 12F);
+            btnBack.Location = new Point(738, 3);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(145, 101);
+            btnBack.TabIndex = 5;
+            btnBack.Tag = "0";
+            btnBack.Text = "Back";
+            btnBack.UseVisualStyleBackColor = true;
+            btnBack.Click += BtnBack_Click;
             // 
             // button6
             // 
-            this.button6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button6.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button6.Location = new System.Drawing.Point(591, 3);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(141, 101);
-            this.button6.TabIndex = 4;
-            this.button6.Tag = "0";
-            this.button6.Text = "5";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button6.Dock = DockStyle.Fill;
+            button6.Font = new Font("Roboto", 30F);
+            button6.Location = new Point(591, 3);
+            button6.Name = "button6";
+            button6.Size = new Size(141, 101);
+            button6.TabIndex = 4;
+            button6.Tag = "0";
+            button6.Text = "5";
+            button6.UseVisualStyleBackColor = true;
+            button6.Click += BtnNumbers_Click;
             // 
             // button5
             // 
-            this.button5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button5.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button5.Location = new System.Drawing.Point(444, 3);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(141, 101);
-            this.button5.TabIndex = 3;
-            this.button5.Tag = "0";
-            this.button5.Text = "4";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button5.Dock = DockStyle.Fill;
+            button5.Font = new Font("Roboto", 30F);
+            button5.Location = new Point(444, 3);
+            button5.Name = "button5";
+            button5.Size = new Size(141, 101);
+            button5.TabIndex = 3;
+            button5.Tag = "0";
+            button5.Text = "4";
+            button5.UseVisualStyleBackColor = true;
+            button5.Click += BtnNumbers_Click;
             // 
             // button4
             // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button4.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button4.Location = new System.Drawing.Point(297, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(141, 101);
-            this.button4.TabIndex = 2;
-            this.button4.Tag = "0";
-            this.button4.Text = "3";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button4.Dock = DockStyle.Fill;
+            button4.Font = new Font("Roboto", 30F);
+            button4.Location = new Point(297, 3);
+            button4.Name = "button4";
+            button4.Size = new Size(141, 101);
+            button4.TabIndex = 2;
+            button4.Tag = "0";
+            button4.Text = "3";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += BtnNumbers_Click;
             // 
             // button3
             // 
-            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button3.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button3.Location = new System.Drawing.Point(150, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(141, 101);
-            this.button3.TabIndex = 1;
-            this.button3.Tag = "0";
-            this.button3.Text = "2";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button3.Dock = DockStyle.Fill;
+            button3.Font = new Font("Roboto", 30F);
+            button3.Location = new Point(150, 3);
+            button3.Name = "button3";
+            button3.Size = new Size(141, 101);
+            button3.TabIndex = 1;
+            button3.Tag = "0";
+            button3.Text = "2";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += BtnNumbers_Click;
             // 
             // button2
             // 
-            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button2.Font = new System.Drawing.Font("Roboto", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button2.Location = new System.Drawing.Point(3, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(141, 101);
-            this.button2.TabIndex = 0;
-            this.button2.Tag = "0";
-            this.button2.Text = "1";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.BtnNumbers_Click);
+            button2.Dock = DockStyle.Fill;
+            button2.Font = new Font("Roboto", 30F);
+            button2.Location = new Point(3, 3);
+            button2.Name = "button2";
+            button2.Size = new Size(141, 101);
+            button2.TabIndex = 0;
+            button2.Tag = "0";
+            button2.Text = "1";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += BtnNumbers_Click;
             // 
             // button7
             // 
-            this.button7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button7.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.button7.Location = new System.Drawing.Point(3, 217);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(141, 70);
-            this.button7.TabIndex = 12;
-            this.button7.Tag = "char";
-            this.button7.Text = "A";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.BtnChars_Click);
+            button7.Dock = DockStyle.Fill;
+            button7.Font = new Font("Microsoft Sans Serif", 18F);
+            button7.Location = new Point(3, 217);
+            button7.Name = "button7";
+            button7.Size = new Size(141, 70);
+            button7.TabIndex = 12;
+            button7.Tag = "char";
+            button7.Text = "A";
+            button7.UseVisualStyleBackColor = true;
+            button7.Click += BtnChars_Click;
             // 
             // chkCapsLock
             // 
-            this.chkCapsLock.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkCapsLock.AutoSize = true;
-            this.chkCapsLock.Checked = true;
-            this.chkCapsLock.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCapsLock.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.chkCapsLock.Location = new System.Drawing.Point(297, 521);
-            this.chkCapsLock.Name = "chkCapsLock";
-            this.chkCapsLock.Size = new System.Drawing.Size(141, 73);
-            this.chkCapsLock.TabIndex = 42;
-            this.chkCapsLock.Text = "Caps\r\nLock\r\n";
-            this.chkCapsLock.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.chkCapsLock.UseVisualStyleBackColor = true;
-            this.chkCapsLock.Click += new System.EventHandler(this.ChkCapsLock_Click);
+            chkCapsLock.Appearance = Appearance.Button;
+            chkCapsLock.AutoSize = true;
+            chkCapsLock.Checked = true;
+            chkCapsLock.CheckState = CheckState.Checked;
+            chkCapsLock.Dock = DockStyle.Fill;
+            chkCapsLock.Location = new Point(297, 521);
+            chkCapsLock.Name = "chkCapsLock";
+            chkCapsLock.Size = new Size(141, 73);
+            chkCapsLock.TabIndex = 42;
+            chkCapsLock.Text = "Caps\r\nLock\r\n";
+            chkCapsLock.TextAlign = ContentAlignment.MiddleCenter;
+            chkCapsLock.UseVisualStyleBackColor = true;
+            chkCapsLock.Click += ChkCapsLock_Click;
             // 
             // pnlParticulars
             // 
-            this.pnlParticulars.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlParticulars.AutoScroll = true;
-            this.pnlParticulars.BackColor = System.Drawing.Color.White;
-            this.pnlParticulars.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.pnlParticulars.Location = new System.Drawing.Point(923, 116);
-            this.pnlParticulars.Name = "pnlParticulars";
-            this.pnlParticulars.Padding = new System.Windows.Forms.Padding(0, 0, 50, 0);
-            this.pnlParticulars.Size = new System.Drawing.Size(522, 610);
-            this.pnlParticulars.TabIndex = 12;
-            this.pnlParticulars.WrapContents = false;
+            pnlParticulars.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            pnlParticulars.AutoScroll = true;
+            pnlParticulars.BackColor = Color.White;
+            pnlParticulars.FlowDirection = FlowDirection.TopDown;
+            pnlParticulars.Location = new Point(923, 116);
+            pnlParticulars.Name = "pnlParticulars";
+            pnlParticulars.Padding = new Padding(0, 0, 50, 0);
+            pnlParticulars.Size = new Size(522, 610);
+            pnlParticulars.TabIndex = 12;
+            pnlParticulars.WrapContents = false;
             // 
             // gvwItems
             // 
-            this.gvwItems.AllowUserToAddRows = false;
-            this.gvwItems.AllowUserToDeleteRows = false;
-            this.gvwItems.AllowUserToResizeRows = false;
-            this.gvwItems.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gvwItems.BackgroundColor = System.Drawing.Color.White;
-            this.gvwItems.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.gvwItems.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            this.gvwItems.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gvwItems.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.gvwItems.ColumnHeadersHeight = 30;
-            this.gvwItems.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ItemId,
-            this.ItemCode,
-            this.ItemName,
-            this.ItemMRP,
-            this.ItemPrice,
-            this.ItemAaliasNname,
-            this.ItemDiscountPer,
-            this.ItemGSTPer,
-            this.LocalLanguage});
-            this.gvwItems.GridColor = System.Drawing.Color.WhiteSmoke;
-            this.gvwItems.Location = new System.Drawing.Point(923, 118);
-            this.gvwItems.MultiSelect = false;
-            this.gvwItems.Name = "gvwItems";
-            this.gvwItems.ReadOnly = true;
-            this.gvwItems.RowHeadersVisible = false;
-            this.gvwItems.RowHeadersWidth = 51;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Roboto", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.AliceBlue;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.gvwItems.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.gvwItems.RowTemplate.Height = 40;
-            this.gvwItems.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gvwItems.Size = new System.Drawing.Size(520, 611);
-            this.gvwItems.TabIndex = 13;
-            this.gvwItems.Visible = false;
-            this.gvwItems.DoubleClick += new System.EventHandler(this.GvwItems_DoubleClick);
-            this.gvwItems.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GvwItems_KeyDown);
+            gvwItems.AllowUserToAddRows = false;
+            gvwItems.AllowUserToDeleteRows = false;
+            gvwItems.AllowUserToResizeRows = false;
+            gvwItems.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            gvwItems.BackgroundColor = Color.White;
+            gvwItems.BorderStyle = BorderStyle.None;
+            gvwItems.CellBorderStyle = DataGridViewCellBorderStyle.None;
+            gvwItems.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Roboto", 10F);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            gvwItems.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            gvwItems.ColumnHeadersHeight = 30;
+            gvwItems.Columns.AddRange(new DataGridViewColumn[] { ItemId, ItemCode, ItemName, ItemMRP, ItemPrice, ItemAaliasNname, ItemDiscountPer, ItemGSTPer, LocalLanguage });
+            gvwItems.GridColor = Color.WhiteSmoke;
+            gvwItems.Location = new Point(923, 118);
+            gvwItems.MultiSelect = false;
+            gvwItems.Name = "gvwItems";
+            gvwItems.ReadOnly = true;
+            gvwItems.RowHeadersVisible = false;
+            gvwItems.RowHeadersWidth = 51;
+            dataGridViewCellStyle4.Font = new Font("Roboto", 9.75F);
+            dataGridViewCellStyle4.SelectionBackColor = Color.AliceBlue;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.ActiveCaptionText;
+            gvwItems.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            gvwItems.RowTemplate.Height = 40;
+            gvwItems.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            gvwItems.Size = new Size(520, 611);
+            gvwItems.TabIndex = 13;
+            gvwItems.Visible = false;
+            gvwItems.DoubleClick += GvwItems_DoubleClick;
+            gvwItems.KeyDown += GvwItems_KeyDown;
             // 
             // ItemId
             // 
-            this.ItemId.DataPropertyName = "ItemId";
-            this.ItemId.HeaderText = "ItemId";
-            this.ItemId.MinimumWidth = 6;
-            this.ItemId.Name = "ItemId";
-            this.ItemId.ReadOnly = true;
-            this.ItemId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemId.Visible = false;
-            this.ItemId.Width = 125;
+            ItemId.DataPropertyName = "ItemId";
+            ItemId.HeaderText = "ItemId";
+            ItemId.MinimumWidth = 6;
+            ItemId.Name = "ItemId";
+            ItemId.ReadOnly = true;
+            ItemId.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemId.Visible = false;
+            ItemId.Width = 125;
             // 
             // ItemCode
             // 
-            this.ItemCode.DataPropertyName = "ItemCode";
-            this.ItemCode.HeaderText = "Code";
-            this.ItemCode.MinimumWidth = 6;
-            this.ItemCode.Name = "ItemCode";
-            this.ItemCode.ReadOnly = true;
-            this.ItemCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemCode.Width = 125;
+            ItemCode.DataPropertyName = "ItemCode";
+            ItemCode.HeaderText = "Code";
+            ItemCode.MinimumWidth = 6;
+            ItemCode.Name = "ItemCode";
+            ItemCode.ReadOnly = true;
+            ItemCode.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemCode.Width = 125;
             // 
             // ItemName
             // 
-            this.ItemName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ItemName.DataPropertyName = "ItemName";
-            this.ItemName.HeaderText = "Name";
-            this.ItemName.MinimumWidth = 6;
-            this.ItemName.Name = "ItemName";
-            this.ItemName.ReadOnly = true;
-            this.ItemName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            ItemName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            ItemName.DataPropertyName = "ItemName";
+            ItemName.HeaderText = "Name";
+            ItemName.MinimumWidth = 6;
+            ItemName.Name = "ItemName";
+            ItemName.ReadOnly = true;
+            ItemName.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // ItemMRP
             // 
-            this.ItemMRP.DataPropertyName = "ItemMRP";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.ItemMRP.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ItemMRP.HeaderText = "MRP";
-            this.ItemMRP.MinimumWidth = 6;
-            this.ItemMRP.Name = "ItemMRP";
-            this.ItemMRP.ReadOnly = true;
-            this.ItemMRP.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemMRP.Width = 125;
+            ItemMRP.DataPropertyName = "ItemMRP";
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleRight;
+            ItemMRP.DefaultCellStyle = dataGridViewCellStyle2;
+            ItemMRP.HeaderText = "MRP";
+            ItemMRP.MinimumWidth = 6;
+            ItemMRP.Name = "ItemMRP";
+            ItemMRP.ReadOnly = true;
+            ItemMRP.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemMRP.Width = 125;
             // 
             // ItemPrice
             // 
-            this.ItemPrice.DataPropertyName = "ItemPrice";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.ItemPrice.DefaultCellStyle = dataGridViewCellStyle3;
-            this.ItemPrice.HeaderText = "Price";
-            this.ItemPrice.MinimumWidth = 6;
-            this.ItemPrice.Name = "ItemPrice";
-            this.ItemPrice.ReadOnly = true;
-            this.ItemPrice.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemPrice.Width = 125;
+            ItemPrice.DataPropertyName = "ItemPrice";
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleRight;
+            ItemPrice.DefaultCellStyle = dataGridViewCellStyle3;
+            ItemPrice.HeaderText = "Price";
+            ItemPrice.MinimumWidth = 6;
+            ItemPrice.Name = "ItemPrice";
+            ItemPrice.ReadOnly = true;
+            ItemPrice.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemPrice.Width = 125;
             // 
             // ItemAaliasNname
             // 
-            this.ItemAaliasNname.DataPropertyName = "ItemAaliasNname";
-            this.ItemAaliasNname.HeaderText = "ItemAaliasNname";
-            this.ItemAaliasNname.MinimumWidth = 6;
-            this.ItemAaliasNname.Name = "ItemAaliasNname";
-            this.ItemAaliasNname.ReadOnly = true;
-            this.ItemAaliasNname.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemAaliasNname.Visible = false;
-            this.ItemAaliasNname.Width = 125;
+            ItemAaliasNname.DataPropertyName = "ItemAaliasNname";
+            ItemAaliasNname.HeaderText = "ItemAaliasNname";
+            ItemAaliasNname.MinimumWidth = 6;
+            ItemAaliasNname.Name = "ItemAaliasNname";
+            ItemAaliasNname.ReadOnly = true;
+            ItemAaliasNname.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemAaliasNname.Visible = false;
+            ItemAaliasNname.Width = 125;
             // 
             // ItemDiscountPer
             // 
-            this.ItemDiscountPer.DataPropertyName = "ItemDiscountPer";
-            this.ItemDiscountPer.HeaderText = "ItemDiscountPer";
-            this.ItemDiscountPer.MinimumWidth = 6;
-            this.ItemDiscountPer.Name = "ItemDiscountPer";
-            this.ItemDiscountPer.ReadOnly = true;
-            this.ItemDiscountPer.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemDiscountPer.Visible = false;
-            this.ItemDiscountPer.Width = 125;
+            ItemDiscountPer.DataPropertyName = "ItemDiscountPer";
+            ItemDiscountPer.HeaderText = "ItemDiscountPer";
+            ItemDiscountPer.MinimumWidth = 6;
+            ItemDiscountPer.Name = "ItemDiscountPer";
+            ItemDiscountPer.ReadOnly = true;
+            ItemDiscountPer.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemDiscountPer.Visible = false;
+            ItemDiscountPer.Width = 125;
             // 
             // ItemGSTPer
             // 
-            this.ItemGSTPer.DataPropertyName = "ItemGSTPer";
-            this.ItemGSTPer.HeaderText = "ItemGSTPer";
-            this.ItemGSTPer.MinimumWidth = 6;
-            this.ItemGSTPer.Name = "ItemGSTPer";
-            this.ItemGSTPer.ReadOnly = true;
-            this.ItemGSTPer.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ItemGSTPer.Visible = false;
-            this.ItemGSTPer.Width = 125;
+            ItemGSTPer.DataPropertyName = "ItemGSTPer";
+            ItemGSTPer.HeaderText = "ItemGSTPer";
+            ItemGSTPer.MinimumWidth = 6;
+            ItemGSTPer.Name = "ItemGSTPer";
+            ItemGSTPer.ReadOnly = true;
+            ItemGSTPer.SortMode = DataGridViewColumnSortMode.NotSortable;
+            ItemGSTPer.Visible = false;
+            ItemGSTPer.Width = 125;
             // 
             // LocalLanguage
             // 
-            this.LocalLanguage.DataPropertyName = "LocalLanguage";
-            this.LocalLanguage.HeaderText = "LocalLanguage";
-            this.LocalLanguage.MinimumWidth = 6;
-            this.LocalLanguage.Name = "LocalLanguage";
-            this.LocalLanguage.ReadOnly = true;
-            this.LocalLanguage.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.LocalLanguage.Visible = false;
-            this.LocalLanguage.Width = 125;
+            LocalLanguage.DataPropertyName = "LocalLanguage";
+            LocalLanguage.HeaderText = "LocalLanguage";
+            LocalLanguage.MinimumWidth = 6;
+            LocalLanguage.Name = "LocalLanguage";
+            LocalLanguage.ReadOnly = true;
+            LocalLanguage.SortMode = DataGridViewColumnSortMode.NotSortable;
+            LocalLanguage.Visible = false;
+            LocalLanguage.Width = 125;
             // 
             // pnlProcess
             // 
-            this.pnlProcess.Controls.Add(this.btnExitProcess);
-            this.pnlProcess.Controls.Add(this.label1);
-            this.pnlProcess.Location = new System.Drawing.Point(0, 0);
-            this.pnlProcess.Name = "pnlProcess";
-            this.pnlProcess.Size = new System.Drawing.Size(0, 0);
-            this.pnlProcess.TabIndex = 14;
-            this.pnlProcess.Visible = false;
+            pnlProcess.Controls.Add(btnExitProcess);
+            pnlProcess.Controls.Add(label1);
+            pnlProcess.Location = new Point(0, 0);
+            pnlProcess.Name = "pnlProcess";
+            pnlProcess.Size = new Size(0, 0);
+            pnlProcess.TabIndex = 14;
+            pnlProcess.Visible = false;
             // 
             // btnExitProcess
             // 
-            this.btnExitProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExitProcess.BackColor = System.Drawing.Color.DarkRed;
-            this.btnExitProcess.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnExitProcess.ForeColor = System.Drawing.Color.White;
-            this.btnExitProcess.Location = new System.Drawing.Point(-119, -71);
-            this.btnExitProcess.Margin = new System.Windows.Forms.Padding(4);
-            this.btnExitProcess.Name = "btnExitProcess";
-            this.btnExitProcess.Size = new System.Drawing.Size(104, 58);
-            this.btnExitProcess.TabIndex = 3;
-            this.btnExitProcess.Text = "EXIT";
-            this.btnExitProcess.UseVisualStyleBackColor = false;
-            this.btnExitProcess.Click += new System.EventHandler(this.BtnExitProcess_Click);
+            btnExitProcess.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnExitProcess.BackColor = Color.DarkRed;
+            btnExitProcess.Font = new Font("Roboto", 10F, FontStyle.Bold);
+            btnExitProcess.ForeColor = Color.White;
+            btnExitProcess.Location = new Point(-119, -71);
+            btnExitProcess.Margin = new Padding(4);
+            btnExitProcess.Name = "btnExitProcess";
+            btnExitProcess.Size = new Size(104, 58);
+            btnExitProcess.TabIndex = 3;
+            btnExitProcess.Text = "EXIT";
+            btnExitProcess.UseVisualStyleBackColor = false;
+            btnExitProcess.Click += BtnExitProcess_Click;
             // 
             // label1
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Roboto", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.label1.Location = new System.Drawing.Point(-142, -21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(376, 72);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Processing...";
+            label1.Anchor = AnchorStyles.None;
+            label1.AutoSize = true;
+            label1.Font = new Font("Roboto", 36F);
+            label1.ForeColor = Color.FromArgb(0, 192, 192);
+            label1.Location = new Point(-142, -21);
+            label1.Name = "label1";
+            label1.Size = new Size(376, 72);
+            label1.TabIndex = 0;
+            label1.Text = "Processing...";
             // 
             // btnEditItem
             // 
-            this.btnEditItem.Location = new System.Drawing.Point(-20, 0);
-            this.btnEditItem.Name = "btnEditItem";
-            this.btnEditItem.Size = new System.Drawing.Size(0, 0);
-            this.btnEditItem.TabIndex = 15;
-            this.btnEditItem.TabStop = false;
-            this.btnEditItem.Text = "&E";
-            this.btnEditItem.UseVisualStyleBackColor = true;
-            this.btnEditItem.Click += new System.EventHandler(this.BtnEditItem_Click);
+            btnEditItem.Location = new Point(-20, 0);
+            btnEditItem.Name = "btnEditItem";
+            btnEditItem.Size = new Size(0, 0);
+            btnEditItem.TabIndex = 15;
+            btnEditItem.TabStop = false;
+            btnEditItem.Text = "&E";
+            btnEditItem.UseVisualStyleBackColor = true;
+            btnEditItem.Click += BtnEditItem_Click;
             // 
             // btnResetForm
             // 
-            this.btnResetForm.Location = new System.Drawing.Point(0, 0);
-            this.btnResetForm.Name = "btnResetForm";
-            this.btnResetForm.Size = new System.Drawing.Size(0, 0);
-            this.btnResetForm.TabIndex = 16;
-            this.btnResetForm.Text = "&l";
-            this.btnResetForm.UseVisualStyleBackColor = true;
-            this.btnResetForm.Click += new System.EventHandler(this.BtnResetForm_Click);
+            btnResetForm.Location = new Point(0, 0);
+            btnResetForm.Name = "btnResetForm";
+            btnResetForm.Size = new Size(0, 0);
+            btnResetForm.TabIndex = 16;
+            btnResetForm.Text = "&l";
+            btnResetForm.UseVisualStyleBackColor = true;
+            btnResetForm.Click += BtnResetForm_Click;
             // 
             // pnlCashReceived
             // 
-            this.pnlCashReceived.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.pnlCashReceived.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.pnlCashReceived.BorderColor = System.Drawing.Color.White;
-            this.pnlCashReceived.Controls.Add(this.lblBalance);
-            this.pnlCashReceived.Controls.Add(this.label6);
-            this.pnlCashReceived.Controls.Add(this.lblCashReceived);
-            this.pnlCashReceived.Controls.Add(this.label4);
-            this.pnlCashReceived.Controls.Add(this.lblInvoiceAmount);
-            this.pnlCashReceived.Controls.Add(this.label2);
-            this.pnlCashReceived.Edge = 30;
-            this.pnlCashReceived.Location = new System.Drawing.Point(948, 319);
-            this.pnlCashReceived.Name = "pnlCashReceived";
-            this.pnlCashReceived.Size = new System.Drawing.Size(470, 166);
-            this.pnlCashReceived.TabIndex = 17;
-            this.pnlCashReceived.Visible = false;
-            this.pnlCashReceived.Click += new System.EventHandler(this.PnlCashReceived);
+            pnlCashReceived.Anchor = AnchorStyles.Right;
+            pnlCashReceived.BackColor = Color.FromArgb(0, 64, 0);
+            pnlCashReceived.Controls.Add(lblBalance);
+            pnlCashReceived.Controls.Add(label6);
+            pnlCashReceived.Controls.Add(lblCashReceived);
+            pnlCashReceived.Controls.Add(label4);
+            pnlCashReceived.Controls.Add(lblInvoiceAmount);
+            pnlCashReceived.Controls.Add(label2);
+            pnlCashReceived.Location = new Point(948, 319);
+            pnlCashReceived.Name = "pnlCashReceived";
+            pnlCashReceived.Size = new Size(470, 166);
+            pnlCashReceived.TabIndex = 17;
+            pnlCashReceived.Visible = false;
+            pnlCashReceived.Click += PnlCashReceived;
             // 
             // lblBalance
             // 
-            this.lblBalance.Font = new System.Drawing.Font("Roboto", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblBalance.ForeColor = System.Drawing.Color.YellowGreen;
-            this.lblBalance.Location = new System.Drawing.Point(238, 108);
-            this.lblBalance.Name = "lblBalance";
-            this.lblBalance.Size = new System.Drawing.Size(190, 30);
-            this.lblBalance.TabIndex = 5;
-            this.lblBalance.Text = "500.00";
-            this.lblBalance.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            lblBalance.Font = new Font("Roboto", 15.75F, FontStyle.Bold);
+            lblBalance.ForeColor = Color.YellowGreen;
+            lblBalance.Location = new Point(238, 108);
+            lblBalance.Name = "lblBalance";
+            lblBalance.Size = new Size(190, 30);
+            lblBalance.TabIndex = 5;
+            lblBalance.Text = "500.00";
+            lblBalance.TextAlign = ContentAlignment.TopRight;
             // 
             // label6
             // 
-            this.label6.Font = new System.Drawing.Font("Roboto", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(25, 106);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(176, 30);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "Balance";
+            label6.Font = new Font("Roboto", 14.25F);
+            label6.ForeColor = Color.White;
+            label6.Location = new Point(25, 106);
+            label6.Name = "label6";
+            label6.Size = new Size(176, 30);
+            label6.TabIndex = 4;
+            label6.Text = "Balance";
             // 
             // lblCashReceived
             // 
-            this.lblCashReceived.Font = new System.Drawing.Font("Roboto", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblCashReceived.ForeColor = System.Drawing.Color.White;
-            this.lblCashReceived.Location = new System.Drawing.Point(238, 68);
-            this.lblCashReceived.Name = "lblCashReceived";
-            this.lblCashReceived.Size = new System.Drawing.Size(190, 30);
-            this.lblCashReceived.TabIndex = 3;
-            this.lblCashReceived.Text = "500.00";
-            this.lblCashReceived.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            lblCashReceived.Font = new Font("Roboto", 15.75F, FontStyle.Bold);
+            lblCashReceived.ForeColor = Color.White;
+            lblCashReceived.Location = new Point(238, 68);
+            lblCashReceived.Name = "lblCashReceived";
+            lblCashReceived.Size = new Size(190, 30);
+            lblCashReceived.TabIndex = 3;
+            lblCashReceived.Text = "500.00";
+            lblCashReceived.TextAlign = ContentAlignment.TopRight;
             // 
             // label4
             // 
-            this.label4.Font = new System.Drawing.Font("Roboto", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(25, 66);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(201, 30);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "Cash Received";
+            label4.Font = new Font("Roboto", 14.25F);
+            label4.ForeColor = Color.White;
+            label4.Location = new Point(25, 66);
+            label4.Name = "label4";
+            label4.Size = new Size(201, 30);
+            label4.TabIndex = 2;
+            label4.Text = "Cash Received";
             // 
             // lblInvoiceAmount
             // 
-            this.lblInvoiceAmount.Font = new System.Drawing.Font("Roboto", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblInvoiceAmount.ForeColor = System.Drawing.Color.Orange;
-            this.lblInvoiceAmount.Location = new System.Drawing.Point(239, 25);
-            this.lblInvoiceAmount.Name = "lblInvoiceAmount";
-            this.lblInvoiceAmount.Size = new System.Drawing.Size(190, 30);
-            this.lblInvoiceAmount.TabIndex = 1;
-            this.lblInvoiceAmount.Text = "500.00";
-            this.lblInvoiceAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            lblInvoiceAmount.Font = new Font("Roboto", 15.75F, FontStyle.Bold);
+            lblInvoiceAmount.ForeColor = Color.Orange;
+            lblInvoiceAmount.Location = new Point(239, 25);
+            lblInvoiceAmount.Name = "lblInvoiceAmount";
+            lblInvoiceAmount.Size = new Size(190, 30);
+            lblInvoiceAmount.TabIndex = 1;
+            lblInvoiceAmount.Text = "500.00";
+            lblInvoiceAmount.TextAlign = ContentAlignment.TopRight;
             // 
             // label2
             // 
-            this.label2.Font = new System.Drawing.Font("Roboto", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(26, 23);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(200, 30);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Invoice Amount";
+            label2.Font = new Font("Roboto", 14.25F);
+            label2.ForeColor = Color.White;
+            label2.Location = new Point(26, 23);
+            label2.Name = "label2";
+            label2.Size = new Size(200, 30);
+            label2.TabIndex = 0;
+            label2.Text = "Invoice Amount";
             // 
             // btnViewSales
             // 
-            this.btnViewSales.Location = new System.Drawing.Point(-10, 0);
-            this.btnViewSales.Name = "btnViewSales";
-            this.btnViewSales.Size = new System.Drawing.Size(0, 0);
-            this.btnViewSales.TabIndex = 18;
-            this.btnViewSales.TabStop = false;
-            this.btnViewSales.Text = "&W";
-            this.btnViewSales.UseVisualStyleBackColor = true;
-            this.btnViewSales.Click += new System.EventHandler(this.BtnViewSales_Click);
+            btnViewSales.Location = new Point(-10, 0);
+            btnViewSales.Name = "btnViewSales";
+            btnViewSales.Size = new Size(0, 0);
+            btnViewSales.TabIndex = 18;
+            btnViewSales.TabStop = false;
+            btnViewSales.Text = "&W";
+            btnViewSales.UseVisualStyleBackColor = true;
+            btnViewSales.Click += BtnViewSales_Click;
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(-10, 0);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(0, 0);
-            this.btnClear.TabIndex = 19;
-            this.btnClear.TabStop = false;
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.BtnClear_Click);
+            btnClear.Location = new Point(-10, 0);
+            btnClear.Name = "btnClear";
+            btnClear.Size = new Size(0, 0);
+            btnClear.TabIndex = 19;
+            btnClear.TabStop = false;
+            btnClear.UseVisualStyleBackColor = true;
+            btnClear.Click += BtnClear_Click;
+            // 
+            // MenuStrip
+            // 
+            MenuStrip.Font = new Font("Roboto", 12F);
+            MenuStrip.ImageScalingSize = new Size(20, 20);
+            MenuStrip.Items.AddRange(new ToolStripItem[] { MenuItemMaster, MenuItemSales, MenuItemPurchase, MenuItemUtilities, MenuItemReports });
+            MenuStrip.Name = "contextMenuStrip1";
+            MenuStrip.Size = new Size(211, 232);
+            // 
+            // MenuItemMaster
+            // 
+            MenuItemMaster.DropDownItems.AddRange(new ToolStripItem[] { MenuItemCategory, toolStripMenuItem2, toolStripMenuItem3, toolStripMenuItem4, toolStripMenuItem6, MenuItemVendor, MenuItemMessage, MenuItemUser });
+            MenuItemMaster.Margin = new Padding(0, 6, 0, 6);
+            MenuItemMaster.Name = "MenuItemMaster";
+            MenuItemMaster.Size = new Size(210, 28);
+            MenuItemMaster.Text = "Master";
+            // 
+            // MenuItemCategory
+            // 
+            MenuItemCategory.Margin = new Padding(0, 6, 0, 6);
+            MenuItemCategory.Name = "MenuItemCategory";
+            MenuItemCategory.Size = new Size(224, 28);
+            MenuItemCategory.Text = "Category";
+            MenuItemCategory.Click += MenuItemCategory_Click;
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Margin = new Padding(0, 6, 0, 6);
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(224, 28);
+            toolStripMenuItem2.Text = "GST";
+            // 
+            // toolStripMenuItem3
+            // 
+            toolStripMenuItem3.Margin = new Padding(0, 6, 0, 6);
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(224, 28);
+            toolStripMenuItem3.Text = "Item";
+            // 
+            // toolStripMenuItem4
+            // 
+            toolStripMenuItem4.Margin = new Padding(0, 6, 0, 6);
+            toolStripMenuItem4.Name = "toolStripMenuItem4";
+            toolStripMenuItem4.Size = new Size(224, 28);
+            toolStripMenuItem4.Text = "Service";
+            // 
+            // toolStripMenuItem6
+            // 
+            toolStripMenuItem6.Margin = new Padding(0, 6, 0, 6);
+            toolStripMenuItem6.Name = "toolStripMenuItem6";
+            toolStripMenuItem6.Size = new Size(224, 28);
+            toolStripMenuItem6.Text = "Party";
+            // 
+            // MenuItemVendor
+            // 
+            MenuItemVendor.Margin = new Padding(0, 6, 0, 6);
+            MenuItemVendor.Name = "MenuItemVendor";
+            MenuItemVendor.Size = new Size(224, 28);
+            MenuItemVendor.Text = "Vendor";
+            // 
+            // MenuItemMessage
+            // 
+            MenuItemMessage.Margin = new Padding(0, 6, 0, 6);
+            MenuItemMessage.Name = "MenuItemMessage";
+            MenuItemMessage.Size = new Size(224, 28);
+            MenuItemMessage.Text = "Message";
+            // 
+            // MenuItemUser
+            // 
+            MenuItemUser.Margin = new Padding(0, 6, 0, 6);
+            MenuItemUser.Name = "MenuItemUser";
+            MenuItemUser.Size = new Size(224, 28);
+            MenuItemUser.Text = "User";
+            // 
+            // MenuItemSales
+            // 
+            MenuItemSales.Margin = new Padding(0, 6, 0, 6);
+            MenuItemSales.Name = "MenuItemSales";
+            MenuItemSales.Size = new Size(210, 28);
+            MenuItemSales.Text = "Sales";
+            // 
+            // MenuItemPurchase
+            // 
+            MenuItemPurchase.Margin = new Padding(0, 6, 0, 6);
+            MenuItemPurchase.Name = "MenuItemPurchase";
+            MenuItemPurchase.Size = new Size(210, 28);
+            MenuItemPurchase.Text = "Purchase";
+            // 
+            // MenuItemUtilities
+            // 
+            MenuItemUtilities.Margin = new Padding(0, 6, 0, 6);
+            MenuItemUtilities.Name = "MenuItemUtilities";
+            MenuItemUtilities.Size = new Size(210, 28);
+            MenuItemUtilities.Text = "Utilities";
+            // 
+            // MenuItemReports
+            // 
+            MenuItemReports.Margin = new Padding(0, 6, 0, 6);
+            MenuItemReports.Name = "MenuItemReports";
+            MenuItemReports.Size = new Size(210, 28);
+            MenuItemReports.Text = "Reports";
             // 
             // SalesInvoiceForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.CancelButton = this.btnClear;
-            this.ClientSize = new System.Drawing.Size(1454, 736);
-            this.ControlBox = false;
-            this.Controls.Add(this.pnlProcess);
-            this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnViewSales);
-            this.Controls.Add(this.pnlCashReceived);
-            this.Controls.Add(this.btnResetForm);
-            this.Controls.Add(this.btnEditItem);
-            this.Controls.Add(this.gvwItems);
-            this.Controls.Add(this.pnlParticulars);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.panelRounded1);
-            this.Controls.Add(this.lblInvoiceDate);
-            this.Controls.Add(this.lblInvoiceNo);
-            this.Controls.Add(this.chkBarcodeOnly);
-            this.Controls.Add(this.lblClientName);
-            this.Controls.Add(this.pictureBox1);
-            this.Font = new System.Drawing.Font("Roboto", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "SalesInvoiceForm";
-            this.Text = "Sales Invoice";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.SalesInvoice_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.panelRounded1.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.pnlKeypboard.ResumeLayout(false);
-            this.pnlKeypboard.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gvwItems)).EndInit();
-            this.pnlProcess.ResumeLayout(false);
-            this.pnlProcess.PerformLayout();
-            this.pnlCashReceived.ResumeLayout(false);
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(10F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.Control;
+            CancelButton = btnClear;
+            ClientSize = new Size(1454, 736);
+            ControlBox = false;
+            Controls.Add(pnlProcess);
+            Controls.Add(btnClear);
+            Controls.Add(btnViewSales);
+            Controls.Add(pnlCashReceived);
+            Controls.Add(btnResetForm);
+            Controls.Add(btnEditItem);
+            Controls.Add(gvwItems);
+            Controls.Add(pnlParticulars);
+            Controls.Add(groupBox1);
+            Controls.Add(panelRounded1);
+            Controls.Add(lblInvoiceDate);
+            Controls.Add(lblInvoiceNo);
+            Controls.Add(chkBarcodeOnly);
+            Controls.Add(lblClientName);
+            Controls.Add(pictureBox1);
+            Font = new Font("Roboto", 10F);
+            FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(4, 3, 4, 3);
+            Name = "SalesInvoiceForm";
+            Text = "Sales Invoice";
+            WindowState = FormWindowState.Maximized;
+            Load += SalesInvoice_Load;
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            panelRounded1.ResumeLayout(false);
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            pnlKeypboard.ResumeLayout(false);
+            pnlKeypboard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)gvwItems).EndInit();
+            pnlProcess.ResumeLayout(false);
+            pnlProcess.PerformLayout();
+            pnlCashReceived.ResumeLayout(false);
+            MenuStrip.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
@@ -1353,5 +1443,23 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnViewSales;
         private System.Windows.Forms.Button btnClear;
+        private ContextMenuStrip MenuStrip;
+        private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem salesToolStripMenuItem;
+        private ToolStripMenuItem purchaseToolStripMenuItem;
+        private ToolStripMenuItem utilitiesToolStripMenuItem;
+        private ToolStripMenuItem reportsToolStripMenuItem;
+        private ToolStripMenuItem MenuItemMaster;
+        private ToolStripMenuItem MenuItemSales;
+        private ToolStripMenuItem MenuItemPurchase;
+        private ToolStripMenuItem MenuItemUtilities;
+        private ToolStripMenuItem MenuItemReports;
+        private ToolStripMenuItem MenuItemCategory;
+        private ToolStripMenuItem MenuItemVendor;
+        private ToolStripMenuItem MenuItemMessage;
+        private ToolStripMenuItem MenuItemUser;
+        private ToolStripMenuItem toolStripMenuItem3;
+        private ToolStripMenuItem toolStripMenuItem4;
+        private ToolStripMenuItem toolStripMenuItem6;
     }
 }
