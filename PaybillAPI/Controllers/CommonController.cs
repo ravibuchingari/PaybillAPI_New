@@ -13,8 +13,6 @@ namespace PaybillAPI.Controllers
     public class CommonController(IAdminRepository adminRepository, ISharedRepository sharedRepository) : ControllerBase
     {
 
-
-
         [HttpPost]
         [Route("client/profile/update")]
         public async Task<IActionResult> UpdateProfile([FromBody] ClientVM client)
