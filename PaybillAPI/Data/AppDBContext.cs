@@ -9,11 +9,19 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<Client> Clients { get; set; }
 
+    public virtual DbSet<Customer> Customers { get; set; }
+
     public virtual DbSet<Gst> Gsts { get; set; }
 
     public virtual DbSet<Item> Items { get; set; }
 
     public virtual DbSet<MessageTemplate> MessageTemplates { get; set; }
+
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderItem> OrderItems { get; set; }
+
+    public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
 
     public virtual DbSet<Party> Parties { get; set; }
 

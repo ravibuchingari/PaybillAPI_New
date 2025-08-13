@@ -146,6 +146,13 @@ public partial class Setting
     [StringLength(2)]
     public string LocalLanguageCode { get; set; } = null!;
 
+    [StringLength(500)]
+    public string? BankDetails { get; set; }
+
+    public sbyte IsOnlineStoreEnabled { get; set; }
+
+    public sbyte IsPrintLocalLanguage { get; set; }
+
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]
     public virtual MessageTemplate? BalanceMessage { get; set; }
