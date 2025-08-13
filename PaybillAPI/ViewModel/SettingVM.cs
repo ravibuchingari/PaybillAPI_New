@@ -1,4 +1,5 @@
 ﻿using PaybillAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace PaybillAPI.ViewModel
 {
@@ -42,6 +43,9 @@ namespace PaybillAPI.ViewModel
         public bool IsSalesPriceEdited { get; set; }
         public bool IsCurrencyDecimalNotRequired { get; set; }
         public string LocalLanguageCode { get; set; } = null!;
+        public string? BankDetails { get; set; }
+        public bool IsOnlineStoreEnabled { get; set; }
+        public bool IsPrintLocalLanguage { get; set; }
         public PrintHeader HeaderModel { get; set; } = new PrintHeader();
 
     }

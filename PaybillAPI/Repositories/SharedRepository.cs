@@ -81,8 +81,8 @@ namespace PaybillAPI.Repositories
                     LastName = userVM.LastName,
                     Address = userVM.Address,
                     Mobile = userVM.Mobile,
-                    IsAdmin = (sbyte)userVM.IsAdmin.GetHashCode(),
-                    IsActive = (sbyte)userVM.IsActive.GetHashCode(),
+                    IsAdmin = (sbyte)(userVM.IsAdmin ? 1 : 0),
+                    IsActive = (sbyte)(userVM.IsActive ? 1 : 0),
                 });
                 await SaveChangesAsync();
                 return AppConstants.RESPONSE_SUCCESS;
@@ -113,8 +113,8 @@ namespace PaybillAPI.Repositories
                     LastName = userVM.LastName,
                     Address = userVM.Address,
                     Mobile = userVM.Mobile,
-                    IsAdmin = (sbyte)userVM.IsAdmin.GetHashCode(),
-                    IsActive = (sbyte)userVM.IsActive.GetHashCode(),
+                    IsAdmin = (sbyte)(userVM.IsAdmin ? 1 : 0),
+                    IsActive = (sbyte)(userVM.IsActive ? 1 : 0),
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
                     CreatedBy = userRowId,
@@ -141,7 +141,7 @@ namespace PaybillAPI.Repositories
                 user.LastName = userVM.LastName;
                 user.Address = userVM.Address;
                 user.Mobile = userVM.Mobile;
-                user.IsActive = (sbyte)userVM.IsActive.GetHashCode();
+                user.IsActive = (sbyte)(userVM.IsActive ? 1 : 0);
                 user.UpdatedDate = DateTime.Now;
                 user.UpdatedBy = userRowId;
             }
@@ -167,8 +167,8 @@ namespace PaybillAPI.Repositories
                     SubscriptionType = clientVM.SubscriptionType,
                     SubscriptionAmount = clientVM.SubscriptionAmount,
                     SubscriptionEndDate = DateTime.Parse(clientVM.SubscriptionEndDate),
-                    IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode(),
-                    IsActivated = (sbyte)clientVM.IsActivated.GetHashCode(),
+                    IsPremiumUser = (sbyte)(clientVM.IsPremiumUser ? 1 : 0),
+                    IsActivated = (sbyte)(clientVM.IsActivated ? 1 : 0),
                     SecurityKey = clientVM.SecurityKey,
                     CountryId = clientVM.Country?.CountryId,
                     CountryName = clientVM.Country?.CountryName ?? string.Empty,
@@ -201,8 +201,8 @@ namespace PaybillAPI.Repositories
                 client.SubscriptionType = clientVM.SubscriptionType;
                 client.SubscriptionAmount = clientVM.SubscriptionAmount;
                 client.SubscriptionEndDate = DateTime.Parse(clientVM.SubscriptionEndDate);
-                client.IsPremiumUser = (sbyte)clientVM.IsPremiumUser.GetHashCode();
-                client.IsActivated = (sbyte)clientVM.IsActivated.GetHashCode();
+                client.IsPremiumUser = (sbyte)(clientVM.IsPremiumUser ? 1 : 0);
+                client.IsActivated = (sbyte)(clientVM.IsActivated ? 1 : 0);
                 client.MaxBackups = (sbyte)clientVM.MaxBackups;
                 client.CountryId = clientVM.Country?.CountryId;
                 client.CountryName = clientVM.Country?.CountryName ?? string.Empty;
@@ -499,8 +499,8 @@ namespace PaybillAPI.Repositories
                 return new ResponseMessage(isSuccess: false, message: "The unlock request was already processed.");
             unlockRequest.UpdatedDate = DateTime.Now;
             unlockRequest.UpdatedBy = userRowId;
-            unlockRequest.IsApproved = (sbyte)isApproved.GetHashCode();
-            unlockRequest.IsRejected = (sbyte)(!isApproved).GetHashCode();
+            unlockRequest.IsApproved = (sbyte)(isApproved ? 1 : 0);
+            unlockRequest.IsRejected = (sbyte)((!isApproved) ? 1 : 0);
             if (string.IsNullOrEmpty(remarks))
                 unlockRequest.Remarks = $"{unlockRequest.Remarks}\n{remarks}";
             if (isApproved)

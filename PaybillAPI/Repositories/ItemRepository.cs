@@ -109,7 +109,7 @@ namespace PaybillAPI.Repositories
                 gst.SgstPer = gstVM.SgstPer;
                 gst.CgstPer = gstVM.CgstPer;
                 gst.IgstPer = gstVM.IgstPer;
-                gst.IsActive = (sbyte)gstVM.IsActive.GetHashCode();
+                gst.IsActive = (sbyte)(gstVM.IsActive ? 1 : 0);
                 gst.UpdatedBy = userRowId;
                 gst.UpdatedDate = DateTime.Now;
             }
@@ -120,7 +120,7 @@ namespace PaybillAPI.Repositories
                     SgstPer = gstVM.SgstPer,
                     CgstPer = gstVM.CgstPer,
                     IgstPer = gstVM.IgstPer,
-                    IsActive = (sbyte)gstVM.IsActive.GetHashCode(),
+                    IsActive = (sbyte)(gstVM.IsActive ? 1 : 0),
                     CreatedBy = userRowId,
                     UpdatedBy = userRowId,
                     CreatedDate = DateTime.Now,
@@ -221,7 +221,7 @@ namespace PaybillAPI.Repositories
             item.Measure = itemVM.Measure ?? string.Empty;
             item.OpeningStock = itemVM.OpeningStock;
             item.MinimumStock = itemVM.MinimumStock;
-            item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
+            item.IsActive = (sbyte)(itemVM.IsActive ? 1 : 0);
             item.Shelf = itemVM.Shelf ?? string.Empty;
             return item;
         }
@@ -529,7 +529,7 @@ namespace PaybillAPI.Repositories
             item.ServiceTypeName = itemVM.ServiceTypeName;
             item.ServiceCharge = itemVM.ServiceCharge;
             item.ServiceDescription = itemVM.ServiceDescription;
-            item.IsActive = (sbyte)itemVM.IsActive.GetHashCode();
+            item.IsActive = (sbyte)(itemVM.IsActive ? 1 : 0);
             return item;
         }
 

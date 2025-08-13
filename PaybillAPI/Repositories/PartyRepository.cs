@@ -19,8 +19,8 @@ namespace PaybillAPI.Repositories
             party.PartyEmail = partyVM.PartyEmail;
             party.PartyGstNo = partyVM.PartyGstNo;
             party.PartyRemarks = partyVM.PartyRemarks;
-            party.IsVendor = (sbyte)partyVM.IsVendor.GetHashCode();
-            party.IsActive = (sbyte)partyVM.IsActive.GetHashCode();
+            party.IsVendor = (sbyte)(partyVM.IsVendor ? 1 : 0);
+            party.IsActive = (sbyte)(partyVM.IsActive ? 1 : 0);
             return party;
         }
 
@@ -52,7 +52,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<PartyVM>> GetParties(bool isVendor)
         {
-            return await dbContext.Parties.Where(col => col.IsVendor == isVendor.GetHashCode()).Select(row => new PartyVM()
+            return await dbContext.Parties.Where(col => col.IsVendor == (isVendor ? 1 : 0)).Select(row => new PartyVM()
             {
                 PartyId = row.PartyId,
                 PartyName = row.PartyName,
@@ -103,7 +103,7 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<PartyVM>> GetActiveParties(bool isVendor, bool isAll)
         {
-            return await dbContext.Parties.Where(col => col.IsActive == 1 && col.IsVendor == (isAll ? col.IsVendor : isVendor.GetHashCode())).Select(row => new PartyVM()
+            return await dbContext.Parties.Where(col => col.IsActive == 1 && col.IsVendor == (isAll ? col.IsVendor : isVendor ? 1 : 0)).Select(row => new PartyVM()
             {
                 PartyId = row.PartyId,
                 PartyName = row.PartyName,

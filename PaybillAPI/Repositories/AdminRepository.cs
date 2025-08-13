@@ -20,9 +20,7 @@ namespace PaybillAPI.Repositories
                 EmailPassword = row.EmailPassword,
                 IsAutoEmail = row.IsAutoEmail == 1,
                 IsBackupOnExit = row.IsBackupOnExit == 1,
-
                 IsDiscountEnabled = row.IsDiscountEnabled == 1,
-
                 AddItemOnSelected = row.AddItemOnSelected == 1,
                 InvoicePrefix = row.InvoicePrefix,
                 InvoiceLength = row.InvoiceLength,
@@ -51,6 +49,9 @@ namespace PaybillAPI.Repositories
                 IsSalesPriceEdited = row.IsSalesPriceEdited == 1,
                 IsCurrencyDecimalNotRequired = row.IsCurrencyDecimalNotRequired == 1,
                 LocalLanguageCode = row.LocalLanguageCode,
+                BankDetails = row.BankDetails ?? string.Empty,
+                IsOnlineStoreEnabled = row.IsOnlineStoreEnabled == 1,
+                IsPrintLocalLanguage = row.IsPrintLocalLanguage == 1,
 
                 HeaderModel = new PrintHeader()
                 {
@@ -80,36 +81,36 @@ namespace PaybillAPI.Repositories
             setting.EmailFrom = settingVM.EmailFrom;
             setting.EmailTo = settingVM.EmailTo;
             setting.EmailPassword = settingVM.EmailPassword;
-            setting.IsAutoEmail = (sbyte)settingVM.IsAutoEmail.GetHashCode();
-            setting.IsBackupOnExit = (sbyte)settingVM.IsBackupOnExit.GetHashCode();
-            setting.IsDiscountEnabled = (sbyte)settingVM.IsDiscountEnabled.GetHashCode();
+            setting.IsAutoEmail = (sbyte)(settingVM.IsAutoEmail ? 1 : 0);
+            setting.IsBackupOnExit = (sbyte)(settingVM.IsBackupOnExit ? 1 : 0);
+            setting.IsDiscountEnabled = (sbyte)(settingVM.IsDiscountEnabled ? 1 : 0);
             setting.InvoiceTitle = settingVM.HeaderModel!.InvoiceTitle;
             setting.Header1 = settingVM.HeaderModel.Header1;
             setting.Header2 = settingVM.HeaderModel.Header2;
             setting.Header3 = settingVM.HeaderModel.Header3;
             setting.Gstin = settingVM.HeaderModel.Gstin;
-            setting.GstslabRequired = (sbyte)settingVM.HeaderModel.GstSlabRequired.GetHashCode()!;
-            setting.ItemWiseGstslabRequired = (sbyte)settingVM.HeaderModel.ItemWiseGstSlabRequired.GetHashCode()!;
-            setting.IsPaymentDetailsRequired = (sbyte)settingVM.HeaderModel.IsPaymentDetailsRequired.GetHashCode()!;
-            setting.IsSavingDetailsRequired = (sbyte)settingVM.HeaderModel.IsSavingDetailsRequired.GetHashCode()!;
-            setting.IsGstSummaryRequired = (sbyte)settingVM.HeaderModel.IsGstSummaryRequired.GetHashCode()!;
-            setting.AddItemOnSelected = (sbyte)settingVM.AddItemOnSelected.GetHashCode();
+            setting.GstslabRequired = (sbyte)(settingVM.HeaderModel.GstSlabRequired ? 1 : 0);
+            setting.ItemWiseGstslabRequired = (sbyte)(settingVM.HeaderModel.ItemWiseGstSlabRequired ? 1 : 0);
+            setting.IsPaymentDetailsRequired = (sbyte)(settingVM.HeaderModel.IsPaymentDetailsRequired ? 1 : 0);
+            setting.IsSavingDetailsRequired = (sbyte)(settingVM.HeaderModel.IsSavingDetailsRequired ? 1 : 0);
+            setting.IsGstSummaryRequired = (sbyte)(settingVM.HeaderModel.IsGstSummaryRequired ? 1 : 0);
+            setting.AddItemOnSelected = (sbyte)(settingVM.AddItemOnSelected ? 1 : 0);
             setting.InvoicePrefix = settingVM.InvoicePrefix;
             setting.InvoiceLength = settingVM.InvoiceLength;
-            setting.IsCreateContactOnParty = (sbyte)settingVM.IsCreateContactOnParty.GetHashCode();
-            setting.IsCompressBackup = (sbyte)settingVM.IsCompressBackup.GetHashCode();
-            setting.IsShadowMenuButton = (sbyte)settingVM.IsShadowMenuButton.GetHashCode();
-            setting.IsBiometricAuthEnabled = (sbyte)settingVM.IsBiometricAuthEnabled.GetHashCode();
-            setting.IsAlertOnMinimumStock = (sbyte)settingVM.IsAlertOnMinimumStock.GetHashCode();
-            setting.ItemCodeAllowNumberOnly = (sbyte)settingVM.ItemCodeAllowNumberOnly.GetHashCode();
-            setting.IsSoundEnabled = (sbyte)settingVM.IsSoundEnabled.GetHashCode();
-            setting.IsSendSmsonInvoice = (sbyte)settingVM.IsSendSmsonInvoice.GetHashCode();
-            setting.IsSendWhatsAppMessageOnInvoice = (sbyte)settingVM.IsSendWhatsAppMessageOnInvoice.GetHashCode();
-            setting.IsShareInvoiceOnInvoice = (sbyte)settingVM.IsShareInvoiceOnInvoice.GetHashCode();
+            setting.IsCreateContactOnParty = (sbyte)(settingVM.IsCreateContactOnParty ? 1 : 0);
+            setting.IsCompressBackup = (sbyte)(settingVM.IsCompressBackup ? 1 : 0);
+            setting.IsShadowMenuButton = (sbyte)(settingVM.IsShadowMenuButton ? 1 : 0);
+            setting.IsBiometricAuthEnabled = (sbyte)(settingVM.IsBiometricAuthEnabled ? 1 : 0);
+            setting.IsAlertOnMinimumStock = (sbyte)(settingVM.IsAlertOnMinimumStock ? 1 : 0);
+            setting.ItemCodeAllowNumberOnly = (sbyte)(settingVM.ItemCodeAllowNumberOnly ? 1 : 0);
+            setting.IsSoundEnabled = (sbyte)(settingVM.IsSoundEnabled ? 1 : 0);
+            setting.IsSendSmsonInvoice = (sbyte)(settingVM.IsSendSmsonInvoice ? 1 : 0);
+            setting.IsSendWhatsAppMessageOnInvoice = (sbyte)(settingVM.IsSendWhatsAppMessageOnInvoice ? 1 : 0);
+            setting.IsShareInvoiceOnInvoice = (sbyte)(settingVM.IsShareInvoiceOnInvoice ? 1 : 0);
 
 
-            setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
-            setting.IsItemSearchImageVisible = (sbyte)settingVM.IsItemSearchImageVisible.GetHashCode();
+            setting.IsServiceRequestEnabled = (sbyte)(settingVM.IsServiceRequestEnabled ? 1 : 0);
+            setting.IsItemSearchImageVisible = (sbyte)(settingVM.IsItemSearchImageVisible ? 1 : 0);
             setting.SalesMessageId = settingVM.SalesMessageId > 0 ? settingVM.SalesMessageId : null;
             setting.ServiceMessageId = settingVM.ServiceMessageId > 0 ? settingVM.ServiceMessageId : null;
             setting.BalanceMessageId = settingVM.BalanceMessageId > 0 ? settingVM.BalanceMessageId : null;
@@ -119,16 +120,19 @@ namespace PaybillAPI.Repositories
             setting.Upiname = settingVM.UPIName ?? string.Empty;
             setting.UpimerchantCode = settingVM.UPIMerchantCode ?? string.Empty;
 
-            setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
-            setting.IsServiceRequestEnabled = (sbyte)settingVM.IsServiceRequestEnabled.GetHashCode();
-            setting.IsItemSearchImageVisible = (sbyte)settingVM.IsItemSearchImageVisible.GetHashCode();
-            setting.IsBackupOnLogin = (sbyte)settingVM.IsBackupOnLogin.GetHashCode();
-            setting.IsViewAllItemsOnSearch = (sbyte)settingVM.IsViewAllItemsOnSearch.GetHashCode();
+            setting.IsServiceRequestEnabled = (sbyte)(settingVM.IsServiceRequestEnabled ? 1 : 0);
+            setting.IsServiceRequestEnabled = (sbyte)(settingVM.IsServiceRequestEnabled ? 1 : 0);
+            setting.IsItemSearchImageVisible = (sbyte)(settingVM.IsItemSearchImageVisible ? 1 : 0);
+            setting.IsBackupOnLogin = (sbyte)(settingVM.IsBackupOnLogin ? 1 : 0);
+            setting.IsViewAllItemsOnSearch = (sbyte)(settingVM.IsViewAllItemsOnSearch ? 1 : 0);
             setting.EmailBodyForSalesInvoice = settingVM.EmailBodyForSalesInvoice;
-            setting.IsSalesPriceEdited = (sbyte)settingVM.IsSalesPriceEdited.GetHashCode();
-            setting.IsCurrencyDecimalNotRequired = (sbyte)settingVM.IsCurrencyDecimalNotRequired.GetHashCode();
+            setting.IsSalesPriceEdited = (sbyte)(settingVM.IsSalesPriceEdited ? 1 : 0);
+            setting.IsCurrencyDecimalNotRequired = (sbyte)(settingVM.IsCurrencyDecimalNotRequired ? 1 : 0);
 
             setting.LocalLanguageCode = settingVM.LocalLanguageCode;
+            setting.BankDetails = settingVM.BankDetails ?? string.Empty;
+            setting.IsOnlineStoreEnabled = (sbyte)(settingVM.IsOnlineStoreEnabled ? 1 : 0);
+            setting.IsPrintLocalLanguage = (sbyte)(settingVM.IsPrintLocalLanguage ? 1 : 0);
             return setting;
         }
 
