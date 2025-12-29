@@ -29,12 +29,12 @@ namespace PaybillAPI.Controllers
             };
         }
 
-        [HttpGet]
-        [Route("server/test")]
-        public async Task<IActionResult> Test()
-        {
-            return Ok(await Task.FromResult(DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt")));
-        }
+        //[HttpGet]
+        //[Route("server/test")]
+        //public async Task<IActionResult> Test()
+        //{
+        //    return Ok(await sharedRepository.CheckDatabase(""));
+        //}
 
         [HttpPost]
         [Route("create/account")]
