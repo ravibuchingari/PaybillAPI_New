@@ -41,19 +41,24 @@ namespace PaybillAPI.Controllers
         public async Task<IActionResult> CreateAccountIfNotExists([FromBody] ClientVM client)
         {
             client.SecurityKey = SharedMethod.GenerateUniqueID();
-            await sharedRepository.CreateAccountIfNotExists(client);
-            AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
+            string responseText = await sharedRepository.CreateAccountIfNotExists(client);
+            if(responseText.Equals(AppConstants.RESPONSE_SUCCESS))
             {
-                UserRowId = client.SecurityKey,
-                UserId = client.ClientId,
-                UserRole = "user",
-                SecurityKey = client.SecurityKey
-            }, true);
+                AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
+                {
+                    UserRowId = client.SecurityKey,
+                    UserId = client.ClientId,
+                    UserRole = "user",
+                    SecurityKey = client.SecurityKey
+                }, true);
 
-            if (authenticationResponse.IsSuccess)
-                return Ok(new ResponseMessage(isSuccess: true, message: authenticationResponse.JwtToken, data: client.SecurityKey));
+                if (authenticationResponse.IsSuccess)
+                    return Ok(new ResponseMessage(isSuccess: true, message: authenticationResponse.JwtToken, data: client.SecurityKey));
+                else
+                    return BadRequest(authenticationResponse.Message);
+            }
             else
-                return BadRequest(authenticationResponse.Message);
+                return BadRequest(responseText);
         }
 
         [HttpPost]

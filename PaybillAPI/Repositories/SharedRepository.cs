@@ -152,9 +152,12 @@ namespace PaybillAPI.Repositories
 
         public async Task<string> CreateAccountIfNotExists(ClientVM clientVM)
         {
-            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId).FirstOrDefaultAsync();
+            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId && col.ClientId == clientVM.ClientId).FirstOrDefaultAsync();
             if (client == null)
             {
+                if(await dbContext.Clients.AnyAsync() || await dbContext.Users.AnyAsync())
+                    return "The service is already set up for a different customer.";
+
                 client = new Client
                 {
                     ClientUniqueId = clientVM.ClientUniqueId,
