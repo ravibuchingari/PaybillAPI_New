@@ -1,13 +1,15 @@
-﻿namespace Authentication.JWTAuthenticationManager
+﻿namespace AuthenticationManager
 {
     public class JwtTokenParameter
     {
-        public string JwtSecurityKey { get; set; } = null!;
-        public double TokenValidityInMinutes { get; set; }
-        public string ValidIssuer { get; set; } = string.Empty;
-        public string ValidAudience { get; set; } = string.Empty;
-        public bool IsValidateIssuer { get; set; } = false;
-        public bool IsValidateAudience { get; set; } = false;
-        public string Origin { get; set; } = string.Empty;
+        public string JWTKey { get; set; } = null!;
+        public string JWTKeyVer { get; set; } = null!;
+        public bool IsValidAudience { get; set; } = true;
+        public bool IsValidIssuer { get; set; } = true;
+        public string ValidAudience { get; set; } = null!;
+        public string ValidIssuer { get; set; } = null!;
+        public bool IsValidateLifetime { get; set; } = true;
+        public double JWTTokenValidityInMinutes { get; set; }
+        public int RefreshTokenValidityInMinutes { get; set; } = 20;
     }
 }

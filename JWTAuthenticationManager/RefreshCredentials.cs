@@ -1,4 +1,4 @@
-﻿namespace Authentication.JWTAuthenticationManager
+﻿namespace AuthenticationManager
 {
     public class RefreshCredentials
     {

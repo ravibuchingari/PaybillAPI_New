@@ -1,14 +1,14 @@
-﻿namespace Authentication.JWTAuthenticationManager
+﻿namespace AuthenticationManager
 {
     public class AuthenticationResponse
     {
-        public string UserRowId { get; set; }
-        public string ClientName { get; set; }
-        public string UserId { get; set; }
-        public string UserName { get; set; }
-        public string JwtToken { get; set; }
-        public string SecurityKey { get; set; }
-        public string UserRole { get; set; }
+        public string UserRowId { get; set; } = null!;
+        public string ClientName { get; set; } = null!;
+        public string UserId { get; set; } = null!;
+        public string UserName { get; set; } = null!;
+        public string JwtToken { get; set; } = null!;
+        public string SecurityKey { get; set; } = null!;
+        public string UserRole { get; set; } = null!;
         public int ValidityTime { get; set; }
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;

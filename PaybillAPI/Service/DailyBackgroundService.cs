@@ -1,6 +1,8 @@
-﻿namespace PaybillAPI.Service
+﻿using Serilog.Core;
+
+namespace PaybillAPI.Service
 {
-    public class DailyBackgroundService(IServiceProvider serviceProvider) : BackgroundService
+    public class DailyBackgroundService(ILogger<DailyBackgroundService> logger, IWebHostEnvironment webHostEnvironment) : BackgroundService
     {
         private static async Task ClearTemp(string tempPath)
         {
@@ -23,13 +25,34 @@
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = serviceProvider.CreateScope();
-                IWebHostEnvironment webHostEnvironment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
-                await ClearTemp(System.IO.Path.Combine(webHostEnvironment.WebRootPath, "temp"));
-                DateTime nextCycle = DateTime.Now.Date.AddDays(1);
-                nextCycle = nextCycle.AddDays(1);
-                nextCycle = new(nextCycle.Year, nextCycle.Month, nextCycle.Day, 1, 0, 0);
-                await Task.Delay(nextCycle.TimeOfDay, stoppingToken);
+                try
+                {
+                    DateTime now = DateTime.UtcNow;
+
+                    DateTime nextRun = now.Date.AddDays(1);
+
+                    TimeSpan delay = nextRun - now;
+
+                    if (delay < TimeSpan.Zero)
+                        delay = TimeSpan.Zero;
+
+                    await ClearTemp(System.IO.Path.Combine(webHostEnvironment.WebRootPath, "temp"));
+
+                    await Task.Delay(delay, stoppingToken);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    logger.LogError(ex, "Background Service Error: {Error}", ex.Message);
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred in Background Service:{Error}", ex.Message);
+                    TimeSpan delay = TimeSpan.FromMinutes(1);
+                    if (logger.IsEnabled(LogLevel.Information))
+                        logger.LogInformation("The Background Service has been rescheduled to | Local: {LocalTime} | UTC: {UtcTime}", TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow.Add(delay), TimeZoneInfo.Local), DateTime.UtcNow.Add(delay));
+                    await Task.Delay(delay, stoppingToken);
+                }
             }
         }
     }

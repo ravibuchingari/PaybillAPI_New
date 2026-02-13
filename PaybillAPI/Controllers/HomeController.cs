@@ -1,4 +1,4 @@
-﻿using Authentication.JWTAuthenticationManager;
+﻿using AuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PaybillAPI.Models;
