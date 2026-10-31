@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -267,7 +267,9 @@ namespace PaybillAPI.Repositories
                     HSncode = row.Hsncode,
                     Measure = row.Measure,
                     OpeningStock = row.OpeningStock,
+                    MinimumStock = row.MinimumStock,
                     ClosingStock = row.OpeningStock + row.ClosingStock,
+                    Shelf = row.Shelf,
                     IsActive = row.IsActive == 1,
                     CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
                     GstModel = row.Gst != null ? new GstVM()
@@ -279,9 +281,13 @@ namespace PaybillAPI.Repositories
                     } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
-                return await dbContext.Items.Where(col => col.CategoryId == (categoryId > 0 ? categoryId : col.CategoryId) && col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
-                                                    col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase) ||
-                                                    col.Category.CategoryName.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Select(row => new ItemVM()
+            {
+                string filterLower = filter.Trim().ToLower();
+                return await dbContext.Items.Where(col => col.CategoryId == (categoryId > 0 ? categoryId : col.CategoryId) &&
+                                                    (col.ItemCode.ToLower().Contains(filterLower) ||
+                                                     col.ItemName.ToLower().Contains(filterLower) ||
+                                                     (col.AliasName != null && col.AliasName.ToLower().Contains(filterLower)) ||
+                                                     col.Category.CategoryName.ToLower().Contains(filterLower))).Select(row => new ItemVM()
                                                     {
                                                         ItemId = row.ItemId,
                                                         ItemCode = row.ItemCode,
@@ -294,7 +300,9 @@ namespace PaybillAPI.Repositories
                                                         HSncode = row.Hsncode,
                                                         Measure = row.Measure,
                                                         OpeningStock = row.OpeningStock,
+                                                        MinimumStock = row.MinimumStock,
                                                         ClosingStock = row.OpeningStock + row.ClosingStock,
+                                                        Shelf = row.Shelf,
                                                         IsActive = row.IsActive == 1,
                                                         CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
                                                         GstModel = row.Gst != null ? new GstVM()
@@ -305,6 +313,7 @@ namespace PaybillAPI.Repositories
                                                             IgstPer = row.Gst.IgstPer
                                                         } : null
                                                     }).OrderBy(ord => ord.ItemName).ToListAsync();
+            }
         }
 
         public async Task<ItemVM> GetItemDetails(int itemId)
@@ -322,6 +331,7 @@ namespace PaybillAPI.Repositories
                 HSncode = row.Hsncode,
                 Measure = row.Measure,
                 OpeningStock = row.OpeningStock,
+                MinimumStock = row.MinimumStock,
                 ClosingStock = row.OpeningStock + row.ClosingStock,
                 Shelf = row.Shelf,
                 IsActive = row.IsActive == 1,
@@ -434,12 +444,29 @@ namespace PaybillAPI.Repositories
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
+                    HSncode = row.Hsncode,
                     Measure = row.Measure,
+                    OpeningStock = row.OpeningStock,
+                    MinimumStock = row.MinimumStock,
                     ClosingStock = row.OpeningStock + row.ClosingStock,
                     Shelf = row.Shelf,
+                    IsActive = row.IsActive == 1,
+                    CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                    GstModel = row.Gst != null ? new GstVM()
+                    {
+                        GstId = row.Gst.GstId,
+                        SgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.CgstPer,
+                        IgstPer = row.Gst.IgstPer
+                    } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
             else
-                return await dbContext.Items.Where(col => col.IsActive == 1 && (col.ItemCode.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || col.ItemName.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || col.AliasName!.StartsWith(filter, StringComparison.OrdinalIgnoreCase))).Select(row => new ItemVM()
+            {
+                string filterLower = filter.Trim().ToLower();
+                return await dbContext.Items.Where(col => col.IsActive == 1 &&
+                    (col.ItemCode.ToLower().Contains(filterLower) ||
+                     col.ItemName.ToLower().Contains(filterLower) ||
+                     (col.AliasName != null && col.AliasName.ToLower().Contains(filterLower)))).Select(row => new ItemVM()
                 {
                     ItemId = row.ItemId,
                     ItemCode = row.ItemCode,
@@ -449,10 +476,23 @@ namespace PaybillAPI.Repositories
                     Mrp = row.Mrp,
                     SalesPrice = row.SalesPrice,
                     PurchasePrice = row.PurchasePrice,
+                    HSncode = row.Hsncode,
                     Measure = row.Measure,
+                    OpeningStock = row.OpeningStock,
+                    MinimumStock = row.MinimumStock,
                     ClosingStock = row.OpeningStock + row.ClosingStock,
                     Shelf = row.Shelf,
+                    IsActive = row.IsActive == 1,
+                    CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                    GstModel = row.Gst != null ? new GstVM()
+                    {
+                        GstId = row.Gst.GstId,
+                        SgstPer = row.Gst.SgstPer,
+                        CgstPer = row.Gst.CgstPer,
+                        IgstPer = row.Gst.IgstPer
+                    } : null
                 }).OrderBy(ord => ord.ItemName).ToListAsync();
+            }
         }
 
         public async Task<IEnumerable<ItemVM>> GetItemsOnCode(string itemCode)
@@ -529,6 +569,7 @@ namespace PaybillAPI.Repositories
             item.ServiceTypeName = itemVM.ServiceTypeName;
             item.ServiceCharge = itemVM.ServiceCharge;
             item.ServiceDescription = itemVM.ServiceDescription;
+            item.SacCode = itemVM.SacCode ?? string.Empty;
             item.IsActive = (sbyte)(itemVM.IsActive ? 1 : 0);
             return item;
         }
@@ -555,7 +596,7 @@ namespace PaybillAPI.Repositories
                 item.UpdatedBy = userRowId;
             }
             await SaveChangesAsync();
-            return new ResponseMessage(isSuccess: true, message: $"{(serviceTypeVM.ServiceTypeId == 0 ? "Service type created successfully" : "serviceTypeVM updated successfully")}", data: item.ServiceTypeId.ToString());
+            return new ResponseMessage(isSuccess: true, message: $"{(serviceTypeVM.ServiceTypeId == 0 ? "Service type created successfully" : "Service type updated successfully")}", data: item.ServiceTypeId.ToString());
         }
 
         public async Task<IEnumerable<ServiceTypeVM>> GetServiceTypes(bool isAll)

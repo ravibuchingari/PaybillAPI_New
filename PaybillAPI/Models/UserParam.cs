@@ -1,13 +1,13 @@
-﻿using PaybillAPI.ViewModel;
+using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Models
 {
     public class UserParam
     {
         public int UserRowId { get; set; }
-        public string SecurityKey { get; set; } = null!;
-        public string ClientUniqueId { get; set; } = null!;
-        public string ClientId { get; set; } = null!;
+        public string SecurityKey { get; set; } = string.Empty;
+        public string ClientUniqueId { get; set; } = string.Empty;
+        public string ClientId { get; set; } = string.Empty;
         public string? remarks { get; set; } = string.Empty;
         public SettingVM? SettingModel { get; set; }
         public CategoryVM? CategoryModel { get; set; }
@@ -20,5 +20,7 @@ namespace PaybillAPI.Models
         public TransactionVM? TransactionModel { get; set; }
         public UserVM? UserModel { get; set; }
         public PurchaseOrderVM? PurchaseOrderModel { get; set; }
+        public JobCardVM? JobCardModel { get; set; }
+        public CustomReceiptLineVM? CustomReceiptLineModel { get; set; }
     }
 }

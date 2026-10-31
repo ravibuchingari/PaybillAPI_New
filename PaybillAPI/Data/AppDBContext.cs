@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PaybillAPI.DTO;
 
 namespace PaybillAPI.Data;
@@ -11,9 +11,17 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<CustomReceiptLine> CustomReceiptLines { get; set; }
+
     public virtual DbSet<Gst> Gsts { get; set; }
 
     public virtual DbSet<Item> Items { get; set; }
+
+    public virtual DbSet<JobCard> JobCards { get; set; }
+
+    public virtual DbSet<JobCardItem> JobCardItems { get; set; }
+
+    public virtual DbSet<JobCardSpare> JobCardSpares { get; set; }
 
     public virtual DbSet<MessageTemplate> MessageTemplates { get; set; }
 
@@ -35,11 +43,15 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
 
+    public virtual DbSet<RewardTransaction> RewardTransactions { get; set; }
+
     public virtual DbSet<Sale> Sales { get; set; }
 
     public virtual DbSet<SalesItem> SalesItems { get; set; }
 
     public virtual DbSet<SalesItemsDeleted> SalesItemsDeleteds { get; set; }
+
+    public virtual DbSet<ServiceRequestStatus> ServiceRequestStatuses { get; set; }
 
     public virtual DbSet<ServiceType> ServiceTypes { get; set; }
 
@@ -52,5 +64,4 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
     public virtual DbSet<UnlockRequest> UnlockRequests { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
 }

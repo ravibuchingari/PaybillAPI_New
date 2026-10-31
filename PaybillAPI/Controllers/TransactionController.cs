@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
@@ -27,7 +27,7 @@ namespace PaybillAPI.Controllers
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             transactionId = DataProtection.UrlDecode(transactionId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await transactionRepository.DeleteTransaction(int.Parse(transactionId), Convert.ToInt32(User.Identity?.Name)));
+            return Ok(await transactionRepository.DeleteTransaction(int.Parse(transactionId), userParam.remarks ?? string.Empty, Convert.ToInt32(User.Identity?.Name)));
         }
 
         [HttpPost]
@@ -47,7 +47,7 @@ namespace PaybillAPI.Controllers
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             fromDate = DataProtection.UrlDecode(fromDate, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             toDate = DataProtection.UrlDecode(toDate, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await transactionRepository.GetTransactions(DateTime.Parse(fromDate), DateTime.Parse(toDate), isPayment));
+            return Ok(await transactionRepository.GetTransactions(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep")), isPayment));
         }
     }
 }

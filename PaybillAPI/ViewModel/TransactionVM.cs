@@ -1,4 +1,4 @@
-﻿namespace PaybillAPI.ViewModel
+namespace PaybillAPI.ViewModel
 {
     public class TransactionVM
     {
@@ -9,6 +9,7 @@
         public string? UpiType { get; set; }
         public double ReceiptAmount { get; set; }
         public double PaymentAmount { get; set; }
+        public double Balance { get; set; }
         public string? Remarks { get; set; } = string.Empty;
         public string TransactionType { get; set; } = null!;
         public string? CreatedDate { get; set; }

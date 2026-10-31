@@ -1,5 +1,5 @@
-﻿using PaybillAPI.DTO;
 using PaybillAPI.Models;
+using PaybillAPI.Repositories.Service;
 
 namespace PaybillAPI.ViewModel
 {
@@ -10,6 +10,6 @@ namespace PaybillAPI.ViewModel
         public bool IsBiometricAuthentication { get; set; }
         public UserVM User { get; set; } = null!;
         public DashboardPref Pref { get; set; } = null!;
-        public IEnumerable<MessageTemplate>? MessageTemplates { get; set; }
+        public IEnumerable<MessageTemplateVM>? MessageTemplates { get; set; }
     }
 }

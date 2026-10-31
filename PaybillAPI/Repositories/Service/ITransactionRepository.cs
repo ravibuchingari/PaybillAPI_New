@@ -1,11 +1,11 @@
-﻿using PaybillAPI.Models;
+using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Repositories.Service
 {
     public interface ITransactionRepository
     {
-        Task<ResponseMessage> DeleteTransaction(int transactionId, int userRowId);
+        Task<ResponseMessage> DeleteTransaction(int transactionId, string remarks, int userRowId);
         Task<List<BalanceSheet>> GetBalanceSheet();
         Task<List<TransactionVM>> GetPartyLedger(ReportParam reportParam);
         Task<IEnumerable<TransactionVM>> GetTodayTransactions(bool isPayment);

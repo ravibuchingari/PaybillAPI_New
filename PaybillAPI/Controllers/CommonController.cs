@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaybillAPI.Models;
@@ -12,7 +12,6 @@ namespace PaybillAPI.Controllers
     [ApiController]
     public class CommonController(IAdminRepository adminRepository, ISharedRepository sharedRepository) : ControllerBase
     {
-
         [HttpPost]
         [Route("client/profile/update")]
         public async Task<IActionResult> UpdateProfile([FromBody] ClientVM client)
@@ -90,6 +89,14 @@ namespace PaybillAPI.Controllers
         }
 
         [HttpPost]
+        [HttpGet]
+        [Route("unlock/request/status")]
+        public async Task<IActionResult> CheckUnlockRequestStatus([FromQuery] int? salesId, [FromQuery] int? purchaseId)
+        {
+            return Ok(await sharedRepository.CheckUnlockRequestStatus(salesId, purchaseId));
+        }
+
+        [HttpPost]
         [Route("unlock/request/list")]
         public async Task<IActionResult> GetUnlockRequests([FromBody] UserParam userParam)
         {
@@ -108,12 +115,25 @@ namespace PaybillAPI.Controllers
             return Ok(await sharedRepository.UpdateUnlockRequest(int.Parse(unlockRequestId), isApproved, userParam.remarks, Convert.ToInt32(User.Identity?.Name)));
         }
 
-
         [HttpPost]
         [Route("message/insert")]
-        public async Task<IActionResult> InsUnlockRequest([FromForm] string messageId, [FromForm] string messageDescription)
+        public async Task<IActionResult> InsMessage([FromForm] string messageId, [FromForm] string messageDescription, [FromForm] string? messageType = null, [FromForm] bool isSelected = false)
         {
-            return Ok(await adminRepository.InsMessage(int.Parse(messageId), messageDescription));
+            return Ok(await adminRepository.InsMessage(int.Parse(messageId), messageDescription, messageType, isSelected));
+        }
+
+        [HttpPost]
+        [Route("message/select")]
+        public async Task<IActionResult> SelectMessageTemplate([FromForm] int messageId, [FromForm] string messageType)
+        {
+            return Ok(await adminRepository.SelectMessageTemplate(messageId, messageType));
+        }
+
+        [HttpGet]
+        [Route("message/selected")]
+        public async Task<IActionResult> GetSelectedMessageDescription([FromQuery] string messageType)
+        {
+            return Ok(await adminRepository.GetSelectedMessageDescription(messageType));
         }
 
         [HttpPost]
@@ -130,6 +150,44 @@ namespace PaybillAPI.Controllers
             return Ok(await adminRepository.GetMessages());
         }
 
+        [HttpGet]
+        [Route("custom-receipt/list")]
+        public async Task<IActionResult> GetAllCustomLines()
+        {
+            return Ok(await adminRepository.GetAllCustomLines());
+        }
+
+        [HttpGet]
+        [Route("custom-receipt/active")]
+        public async Task<IActionResult> GetActiveCustomLines()
+        {
+            return Ok(await adminRepository.GetActiveCustomLines());
+        }
+
+        [HttpPost]
+        [Route("custom-receipt/upsert")]
+        public async Task<IActionResult> UpsertCustomLine([FromBody] UserParam userParam)
+        {
+            if (userParam.CustomReceiptLineModel == null)
+                return BadRequest("Custom receipt line model is required.");
+            return Ok(await adminRepository.UpsertCustomLine(userParam.CustomReceiptLineModel));
+        }
+
+        [HttpPost]
+        [Route("custom-receipt/status/{customLineId}/{isActive}")]
+        public async Task<IActionResult> UpdateCustomLineActiveStatus([FromRoute] int customLineId, [FromRoute] bool isActive)
+        {
+            return Ok(await adminRepository.UpdateCustomLineActiveStatus(customLineId, isActive));
+        }
+
+        [HttpPost]
+        [Route("custom-receipt/{customLineId}/delete")]
+        public async Task<IActionResult> DeleteCustomLine([FromRoute] int customLineId)
+        {
+            return Ok(await adminRepository.DeleteCustomLine(customLineId));
+        }
+
+        [HttpGet]
         [HttpPost]
         [Route("sever/backups/max")]
         public async Task<IActionResult> GetMaxServerBackups()

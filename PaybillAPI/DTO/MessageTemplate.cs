@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PaybillAPI.DTO;
@@ -9,8 +9,13 @@ public partial class MessageTemplate
     [Key]
     public int MessageId { get; set; }
 
+    [StringLength(50)]
+    public string MessageType { get; set; } = "Sales Invoice Message";
+
     [StringLength(500)]
     public string MessageDescription { get; set; } = null!;
+
+    public sbyte IsSelected { get; set; }
 
     [InverseProperty("BalanceMessage")]
     public virtual ICollection<Setting> SettingBalanceMessages { get; set; } = new List<Setting>();

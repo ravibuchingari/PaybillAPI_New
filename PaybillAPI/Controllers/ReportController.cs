@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -14,9 +14,13 @@ namespace PaybillAPI.Controllers
     {
         [HttpGet]
         [Route("sales/gst/return/detailed")]
-        public async Task<IActionResult> GetGSTReturnDetailed([FromQuery] string fromDate, [FromQuery] string toDate)
+        public async Task<IActionResult> GetGSTReturnDetailed([FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string? returnType = null)
         {
-            return Ok(await reportRepository.GetGSTReturnDetailed(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
+            DateTime fDate = DateTime.Parse(fromDate.Replace("Sept", "Sep"));
+            DateTime tDate = DateTime.Parse(toDate.Replace("Sept", "Sep"));
+            if (!string.IsNullOrWhiteSpace(returnType))
+                return Ok(await reportRepository.GetGSTRReturnByType(returnType, fDate, tDate));
+            return Ok(await reportRepository.GetGSTReturnDetailed(fDate, tDate));
         }
 
         [HttpGet]
@@ -55,7 +59,6 @@ namespace PaybillAPI.Controllers
             }
             else
                 return BadRequest("No data found");
-
         }
 
         [HttpPost]
@@ -80,7 +83,6 @@ namespace PaybillAPI.Controllers
             }
             else
                 return BadRequest("No data found");
-
         }
 
         [HttpPost]
@@ -183,5 +185,11 @@ namespace PaybillAPI.Controllers
             return Ok(await reportRepository.GetSalesPaymentModeSummary(DateTime.Parse(fromDate.Replace("Sept", "Sep")), DateTime.Parse(toDate.Replace("Sept", "Sep"))));
         }
 
+        [HttpPost]
+        [Route("product/movement/analysis")]
+        public async Task<IActionResult> GetProductMovementAnalysis([FromBody] ReportParam reportParam)
+        {
+            return Ok(await reportRepository.GetProductMovementAnalysis(reportParam));
+        }
     }
 }

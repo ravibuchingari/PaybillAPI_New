@@ -137,6 +137,22 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+        if (await dbContext.Database.CanConnectAsync())
+        {
+            await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
+        }
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "Could not run automatic schema migration on startup.");
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

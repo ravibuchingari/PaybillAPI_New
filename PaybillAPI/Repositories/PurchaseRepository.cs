@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
 using PaybillAPI.Models;
@@ -20,6 +20,8 @@ namespace PaybillAPI.Repositories
                     purchase = await dbContext.Purchases.Where(col => col.PurchaseId == purchaseVM.PurchaseId).FirstOrDefaultAsync();
                     if (purchase == null)
                         return new ResponseMessage(isSuccess: false, message: string.Format(AppConstants.ITEM_NOT_FOUND, "Purchase invoice"));
+                    if (purchase.IsLocked == 1)
+                        return new ResponseMessage(isSuccess: false, message: AppConstants.INVOICE_LOCKED_MESSAGE);
                 }
                 else
                     purchase = new Purchase();
@@ -48,30 +50,55 @@ namespace PaybillAPI.Repositories
                 foreach (PurchaseItemVM purchaseItemVM in purchaseVM.PurchaseItems!)
                 {
                     totalPurchaseAmount += purchaseItemVM.TotalAmount;
-                    await dbContext.PurchaseItems.AddAsync(new PurchaseItem()
+                    if (purchaseItemVM.PurchaseItemId > 0)
                     {
-                        PurchaseId = purchase.PurchaseId,
-                        ItemId = purchaseItemVM.ItemModel!.ItemId,
-                        Quantity = purchaseItemVM.Quantity,
-                        Rate = purchaseItemVM.Rate,
-                        Amount = purchaseItemVM.Amount,
-                        DiscountInRs = purchaseItemVM.DiscountInRs,
-                        TaxableAmount = purchaseItemVM.TaxableAmount,
-                        CgstPer = purchaseItemVM.CgstPer,
-                        SgstPer = purchaseItemVM.SgstPer,
-                        IgstPer = purchaseItemVM.IgstPer,
-                        GstPer = purchaseItemVM.GstPer,
-                        CgstRs = purchaseItemVM.CgstRs,
-                        SgstRs = purchaseItemVM.SgstRs,
-                        IgstRs = purchaseItemVM.IgstRs,
-                        GstAmount = purchaseItemVM.GstAmount,
-                        TotalAmount = purchaseItemVM.TotalAmount,
-                        CreatedDate = DateTime.Now
-                    });
+                        var existingItem = await dbContext.PurchaseItems.FirstOrDefaultAsync(x => x.PurchaseItemId == purchaseItemVM.PurchaseItemId);
+                        if (existingItem != null)
+                        {
+                            existingItem.ItemId = purchaseItemVM.ItemModel!.ItemId;
+                            existingItem.Quantity = purchaseItemVM.Quantity;
+                            existingItem.Rate = purchaseItemVM.Rate;
+                            existingItem.Amount = purchaseItemVM.Amount;
+                            existingItem.DiscountInRs = purchaseItemVM.DiscountInRs;
+                            existingItem.TaxableAmount = purchaseItemVM.TaxableAmount;
+                            existingItem.CgstPer = purchaseItemVM.CgstPer;
+                            existingItem.SgstPer = purchaseItemVM.SgstPer;
+                            existingItem.IgstPer = purchaseItemVM.IgstPer;
+                            existingItem.GstPer = purchaseItemVM.GstPer;
+                            existingItem.CgstRs = purchaseItemVM.CgstRs;
+                            existingItem.SgstRs = purchaseItemVM.SgstRs;
+                            existingItem.IgstRs = purchaseItemVM.IgstRs;
+                            existingItem.GstAmount = purchaseItemVM.GstAmount;
+                            existingItem.TotalAmount = purchaseItemVM.TotalAmount;
+                        }
+                    }
+                    else
+                    {
+                        await dbContext.PurchaseItems.AddAsync(new PurchaseItem()
+                        {
+                            PurchaseId = purchase.PurchaseId,
+                            ItemId = purchaseItemVM.ItemModel!.ItemId,
+                            Quantity = purchaseItemVM.Quantity,
+                            Rate = purchaseItemVM.Rate,
+                            Amount = purchaseItemVM.Amount,
+                            DiscountInRs = purchaseItemVM.DiscountInRs,
+                            TaxableAmount = purchaseItemVM.TaxableAmount,
+                            CgstPer = purchaseItemVM.CgstPer,
+                            SgstPer = purchaseItemVM.SgstPer,
+                            IgstPer = purchaseItemVM.IgstPer,
+                            GstPer = purchaseItemVM.GstPer,
+                            CgstRs = purchaseItemVM.CgstRs,
+                            SgstRs = purchaseItemVM.SgstRs,
+                            IgstRs = purchaseItemVM.IgstRs,
+                            GstAmount = purchaseItemVM.GstAmount,
+                            TotalAmount = purchaseItemVM.TotalAmount,
+                            CreatedDate = DateTime.Now
+                        });
+                    }
 
                     if (purchaseItemVM.Rate > 0)
                     {
-                        var item = await dbContext.Items.Where(col => col.ItemId == purchaseItemVM.ItemModel.ItemId).FirstAsync();
+                        var item = await dbContext.Items.Where(col => col.ItemId == purchaseItemVM.ItemModel!.ItemId).FirstAsync();
                         if (item.PurchasePrice != purchaseItemVM.Rate)
                             item.PurchasePrice = purchaseItemVM.Rate;
                     }
@@ -159,12 +186,15 @@ namespace PaybillAPI.Repositories
 
         public async Task<IEnumerable<PurchaseVM>> GetPurchaseInvoices(DateTime fromDate, DateTime toDate)
         {
-            return await dbContext.Purchases.Include(itm => itm.PurchaseItems).Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).Select(row => new PurchaseVM()
+            return await dbContext.Purchases.Include(itm => itm.PurchaseItems).Where(col => col.InvoiceDate.Date >= fromDate.Date && col.InvoiceDate.Date <= toDate.Date).OrderByDescending(col => col.PurchaseId).Select(row => new PurchaseVM()
             {
                 PurchaseId = row.PurchaseId,
+                PurchaseOrderId = row.PurchaseOrderId ?? 0,
                 InvoiceNo = row.InvoiceNo,
                 InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 PurchaseType = row.PurchaseType,
+                PaymentMode = row.PaymentMode,
+                UpiType = row.UpiType ?? string.Empty,
                 IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {
@@ -194,7 +224,16 @@ namespace PaybillAPI.Repositories
 
                 try
                 {
-                    dbContext.Transactions.RemoveRange(purchase.Transactions);
+                    if (purchase.Transactions.Count > 0)
+                    {
+                        foreach (var trn in purchase.Transactions)
+                        {
+                            trn.DeletedBy = purchase.UpdatedBy;
+                            trn.DeletedRemarks = "Purchase invoice deleted";
+                        }
+                        await SaveChangesAsync();
+                        dbContext.Transactions.RemoveRange(purchase.Transactions);
+                    }
                     dbContext.Purchases.Remove(purchase);
                     await SaveChangesAsync();
                     await dbTrans.CommitAsync();
@@ -222,9 +261,13 @@ namespace PaybillAPI.Repositories
             PurchaseVM purchaseVM = await dbContext.Purchases.Where(col => col.PurchaseId == purchaseId).Select(row => new PurchaseVM()
             {
                 PurchaseId = row.PurchaseId,
+                PurchaseOrderId = row.PurchaseOrderId ?? 0,
                 InvoiceNo = row.InvoiceNo,
                 InvoiceDate = row.InvoiceDate.ToString("dd-MMM-yyyy"),
                 PurchaseType = row.PurchaseType,
+                PaymentMode = row.PaymentMode,
+                UpiType = row.UpiType ?? string.Empty,
+                Remarks = row.Remarks ?? string.Empty,
                 IsLocked = row.IsLocked == 1,
                 Summary = new InvoiceSummary()
                 {

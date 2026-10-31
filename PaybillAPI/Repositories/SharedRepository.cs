@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PaybillAPI.Data;
 using PaybillAPI.DTO;
@@ -18,11 +18,12 @@ namespace PaybillAPI.Repositories
                 var isConnected = await dbContext.Database.CanConnectAsync();
                 if (isConnected)
                 {
+                    await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
                     return new StringBuilder().Append("<html><head><title>Player Server</title></head>")
                                                 .Append("<body style='background-color: black;'><div><img style='position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);' src='")
                                                 .Append(logoUrl)
                                                 .Append("'>")
-                                                .Append("<div style='color: white; font-family: Verdana, Geneva, Tahoma;'>PayBill api server started</div>")
+                                                .Append("<div style='color: white; font-family: Verdana, Geneva, Tahoma;'>PayBill api server is running</div>")
                                                 .Append("</div></body></html>").ToString();
                 }
                 else
@@ -44,7 +45,6 @@ namespace PaybillAPI.Repositories
             {
                 return ex.Message;
             }
-
         }
 
         public async Task<bool> IsValidAccount(string ClientUniqueId, string clientId)
@@ -120,7 +120,6 @@ namespace PaybillAPI.Repositories
                     CreatedBy = userRowId,
                     UpdatedBy = userRowId
                 });
-
             }
             else
             {
@@ -155,7 +154,7 @@ namespace PaybillAPI.Repositories
             Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == clientVM.ClientUniqueId && col.ClientId == clientVM.ClientId).FirstOrDefaultAsync();
             if (client == null)
             {
-                if(await dbContext.Clients.AnyAsync() || await dbContext.Users.AnyAsync())
+                if (await dbContext.Clients.AnyAsync() || await dbContext.Users.AnyAsync())
                     return "The service is already set up for a different customer.";
 
                 client = new Client
@@ -169,7 +168,7 @@ namespace PaybillAPI.Repositories
                     Address = clientVM.Address,
                     SubscriptionType = clientVM.SubscriptionType,
                     SubscriptionAmount = clientVM.SubscriptionAmount,
-                    SubscriptionEndDate = DateTime.Parse(clientVM.SubscriptionEndDate),
+                    SubscriptionEndDate = DateTime.TryParse(clientVM.SubscriptionEndDate, out var subEndDate) ? subEndDate : DateTime.Now.AddYears(1),
                     IsPremiumUser = (sbyte)(clientVM.IsPremiumUser ? 1 : 0),
                     IsActivated = (sbyte)(clientVM.IsActivated ? 1 : 0),
                     SecurityKey = clientVM.SecurityKey,
@@ -203,7 +202,8 @@ namespace PaybillAPI.Repositories
                 client.Address = clientVM.Address;
                 client.SubscriptionType = clientVM.SubscriptionType;
                 client.SubscriptionAmount = clientVM.SubscriptionAmount;
-                client.SubscriptionEndDate = DateTime.Parse(clientVM.SubscriptionEndDate);
+                if (DateTime.TryParse(clientVM.SubscriptionEndDate, out var subEndDate))
+                    client.SubscriptionEndDate = subEndDate;
                 client.IsPremiumUser = (sbyte)(clientVM.IsPremiumUser ? 1 : 0);
                 client.IsActivated = (sbyte)(clientVM.IsActivated ? 1 : 0);
                 client.MaxBackups = (sbyte)clientVM.MaxBackups;
@@ -273,9 +273,11 @@ namespace PaybillAPI.Repositories
                 IsSendSmsonInvoice = row.IsSendSmsonInvoice == 1,
                 IsSendWhatsAppMessageOnInvoice = row.IsSendWhatsAppMessageOnInvoice == 1,
                 IsShareInvoiceOnInvoice = row.IsShareInvoiceOnInvoice == 1,
-                UPIId = row.Upiid,
-                UPIName = row.Upiname,
-                UPIMerchantCode = row.UpimerchantCode,
+                IsShareInvoice3C = row.IsShareInvoice3C == 1,
+                IsSalesInvoiceDateEnabled = row.IsSalesInvoiceDateEnabled == 1,
+                UPIId = row.Upiid ?? string.Empty,
+                UPIName = row.Upiname ?? string.Empty,
+                UPIMerchantCode = row.UpimerchantCode ?? string.Empty,
                 SalesMessageId = row.SalesMessageId,
                 ServiceMessageId = row.ServiceMessageId,
                 BalanceMessageId = row.BalanceMessageId,
@@ -286,8 +288,18 @@ namespace PaybillAPI.Repositories
                 EmailBodyForSalesInvoice = row.EmailBodyForSalesInvoice ?? string.Empty,
                 IsSalesPriceEdited = row.IsSalesPriceEdited == 1,
                 IsCurrencyDecimalNotRequired = row.IsCurrencyDecimalNotRequired == 1,
+                LocalLanguageCode = row.LocalLanguageCode ?? string.Empty,
+                IsPrintLocalLanguage = row.IsPrintLocalLanguage == 1,
+                IsOnlineStoreEnabled = row.IsOnlineStoreEnabled == 1,
+                IsAutoBackupWhatsAppEnabled = row.IsAutoBackupWhatsAppEnabled == 1,
+                IsAutoBackupEmailEnabled = row.IsAutoBackupEmailEnabled == 1,
+                PaymentGatewayName = row.PaymentGatewayName ?? "None",
+                PaymentGatewayMerchantId = row.PaymentGatewayMerchantId ?? string.Empty,
+                PaymentGatewayApiKey = row.PaymentGatewayApiKey ?? string.Empty,
+                PaymentGatewayApiSecret = row.PaymentGatewayApiSecret ?? string.Empty,
+                MaxItemImageDimension = row.MaxItemImageDimension > 0 ? row.MaxItemImageDimension : 200,
+                IsRewardsEnabled = row.IsRewardsEnabled == 1,
                 IsSettingsUpdated = true
-
             }).FirstOrDefaultAsync() ?? new DashboardPref() { IsSettingsUpdated = false };
             return dashboardPref;
         }
@@ -305,14 +317,15 @@ namespace PaybillAPI.Repositories
 
             string securityKey = SharedMethod.GenerateUniqueID();
 
-
             DashboardPref dashboardPref = await GetDashboardPref();
             dashboardPref.HeaderModel = await GetPrintHeader();
 
-            IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
+            IEnumerable<MessageTemplateVM> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplateVM()
             {
                 MessageId = row.MessageId,
-                MessageDescription = row.MessageDescription
+                MessageType = row.MessageType ?? "FESTIVAL",
+                MessageDescription = row.MessageDescription,
+                IsSelected = row.IsSelected == 1
             }).ToListAsync();
 
             string biometricAuthKey = string.Empty;
@@ -338,7 +351,8 @@ namespace PaybillAPI.Repositories
             user.UpdatedDate = DateTime.Now;
             await SaveChangesAsync();
 
-            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
+            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstOrDefaultAsync()
+                             ?? await dbContext.Clients.FirstOrDefaultAsync();
 
             return new AuthResponseVM()
             {
@@ -357,10 +371,10 @@ namespace PaybillAPI.Repositories
                     BiometricAuthKey = biometricAuthKey,
                     Client = new ClientVM()
                     {
-                        ClientUniqueId = client.ClientUniqueId,
-                        ClientId = client.ClientId,
-                        IsPremiumUser = client.IsPremiumUser == 1,
-                        IsActivated = client.IsActivated == 1,
+                        ClientUniqueId = client?.ClientUniqueId ?? authRequest.ClientUniqueId,
+                        ClientId = client?.ClientId ?? authRequest.ClientId,
+                        IsPremiumUser = client?.IsPremiumUser == 1,
+                        IsActivated = client?.IsActivated == 1,
                         Country = new CountryModel()
                         {
                             CountryId = client?.CountryId ?? 0,
@@ -388,13 +402,16 @@ namespace PaybillAPI.Repositories
             DashboardPref dashboardPref = await GetDashboardPref();
             dashboardPref.HeaderModel = await GetPrintHeader();
 
-            IEnumerable<MessageTemplate> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplate()
+            IEnumerable<MessageTemplateVM> messages = await dbContext.MessageTemplates.OrderBy(ord => ord.MessageDescription).Select(row => new MessageTemplateVM()
             {
                 MessageId = row.MessageId,
-                MessageDescription = row.MessageDescription
+                MessageType = row.MessageType ?? "FESTIVAL",
+                MessageDescription = row.MessageDescription,
+                IsSelected = row.IsSelected == 1
             }).ToListAsync();
 
-            Client client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstAsync();
+            Client? client = await dbContext.Clients.Where(col => col.ClientUniqueId == authRequest.ClientUniqueId).FirstOrDefaultAsync()
+                             ?? await dbContext.Clients.FirstOrDefaultAsync();
 
             return new AuthResponseVM()
             {
@@ -413,10 +430,10 @@ namespace PaybillAPI.Repositories
                     BiometricAuthKey = biometricAuthKey,
                     Client = new ClientVM()
                     {
-                        ClientUniqueId = client.ClientUniqueId,
-                        ClientId = client.ClientId,
-                        IsPremiumUser = client.IsPremiumUser == 1,
-                        IsActivated = client.IsActivated == 1,
+                        ClientUniqueId = client?.ClientUniqueId ?? authRequest.ClientUniqueId,
+                        ClientId = client?.ClientId ?? authRequest.ClientId,
+                        IsPremiumUser = client?.IsPremiumUser == 1,
+                        IsActivated = client?.IsActivated == 1,
                         Country = new CountryModel()
                         {
                             CountryId = client?.CountryId ?? 0,
@@ -455,10 +472,20 @@ namespace PaybillAPI.Repositories
 
         public async Task<ResponseMessage> InsUnlockRequest(UnlockRequestVM request, int userRowId)
         {
+            int? salesId = request.SalesModel != null && request.SalesModel.SalesId > 0 ? request.SalesModel.SalesId : null;
+            int? purchaseId = request.PurchaseModel != null && request.PurchaseModel.PurchaseId > 0 ? request.PurchaseModel.PurchaseId : null;
+
+            bool alreadyPending = await dbContext.UnlockRequests.AnyAsync(col =>
+                ((salesId != null && col.SalesId == salesId) || (purchaseId != null && col.PurchaseId == purchaseId))
+                && col.IsApproved == 0 && col.IsRejected == 0);
+
+            if (alreadyPending)
+                return new ResponseMessage(isSuccess: false, message: "An unlock request for this invoice is already pending approval.");
+
             await dbContext.UnlockRequests.AddAsync(new UnlockRequest()
             {
-                SalesId = request.SalesModel != null ? request.SalesModel.SalesId : null,
-                PurchaseId = request.PurchaseModel != null ? request.PurchaseModel.PurchaseId : null,
+                SalesId = salesId,
+                PurchaseId = purchaseId,
                 Remarks = request.Remarks,
                 IsApproved = 0,
                 IsRejected = 0,
@@ -467,6 +494,14 @@ namespace PaybillAPI.Repositories
             });
             await SaveChangesAsync();
             return new ResponseMessage(isSuccess: true, message: "Invoice unlock request submitted successfully.");
+        }
+
+        public async Task<ResponseMessage> CheckUnlockRequestStatus(int? salesId, int? purchaseId)
+        {
+            bool exists = await dbContext.UnlockRequests.AnyAsync(col =>
+                ((salesId != null && salesId > 0 && col.SalesId == salesId) || (purchaseId != null && purchaseId > 0 && col.PurchaseId == purchaseId))
+                && col.IsApproved == 0 && col.IsRejected == 0);
+            return new ResponseMessage(isSuccess: !exists, message: exists ? "An unlock request for this invoice is already pending approval." : "NONE");
         }
 
         public async Task<List<UnlockRequestVM>> GetUnlockRequests()
@@ -504,7 +539,7 @@ namespace PaybillAPI.Repositories
             unlockRequest.UpdatedBy = userRowId;
             unlockRequest.IsApproved = (sbyte)(isApproved ? 1 : 0);
             unlockRequest.IsRejected = (sbyte)((!isApproved) ? 1 : 0);
-            if (string.IsNullOrEmpty(remarks))
+            if (!string.IsNullOrEmpty(remarks))
                 unlockRequest.Remarks = $"{unlockRequest.Remarks}\n{remarks}";
             if (isApproved)
             {
@@ -534,6 +569,5 @@ namespace PaybillAPI.Repositories
             else
                 return new ResponseMessage(isSuccess: false, "0");
         }
-
     }
 }

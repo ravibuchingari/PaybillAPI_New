@@ -1,8 +1,9 @@
-﻿namespace PaybillAPI.Models
+namespace PaybillAPI.Models
 {
     public class GSTData
     {
         public float GstPer { get; set; }
+        public double Quantity { get; set; }
         public double TaxableAmount { get; set; }
         public float IgstPer { get; set; }
         public float CgstPer { get; set; }

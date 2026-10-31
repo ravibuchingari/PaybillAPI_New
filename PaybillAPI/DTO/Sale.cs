@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -52,6 +52,14 @@ public partial class Sale
 
     [StringLength(10)]
     public string? EndUserMobile { get; set; }
+
+    public int? ServiceRequestId { get; set; } = 0;
+
+    public double RewardPointsEarned { get; set; }
+
+    public double RewardPointsRedeemed { get; set; }
+
+    public double RewardDiscountAmount { get; set; }
 
     [ForeignKey("CreatedBy")]
     [InverseProperty("SaleCreatedByNavigations")]

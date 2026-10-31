@@ -1,4 +1,4 @@
-﻿using PaybillAPI.Models;
+using PaybillAPI.Models;
 using PaybillAPI.ViewModel;
 
 namespace PaybillAPI.Repositories.Service
@@ -21,6 +21,7 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> InsUnlockRequest(UnlockRequestVM request, int userRowId);
         Task<List<UnlockRequestVM>> GetUnlockRequests();
         Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, string remarks, int userRowId);
+        Task<ResponseMessage> CheckUnlockRequestStatus(int? salesId, int? purchaseId);
         Task<ResponseMessage> GetMaxServerBackups();
     }
 }

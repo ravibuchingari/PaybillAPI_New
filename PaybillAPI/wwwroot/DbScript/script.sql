@@ -1,4 +1,4 @@
-﻿-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: paybill_api
 -- ------------------------------------------------------
@@ -137,7 +137,9 @@ DROP TABLE IF EXISTS `message_templates`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `message_templates` (
   `MessageId` int NOT NULL AUTO_INCREMENT,
+  `MessageType` varchar(50) NOT NULL DEFAULT 'Sales Invoice Message',
   `MessageDescription` varchar(500) NOT NULL,
+  `IsSelected` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`MessageId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -414,6 +416,10 @@ CREATE TABLE `sales` (
   `UpdatedBy` int DEFAULT NULL,
   `UpdatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `EndUserMobile` varchar(10) DEFAULT NULL,
+  `ServiceRequestId` int DEFAULT '0',
+  `RewardPointsEarned` double NOT NULL DEFAULT '0',
+  `RewardPointsRedeemed` double NOT NULL DEFAULT '0',
+  `RewardDiscountAmount` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`SalesId`),
   UNIQUE KEY `InvoiceNo_UNIQUE` (`InvoiceNo`),
   KEY `fk_sales_party_id_idx` (`PartyId`),
@@ -438,11 +444,11 @@ DELIMITER ;;
     declare v_InvoiceLength tinyint;
     declare v_Next_SalesId int;
     
-    select InvoicePrefix, InvoiceLength into v_InvoicePrefix, v_InvoiceLength from settings limit 1;
+    select ifnull(InvoicePrefix,''), ifnull(InvoiceLength,6) into v_InvoicePrefix, v_InvoiceLength from settings limit 1;
     
     select max(SalesId) into v_Next_SalesId from sales;
     
-    set new.InvoiceNo = concat(v_InvoicePrefix,lpad(ifnull(v_Next_SalesId,0) + 1,v_InvoiceLength,0));
+    set new.InvoiceNo = concat(ifnull(v_InvoicePrefix,''),lpad(ifnull(v_Next_SalesId,0) + 1,ifnull(v_InvoiceLength,6),0));
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -704,7 +710,36 @@ CREATE TABLE `settings` (
   `IsSendWhatsAppMessageOnInvoice` tinyint NOT NULL DEFAULT '0',
   `IsSalesPriceEdited` tinyint NOT NULL DEFAULT '0',
   `IsCurrencyDecimalNotRequired` tinyint NOT NULL DEFAULT '0',
-  `LocalLanguageCode` varchar(2) NOT NULL,
+  `LocalLanguageCode` varchar(2) NOT NULL DEFAULT 'te',
+  `IsPrintLocalLanguage` tinyint NOT NULL DEFAULT '0',
+  `IsOnlineStoreEnabled` tinyint NOT NULL DEFAULT '0',
+  `BankDetails` varchar(250) DEFAULT NULL,
+  `IsShareInvoice3C` tinyint NOT NULL DEFAULT '0',
+  `IsSalesInvoiceDateEnabled` tinyint NOT NULL DEFAULT '1',
+  `IsAutoBackupWhatsAppEnabled` tinyint NOT NULL DEFAULT '1',
+  `IsAutoBackupEmailEnabled` tinyint NOT NULL DEFAULT '0',
+  `PaymentGatewayName` varchar(50) NOT NULL DEFAULT 'None',
+  `PaymentGatewayMerchantId` varchar(150) NOT NULL DEFAULT '',
+  `PaymentGatewayApiKey` varchar(250) NOT NULL DEFAULT '',
+  `PaymentGatewayApiSecret` varchar(250) NOT NULL DEFAULT '',
+  `MaxItemImageDimension` int NOT NULL DEFAULT '512',
+  `IsRewardsEnabled` tinyint NOT NULL DEFAULT '0',
+  `RewardEarningMethod` varchar(30) NOT NULL DEFAULT 'FIXED_POINTS',
+  `RewardEarningPurchaseAmount` double NOT NULL DEFAULT '100',
+  `RewardEarningPoints` double NOT NULL DEFAULT '1',
+  `RewardEarningPercentage` double NOT NULL DEFAULT '2',
+  `RewardPointValue` double NOT NULL DEFAULT '1',
+  `RewardMinPurchaseForEarning` double NOT NULL DEFAULT '100',
+  `RewardMinPointsForRedemption` double NOT NULL DEFAULT '0',
+  `RewardMinInvoiceForRedemption` double NOT NULL DEFAULT '0',
+  `RewardMaxRedemptionPercentage` double NOT NULL DEFAULT '20',
+  `RewardAllowPartialRedemption` tinyint NOT NULL DEFAULT '1',
+  `RewardAllowSameInvoiceRedemption` tinyint NOT NULL DEFAULT '0',
+  `RewardIsExpiryEnabled` tinyint NOT NULL DEFAULT '0',
+  `RewardExpiryDays` int NOT NULL DEFAULT '365',
+  `RewardEligibleAmountType` varchar(30) NOT NULL DEFAULT 'TOTAL_WITH_TAX',
+  `RewardStartDate` varchar(20) NOT NULL DEFAULT '',
+  `RewardEndDate` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (`RowId`),
   KEY `fk_settings_created_by_idx` (`CreatedBy`),
   KEY `fk_settings_updated_by_idx` (`UpdatedBy`),
@@ -854,6 +889,136 @@ CREATE TABLE `users` (
   CONSTRAINT `fk_users_updated_by` FOREIGN KEY (`UpdatedBy`) REFERENCES `users` (`UserRowId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `custom_receipt_lines`
+--
+
+DROP TABLE IF EXISTS `custom_receipt_lines`;
+CREATE TABLE `custom_receipt_lines` (
+  `CustomLineId` int NOT NULL AUTO_INCREMENT,
+  `CustomLineTitle` varchar(50) NOT NULL DEFAULT '',
+  `CustomLineDescription` varchar(100) NOT NULL DEFAULT '',
+  `IsActive` tinyint NOT NULL DEFAULT '1',
+  `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`CustomLineId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `service_request_status`
+--
+
+DROP TABLE IF EXISTS `service_request_status`;
+CREATE TABLE `service_request_status` (
+  `ServiceRequestStatusId` int NOT NULL,
+  `ServiceRequestStatusName` varchar(30) NOT NULL,
+  `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ServiceRequestStatusId`),
+  UNIQUE KEY `ServiceRequestStatusName_UNIQUE` (`ServiceRequestStatusName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT IGNORE INTO `service_request_status` (`ServiceRequestStatusId`, `ServiceRequestStatusName`) VALUES
+(1, 'Pending'),
+(2, 'InProgress'),
+(3, 'Completed'),
+(4, 'Cancelled'),
+(5, 'Delivered');
+
+--
+-- Table structure for table `job_cards`
+--
+
+DROP TABLE IF EXISTS `job_cards`;
+CREATE TABLE `job_cards` (
+  `ServiceRequestId` int NOT NULL AUTO_INCREMENT,
+  `SalesId` int DEFAULT NULL,
+  `PartyId` int NOT NULL,
+  `ServiceRequestDate` date NOT NULL,
+  `ServiceRequestDescription` varchar(500) DEFAULT NULL,
+  `ServiceRequestStatusId` int NOT NULL DEFAULT '1',
+  `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `CreatedBy` int NOT NULL,
+  `UpdatedBy` int NOT NULL,
+  PRIMARY KEY (`ServiceRequestId`),
+  KEY `fk_job_cards_party_id_idx` (`PartyId`),
+  KEY `fk_job_cards_status_id_idx` (`ServiceRequestStatusId`),
+  CONSTRAINT `fk_job_cards_party_id` FOREIGN KEY (`PartyId`) REFERENCES `parties` (`PartyId`),
+  CONSTRAINT `fk_job_cards_status_id` FOREIGN KEY (`ServiceRequestStatusId`) REFERENCES `service_request_status` (`ServiceRequestStatusId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `job_card_items`
+--
+
+DROP TABLE IF EXISTS `job_card_items`;
+CREATE TABLE `job_card_items` (
+  `ServiceRequestComplaintId` int NOT NULL AUTO_INCREMENT,
+  `ServiceRequestId` int NOT NULL,
+  `ServiceTypeId` int NOT NULL,
+  `ServiceCharge` double NOT NULL DEFAULT '0',
+  `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ServiceRequestComplaintId`),
+  KEY `fk_job_card_items_req_id_idx` (`ServiceRequestId`),
+  KEY `fk_job_card_items_stype_id_idx` (`ServiceTypeId`),
+  CONSTRAINT `fk_job_card_items_req_id` FOREIGN KEY (`ServiceRequestId`) REFERENCES `job_cards` (`ServiceRequestId`),
+  CONSTRAINT `fk_job_card_items_stype_id` FOREIGN KEY (`ServiceTypeId`) REFERENCES `service_types` (`ServiceTypeId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `job_card_spares`
+--
+
+DROP TABLE IF EXISTS `job_card_spares`;
+CREATE TABLE `job_card_spares` (
+  `JobCardSpareId` int NOT NULL AUTO_INCREMENT,
+  `ServiceRequestId` int NOT NULL,
+  `ItemId` int NOT NULL,
+  `Quantity` double NOT NULL DEFAULT '1',
+  `Mrp` double NOT NULL DEFAULT '0',
+  `Rate` double NOT NULL DEFAULT '0',
+  `Amount` double NOT NULL DEFAULT '0',
+  `DiscountInRs` double NOT NULL DEFAULT '0',
+  `TaxableAmount` double NOT NULL DEFAULT '0',
+  `CgstPer` float NOT NULL DEFAULT '0',
+  `SgstPer` float NOT NULL DEFAULT '0',
+  `IgstPer` float NOT NULL DEFAULT '0',
+  `GstPer` float NOT NULL DEFAULT '0',
+  `CgstRs` double NOT NULL DEFAULT '0',
+  `SgstRs` double NOT NULL DEFAULT '0',
+  `IgstRs` double NOT NULL DEFAULT '0',
+  `GstAmount` double NOT NULL DEFAULT '0',
+  `TotalAmount` double NOT NULL DEFAULT '0',
+  `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`JobCardSpareId`),
+  KEY `fk_job_card_spares_req_id_idx` (`ServiceRequestId`),
+  KEY `fk_job_card_spares_item_id_idx` (`ItemId`),
+  CONSTRAINT `fk_job_card_spares_req_id` FOREIGN KEY (`ServiceRequestId`) REFERENCES `job_cards` (`ServiceRequestId`),
+  CONSTRAINT `fk_job_card_spares_item_id` FOREIGN KEY (`ItemId`) REFERENCES `items` (`ItemId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `reward_transactions`
+--
+
+DROP TABLE IF EXISTS `reward_transactions`;
+CREATE TABLE `reward_transactions` (
+  `RewardTransId` int NOT NULL AUTO_INCREMENT,
+  `PartyId` int NOT NULL,
+  `SalesId` int DEFAULT '0',
+  `TransactionType` varchar(20) NOT NULL,
+  `PointsCredited` double NOT NULL DEFAULT '0',
+  `PointsDebited` double NOT NULL DEFAULT '0',
+  `MonetaryValue` double NOT NULL DEFAULT '0',
+  `TransactionDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Description` varchar(250) DEFAULT '',
+  `RefTransId` int DEFAULT '0',
+  `CreatedBy` int DEFAULT '0',
+  PRIMARY KEY (`RewardTransId`),
+  KEY `idx_reward_trans_party_id` (`PartyId`),
+  KEY `idx_reward_trans_sales_id` (`SalesId`),
+  KEY `idx_reward_trans_date` (`TransactionDate`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping events for database 'paybill_api'
