@@ -28,7 +28,7 @@ namespace Paybill.Areas.WebApi.Controllers
             if (!await sharedRepository.IsValidUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             transactionId = DataProtection.UrlDecode(transactionId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await transactionRepository.DeleteTransaction(int.Parse(transactionId), userParam.remarks ?? string.Empty, Convert.ToInt32(User.Identity?.Name)));
+            return Ok(await transactionRepository.DeleteTransaction(int.Parse(transactionId), userParam.Remarks ?? string.Empty, Convert.ToInt32(User.Identity?.Name)));
         }
 
         [HttpPost]

@@ -2,20 +2,28 @@ using Paybill.Models;
 
 namespace Paybill.ViewModel
 {
+
+
+    using System.Text.Json.Serialization;
+
     public class SettingVM
     {
         public int SettingId { get; set; }
-        public string? SmtpHost { get; set; } = string.Empty;
-        public string? SmtpPort { get; set; } = string.Empty;
-        public string? EmailFrom { get; set; } = string.Empty;
-        public string? EmailTo { get; set; } = string.Empty;
-        public string? EmailPassword { get; set; } = string.Empty;
+
+        public string SmtpHost { get; set; } = string.Empty;
+        public string SmtpPort { get; set; } = string.Empty;
+        public string EmailFrom { get; set; } = string.Empty;
+        public string EmailTo { get; set; } = string.Empty;
+        public string EmailPassword { get; set; } = string.Empty;
+
         public bool IsAutoEmail { get; set; }
         public bool IsBackupOnExit { get; set; } = true;
         public bool IsDiscountEnabled { get; set; } = true;
         public bool AddItemOnSelected { get; set; }
-        public string? InvoicePrefix { get; set; } = "INV-";
+
+        public string InvoicePrefix { get; set; } = "INV-";
         public sbyte InvoiceLength { get; set; } = 6;
+
         public bool IsCreateContactOnParty { get; set; }
         public bool IsCompressBackup { get; set; }
         public bool IsShadowMenuButton { get; set; }
@@ -28,37 +36,50 @@ namespace Paybill.ViewModel
         public bool IsSendWhatsAppMessageOnInvoice { get; set; }
         public bool IsShareInvoiceOnInvoice { get; set; }
         public bool IsShareInvoice3C { get; set; }
+
         public int BackupDuration { get; set; } = 30;
+
         public int? SalesMessageId { get; set; }
         public int? ServiceMessageId { get; set; }
         public int? BalanceMessageId { get; set; }
         public int? FestivalMessageId { get; set; }
-        public string? UPIId { get; set; } = string.Empty;
-        public string? UPIName { get; set; } = string.Empty;
-        public string? UPIMerchantCode { get; set; } = string.Empty;
+
+        public string UPIId { get; set; } = string.Empty;
+        public string UPIName { get; set; } = string.Empty;
+        public string UPIMerchantCode { get; set; } = string.Empty;
+
         public bool IsServiceRequestEnabled { get; set; } = true;
         public bool IsItemSearchImageVisible { get; set; } = true;
         public bool PurchaseOrderItemCodeRequired { get; set; }
         public bool IsBackupOnLogin { get; set; }
         public bool IsViewAllItemsOnSearch { get; set; } = true;
-        public string? EmailBodyForSalesInvoice { get; set; } = "Please find the attached copy of sales invoice";
+
+        public string EmailBodyForSalesInvoice { get; set; } =
+            "Please find the attached copy of sales invoice";
+
         public bool IsSalesPriceEdited { get; set; } = true;
         public bool IsSalesInvoiceDateEnabled { get; set; } = true;
         public bool IsCurrencyDecimalNotRequired { get; set; }
+
         public string LocalLanguageCode { get; set; } = "te";
-        public string? BankDetails { get; set; } = string.Empty;
+        public string BankDetails { get; set; } = string.Empty;
+
         public bool IsOnlineStoreEnabled { get; set; }
         public bool IsPrintLocalLanguage { get; set; }
+
         public bool IsAutoBackupWhatsAppEnabled { get; set; } = true;
         public bool IsAutoBackupEmailEnabled { get; set; }
+
         public string PaymentGatewayName { get; set; } = "None";
         public string PaymentGatewayMerchantId { get; set; } = string.Empty;
         public string PaymentGatewayApiKey { get; set; } = string.Empty;
         public string PaymentGatewayApiSecret { get; set; } = string.Empty;
+
         public int MaxItemImageDimension { get; set; } = 256;
 
         // Customer Rewards Points Settings
         public bool IsRewardsEnabled { get; set; }
+
         public string RewardEarningMethod { get; set; } = "FIXED_POINTS";
         public double RewardEarningPurchaseAmount { get; set; } = 100.0;
         public double RewardEarningPoints { get; set; } = 1.0;
@@ -68,102 +89,125 @@ namespace Paybill.ViewModel
         public double RewardMinPointsForRedemption { get; set; } = 0.0;
         public double RewardMinInvoiceForRedemption { get; set; } = 0.0;
         public double RewardMaxRedemptionPercentage { get; set; } = 20.0;
+
         public bool RewardAllowPartialRedemption { get; set; } = true;
-        public bool RewardAllowSameInvoiceRedemption { get; set; } = false;
-        public bool RewardIsExpiryEnabled { get; set; } = false;
+        public bool RewardAllowSameInvoiceRedemption { get; set; }
+        public bool RewardIsExpiryEnabled { get; set; }
+
         public int RewardExpiryDays { get; set; } = 365;
+
         public string RewardEligibleAmountType { get; set; } = "TOTAL_WITH_TAX";
         public string RewardStartDate { get; set; } = string.Empty;
         public string RewardEndDate { get; set; } = string.Empty;
 
-        public PrintHeader HeaderModel { get; set; } = new();
+        // Print Header Model
+        private PrintHeader _headerModel = new();
+
+        public PrintHeader HeaderModel
+        {
+            get => _headerModel;
+            set => _headerModel = value ?? new PrintHeader();
+        }
 
         // Convenience bindings for Razor views
         public string ReceiptHeaderLine1
         {
-            get => HeaderModel.CompanyName;
+            get => HeaderModel.CompanyName ?? string.Empty;
             set => HeaderModel.CompanyName = value ?? string.Empty;
         }
+
         public string ReceiptHeaderLine2
         {
-            get => HeaderModel.Header1;
+            get => HeaderModel.Header1 ?? string.Empty;
             set => HeaderModel.Header1 = value ?? string.Empty;
         }
+
         public string ReceiptHeaderLine3
         {
-            get => HeaderModel.Header2;
+            get => HeaderModel.Header2 ?? string.Empty;
             set => HeaderModel.Header2 = value ?? string.Empty;
         }
+
         public string ReceiptHeaderLine4
         {
-            get => HeaderModel.Header3;
+            get => HeaderModel.Header3 ?? string.Empty;
             set => HeaderModel.Header3 = value ?? string.Empty;
         }
+
         public string ReceiptHeaderLine5
         {
-            get => HeaderModel.Gstin;
+            get => HeaderModel.Gstin ?? string.Empty;
             set => HeaderModel.Gstin = value ?? string.Empty;
         }
+
         public string ReceiptFooterLine1
         {
-            get => HeaderModel.FooterLine1;
+            get => HeaderModel.FooterLine1 ?? string.Empty;
             set => HeaderModel.FooterLine1 = value ?? string.Empty;
         }
+
         public string ReceiptFooterLine2
         {
-            get => HeaderModel.FooterLine2;
+            get => HeaderModel.FooterLine2 ?? string.Empty;
             set => HeaderModel.FooterLine2 = value ?? string.Empty;
         }
+
         public bool IsGstInvoice
         {
             get => HeaderModel.GstSlabRequired;
             set => HeaderModel.GstSlabRequired = value;
         }
+
         public bool ResetInvoiceNumberFinancialYear { get; set; } = true;
+
         public bool DisplayItemStockOnSales
         {
             get => IsViewAllItemsOnSearch;
             set => IsViewAllItemsOnSearch = value;
         }
+
         public bool AllowNegativeStock { get; set; } = true;
         public bool PrintQrCode { get; set; } = true;
+
         public bool PrintTotalSavings
         {
             get => HeaderModel.IsSavingDetailsRequired;
             set => HeaderModel.IsSavingDetailsRequired = value;
         }
-        public string? UpiId
-        {
-            get => UPIId;
-            set => UPIId = value;
-        }
+
         public string? BankName
         {
             get => BankDetails;
-            set => BankDetails = value;
+            set => BankDetails = value ?? string.Empty;
         }
-        public string? BankAccountNumber { get; set; } = string.Empty;
-        public string? BankIfscCode { get; set; } = string.Empty;
+
+        public string BankAccountNumber { get; set; } = string.Empty;
+        public string BankIfscCode { get; set; } = string.Empty;
+
         public string PaymentGatewayKeyId
         {
             get => PaymentGatewayApiKey;
             set => PaymentGatewayApiKey = value ?? string.Empty;
         }
+
         public bool EnableCustomerRewards
         {
             get => IsRewardsEnabled;
             set => IsRewardsEnabled = value;
         }
+
         public double RewardPointsPerHundredRupees
         {
             get => RewardEarningPoints;
             set => RewardEarningPoints = value;
         }
+
         public double RewardMinInvoiceAmount
         {
             get => RewardMinPurchaseForEarning;
             set => RewardMinPurchaseForEarning = value;
         }
+
         public int RewardPointsExpiryDays
         {
             get => RewardExpiryDays;
@@ -173,17 +217,21 @@ namespace Paybill.ViewModel
                 RewardIsExpiryEnabled = value > 0;
             }
         }
-        public string? SenderEmail
+
+        public string SenderEmail
         {
             get => EmailFrom;
-            set => EmailFrom = value;
+            set => EmailFrom = value ?? string.Empty;
         }
-        public string? SenderPassword
+
+        public string SenderPassword
         {
             get => EmailPassword;
-            set => EmailPassword = value;
+            set => EmailPassword = value ?? string.Empty;
         }
     }
+
+
     //public class SettingVM
     //{
     //    public string? SmtpHost { get; set; } = string.Empty;

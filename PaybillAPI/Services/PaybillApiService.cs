@@ -294,7 +294,7 @@ namespace Paybill.Services
         {
             string encId = PaybillCrypto.EncodeRouteParam(unlockRequestId);
             var param = GetCurrentUserParam();
-            param.remarks = remarks;
+            param.Remarks = remarks;
             return await PostJsonAsync<ResponseMessage>($"api/common/unlock/request/update/{encId}/{isApproved.ToString().ToLowerInvariant()}", param)
                    ?? new ResponseMessage { IsSuccess = false, Message = "Failed to update unlock request." };
         }
@@ -631,7 +631,7 @@ namespace Paybill.Services
         {
             string encId = PaybillCrypto.EncodeRouteParam(salesItemId);
             var param = GetCurrentUserParam();
-            param.remarks = remarks;
+            param.Remarks = remarks;
             return await PostJsonAsync<ResponseMessage>($"api/sales/sales/item/{encId}/delete", param)
                    ?? new ResponseMessage { IsSuccess = false, Message = "Failed to delete sales item." };
         }
@@ -715,7 +715,7 @@ namespace Paybill.Services
         {
             string encId = PaybillCrypto.EncodeRouteParam(purchaseItemId);
             var param = GetCurrentUserParam();
-            param.remarks = remarks;
+            param.Remarks = remarks;
             return await PostJsonAsync<ResponseMessage>($"api/purchase/purchase/item/{encId}/delete", param)
                    ?? new ResponseMessage { IsSuccess = false, Message = "Failed to delete purchase item." };
         }
@@ -778,7 +778,7 @@ namespace Paybill.Services
         {
             string encId = PaybillCrypto.EncodeRouteParam(transactionId);
             var param = GetCurrentUserParam();
-            param.remarks = remarks;
+            param.Remarks = remarks;
             return await PostJsonAsync<ResponseMessage>($"api/transaction/trans/{encId}/delete", param)
                    ?? new ResponseMessage { IsSuccess = false, Message = "Failed to delete transaction." };
         }

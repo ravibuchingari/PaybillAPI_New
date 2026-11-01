@@ -253,10 +253,10 @@
                             </button>
                         </div>
                     </div>
-                    @if (!string.IsNullOrWhiteSpace(Model.Settings.UpiId))
+                    @if (!string.IsNullOrWhiteSpace(Model.Settings.UPIId))
                     {
                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="showUpiQrModal()">
-                            <i class="bi bi-qr-code-scan me-1"></i>Show UPI Payment QR (@Model.Settings.UpiId)
+                            <i class="bi bi-qr-code-scan me-1"></i>Show UPI Payment QR (@Model.Settings.UPIId)
                         </button>
                     }
                     @if (isEdit)
@@ -365,7 +365,7 @@
             <div class="modal-body">
                 <div class="fw-bold fs-4 text-success mb-2" id="upiQrAmountText">₹ 0.00</div>
                 <img id="upiQrImg" src="" alt="UPI QR" class="img-fluid border rounded p-2 mb-2" style="max-width: 220px;" />
-                <div class="small text-muted">@Model.Settings.UpiId</div>
+                <div class="small text-muted">@Model.Settings.UPIId</div>
             </div>
         </div>
     </div>
@@ -929,7 +929,7 @@
 
         function showUpiQrModal() {
             const grandTotal = parseFloat(document.getElementById('lblGrandTotal').innerText.replace('₹', '').trim()) || 0;
-            const upiId = '@Model.Settings.UpiId';
+            const upiId = '@Model.Settings.UPIId';
             const company = encodeURIComponent('@(Model.Settings.ReceiptHeaderLine1 ?? "PayBill")');
             const upiUri = `upi://pay?pa=${upiId}&pn=${company}&am=${grandTotal.toFixed(2)}&cu=INR`;
             document.getElementById('upiQrAmountText').innerText = `₹ ${grandTotal.toFixed(2)}`;

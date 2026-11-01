@@ -27,10 +27,10 @@ namespace Paybill.Areas.WebApi.Controllers
         {
             if (!await sharedRepository.IsValidAdminUser(userParam.UserRowId, userParam.SecurityKey, Convert.ToInt32(User.Identity?.Name)))
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
-            if (string.IsNullOrWhiteSpace(userParam.remarks))
+            if (string.IsNullOrWhiteSpace(userParam.Remarks))
                 return BadRequest("Remarks cannot be empty.");
             purchaseItemId = DataProtection.UrlDecode(purchaseItemId, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
-            return Ok(await purchaseRepository.DeletePurchaseItem(int.Parse(purchaseItemId), userParam.remarks, Convert.ToInt32(User.Identity?.Name)));
+            return Ok(await purchaseRepository.DeletePurchaseItem(int.Parse(purchaseItemId), userParam.Remarks ?? string.Empty, Convert.ToInt32(User.Identity?.Name)));
         }
 
         [HttpPost]

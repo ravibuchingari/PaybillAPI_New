@@ -8,7 +8,7 @@ namespace Paybill.Models
         public string SecurityKey { get; set; } = string.Empty;
         public string ClientUniqueId { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
-        public string? remarks { get; set; } = string.Empty;
+        public string? Remarks { get; set; } = string.Empty;
         public SettingVM? SettingModel { get; set; }
         public CategoryVM? CategoryModel { get; set; }
         public GstVM? GstModel { get; set; }
@@ -23,4 +23,13 @@ namespace Paybill.Models
         public JobCardVM? JobCardModel { get; set; }
         public CustomReceiptLineVM? CustomReceiptLineModel { get; set; }
     }
+
+    //public class HeaderProp
+    //{
+    //    public int UserRowId { get; set; }
+    //    public string SecurityKey { get; set; } = string.Empty;
+    //    public string ClientUniqueId { get; set; } = string.Empty;
+    //    public string ClientId { get; set; } = string.Empty;
+    //}
+
 }

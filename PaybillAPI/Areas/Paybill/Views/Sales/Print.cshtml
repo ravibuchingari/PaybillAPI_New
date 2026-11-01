@@ -17,8 +17,8 @@
         ? $"https://wa.me/91{customerPhone}?text={Uri.EscapeDataString(Model.WhatsAppMessage)}"
         : $"https://wa.me/?text={Uri.EscapeDataString(Model.WhatsAppMessage)}";
 
-    string upiUri = !string.IsNullOrWhiteSpace(Model.Settings.UpiId)
-        ? $"upi://pay?pa={Model.Settings.UpiId}&pn={Uri.EscapeDataString(hdr.HeaderLine1)}&am={inv.TotalInvoiceAmount:F2}&cu=INR"
+    string upiUri = !string.IsNullOrWhiteSpace(Model.Settings.UPIId)
+        ? $"upi://pay?pa={Model.Settings.UPIId}&pn={Uri.EscapeDataString(hdr.HeaderLine1)}&am={inv.TotalInvoiceAmount:F2}&cu=INR"
         : "";
 }
 
@@ -315,9 +315,9 @@ else
                             <div><strong>Bank:</strong> @Model.Settings.BankName</div>
                             <div><strong>A/C No:</strong> @Model.Settings.BankAccountNumber | <strong>IFSC:</strong> @Model.Settings.BankIfscCode</div>
                         }
-                        @if (!string.IsNullOrWhiteSpace(Model.Settings.UpiId))
+                        @if (!string.IsNullOrWhiteSpace(Model.Settings.UPIId))
                         {
-                            <div><strong>UPI ID:</strong> @Model.Settings.UpiId</div>
+                            <div><strong>UPI ID:</strong> @Model.Settings.UPIId</div>
                         }
                         @if (inv.PointsEarned > 0 || inv.AvailablePoints > 0)
                         {
