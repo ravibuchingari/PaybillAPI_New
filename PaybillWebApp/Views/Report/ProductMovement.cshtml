@@ -1,0 +1,67 @@
+@model List<ProductMovementModel>
+@{
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    ViewData["Title"] = "Fast-Moving vs Slow-Moving Product Analysis";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex gap-2 align-items-center">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <button type="submit" class="btn btn-paybill">Analyze Movement</button>
+        </div>
+    </form>
+
+    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('movTable', 'Product_Movement.csv')">
+        <i class="bi bi-download me-1"></i>Export CSV
+    </button>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title">Product Movement & Velocity Classification (@fromDate to @toDate)</h6>
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="movTable">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th class="text-end">Sold Qty</th>
+                    <th class="text-end">Sales Revenue</th>
+                    <th class="text-end">Current Stock</th>
+                    <th class="text-end">Turnover Ratio</th>
+                    <th class="text-center">Movement Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-muted">No product movement data available for this period.</td></tr>
+                }
+                @foreach (var m in Model)
+                {
+                    string badge = (m.MovementCategory ?? "").Contains("Fast", StringComparison.OrdinalIgnoreCase)
+                        ? "badge-soft-success"
+                        : ((m.MovementCategory ?? "").Contains("Slow", StringComparison.OrdinalIgnoreCase) ? "badge-soft-warning" : "badge-soft-secondary");
+                    <tr>
+                        <td><code>@m.ItemCode</code></td>
+                        <td class="fw-semibold">@m.ItemName</td>
+                        <td>@m.CategoryName</td>
+                        <td class="text-end fw-bold">@m.TotalSoldQty</td>
+                        <td class="text-end text-success fw-semibold">₹ @m.TotalSalesAmount.ToString("N2")</td>
+                        <td class="text-end">@m.CurrentStock</td>
+                        <td class="text-end">@m.StockTurnoverRatio.ToString("N2")</td>
+                        <td class="text-center"><span class="badge-soft @badge">@(string.IsNullOrWhiteSpace(m.MovementCategory) ? "Normal" : m.MovementCategory)</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

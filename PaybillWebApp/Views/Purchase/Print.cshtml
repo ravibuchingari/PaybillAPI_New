@@ -1,0 +1,92 @@
+@model PurchaseVM
+@{
+    Layout = "_PrintLayout";
+    var hdr = ViewBag.Header as PrintHeader ?? new PrintHeader();
+    string amountWords = ViewBag.AmountInWords as string ?? "";
+    ViewData["Title"] = $"Purchase Invoice #{Model.InvoiceNumber ?? Model.PurchaseId.ToString()}";
+}
+
+<div class="print-a4">
+    <div class="row border-bottom border-dark pb-3 mb-3 align-items-center">
+        <div class="col-8">
+            <h3 class="fw-bold mb-0" style="color: #174204;">@hdr.HeaderLine1</h3>
+            <div class="small">@hdr.HeaderLine2 @hdr.HeaderLine3</div>
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5))
+            {
+                <div class="small fw-bold">GSTIN: @hdr.HeaderLine5</div>
+            }
+        </div>
+        <div class="col-4 text-end">
+            <h4 class="fw-bold text-uppercase mb-1">PURCHASE VOUCHER</h4>
+            <div class="small"><strong>Supplier Bill No:</strong> #@Model.InvoiceNumber</div>
+            <div class="small"><strong>Purchase Date:</strong> @Model.PurchaseDate</div>
+            <div class="small"><strong>Payment Mode:</strong> @Model.PaymentMode</div>
+        </div>
+    </div>
+
+    <div class="p-2 border rounded bg-light mb-3">
+        <div class="small text-muted text-uppercase fw-bold">Purchased From (Supplier / Vendor):</div>
+        <div class="fw-bold fs-6">@(Model.Party?.PartyName ?? "Supplier")</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Party?.Address)) { <div class="small">@Model.Party.Address</div> }
+        @if (!string.IsNullOrWhiteSpace(Model.Party?.Mobile)) { <div class="small">Mobile: @Model.Party.Mobile</div> }
+        @if (!string.IsNullOrWhiteSpace(Model.Party?.Gstin)) { <div class="small fw-bold">Supplier GSTIN: @Model.Party.Gstin</div> }
+    </div>
+
+    <table class="table table-bordered border-dark table-sm align-middle mb-3" style="font-size: 12px;">
+        <thead class="table-light border-dark">
+            <tr>
+                <th>#</th>
+                <th>Item Description</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">Free</th>
+                <th class="text-end">Pur Rate</th>
+                <th class="text-end">Disc</th>
+                <th class="text-end">Taxable</th>
+                <th class="text-end">GST Amt</th>
+                <th class="text-end">Total (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int sr = 1; }
+            @foreach (var item in Model.PurchaseItems)
+            {
+                double tax = item.CgstAmount + item.SgstAmount + item.IgstAmount;
+                <tr>
+                    <td>@(sr++)</td>
+                    <td class="fw-semibold">@(item.Item?.ItemName ?? $"Item #{item.ItemId}")</td>
+                    <td class="text-center">@item.Quantity</td>
+                    <td class="text-center">@item.FreeQuantity</td>
+                    <td class="text-end">@item.PurchasePrice.ToString("N2")</td>
+                    <td class="text-end">@item.DiscountRs.ToString("N2")</td>
+                    <td class="text-end">@item.TaxableAmount.ToString("N2")</td>
+                    <td class="text-end">@tax.ToString("N2")</td>
+                    <td class="text-end fw-bold">@item.TotalAmount.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-7">
+            <div class="p-2 border rounded mb-2">
+                <div class="small text-muted">Amount in Words:</div>
+                <div class="fw-bold small">@amountWords</div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.Remarks))
+            {
+                <div class="small"><strong>Remarks:</strong> @Model.Remarks</div>
+            }
+        </div>
+        <div class="col-5">
+            <table class="table table-sm table-bordered" style="font-size: 12px;">
+                <tr><td>Taxable Total</td><td class="text-end">₹ @Model.TotalTaxableAmount.ToString("N2")</td></tr>
+                <tr><td>Total GST (CGST+SGST+IGST)</td><td class="text-end">₹ @((Model.TotalCgst + Model.TotalSgst + Model.TotalIgst).ToString("N2"))</td></tr>
+                <tr><td>Discount</td><td class="text-end">- ₹ @Model.TotalDiscount.ToString("N2")</td></tr>
+                <tr class="table-success fw-bold"><td>Total Purchase Amount</td><td class="text-end">₹ @Model.TotalInvoiceAmount.ToString("N2")</td></tr>
+                <tr><td>Paid Amount</td><td class="text-end">₹ @Model.PaidAmount.ToString("N2")</td></tr>
+                <tr><td>Balance Payable</td><td class="text-end fw-bold text-danger">₹ @Model.BalanceAmount.ToString("N2")</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -119,9 +119,10 @@ namespace PaybillAPI.Controllers
 
         [HttpPost]
         [Route("party/rewards/expire")]
-        public IActionResult ExpireOldPoints()
+        public async Task<IActionResult> ExpireOldPoints()
         {
-            return Ok(new ResponseMessage(isSuccess: true, message: "0", data: "0"));
+            int userRowId = int.TryParse(User.Identity?.Name, out var uid) ? uid : 0;
+            return Ok(await partyRepository.ExpireOldPoints(userRowId));
         }
 
         [HttpGet]

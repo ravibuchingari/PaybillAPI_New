@@ -1,0 +1,70 @@
+@model TransactionVM
+@{
+    Layout = "_PrintLayout";
+    var hdr = ViewBag.Header as PrintHeader ?? new PrintHeader();
+    string amountWords = ViewBag.AmountInWords as string ?? "";
+    double amount = Model.IsPayment ? Model.PaidAmount : Model.ReceivedAmount;
+    string voucherType = Model.IsPayment ? "PAYMENT VOUCHER" : "RECEIPT VOUCHER";
+    ViewData["Title"] = $"{voucherType} #{Model.TransactionId}";
+}
+
+<div class="print-a4" style="min-height: auto;">
+    <div class="border border-dark p-4 rounded">
+        <div class="row border-bottom border-dark pb-3 mb-3 align-items-center">
+            <div class="col-8">
+                <h4 class="fw-bold mb-0" style="color: #174204;">@hdr.HeaderLine1</h4>
+                <div class="small">@hdr.HeaderLine2 @hdr.HeaderLine3</div>
+                @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5))
+                {
+                    <div class="small fw-bold">GSTIN: @hdr.HeaderLine5</div>
+                }
+            </div>
+            <div class="col-4 text-end">
+                <h5 class="fw-bold mb-1">@voucherType</h5>
+                <div class="small"><strong>Voucher No:</strong> #@(Model.IsPayment ? "PAY" : "RCT")-@Model.TransactionId</div>
+                <div class="small"><strong>Date:</strong> @Model.TransactionDate</div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-8">
+                <div class="mb-2">
+                    <span class="text-muted small">@(Model.IsPayment ? "Paid To:" : "Received with thanks from:")</span>
+                    <div class="fw-bold fs-5 border-bottom pb-1">@(Model.Party?.PartyName ?? "Party")</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small">The sum of Rupees:</span>
+                    <div class="fw-semibold border-bottom pb-1">@amountWords</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small">By Payment Mode:</span>
+                    <strong class="ms-2">@Model.PaymentMode</strong>
+                    @if (!string.IsNullOrWhiteSpace(Model.Remarks))
+                    {
+                        <span class="ms-3 text-muted small">Remarks: @Model.Remarks</span>
+                    }
+                </div>
+            </div>
+            <div class="col-4 d-flex flex-column justify-content-center align-items-end">
+                <div class="border border-dark rounded p-3 text-center bg-light w-100">
+                    <div class="small text-muted text-uppercase fw-bold">Amount</div>
+                    <div class="fs-3 fw-bold" style="color: #174204;">₹ @amount.ToString("N2")</div>
+                    @if (Model.Discount > 0)
+                    {
+                        <div class="small text-muted">Discount Allowed: ₹ @Model.Discount.ToString("N2")</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 pt-3">
+            <div class="col-6">
+                <div class="small border-top border-dark d-inline-block pt-1 px-4">Receiver's Signature</div>
+            </div>
+            <div class="col-6 text-end">
+                <div class="small border-top border-dark d-inline-block pt-1 px-4">For @hdr.HeaderLine1</div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,99 @@
+@model List<TransactionVM>
+@{
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    ViewData["Title"] = "Daybook & Daily Cash Flow";
+
+    double totalInflow = Model.Sum(t => t.ReceivedAmount);
+    double totalOutflow = Model.Sum(t => t.PaidAmount);
+    double netCashFlow = totalInflow - totalOutflow;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex gap-2 align-items-center">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <button type="submit" class="btn btn-paybill"><i class="bi bi-funnel me-1"></i>Load Daybook</button>
+        </div>
+    </form>
+
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('daybookTable', 'Daybook_@(fromDate)_@(toDate).csv')">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Collections / Inflow (Cr)</div>
+            <div class="kpi-value text-success">₹ @totalInflow.ToString("N2")</div>
+            <div class="kpi-sub">Sales & Customer Receipts</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Payments / Outflow (Dr)</div>
+            <div class="kpi-value text-danger">₹ @totalOutflow.ToString("N2")</div>
+            <div class="kpi-sub">Purchases & Supplier Payments</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Net Cash Surplus / Deficit</div>
+            <div class="kpi-value @(netCashFlow >= 0 ? "text-primary" : "text-danger")">₹ @netCashFlow.ToString("N2")</div>
+            <div class="kpi-sub">@Model.Count total entries</div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title"><i class="bi bi-journal-bookmark-fill me-2 text-success"></i>Daybook Transactions (@fromDate to @toDate)</h6>
+        <input type="text" id="dbSearch" class="form-control form-control-sm" placeholder="Filter daybook..." style="width: 220px;"
+               onkeyup="PaybillUI.filterTable('dbSearch', 'daybookTable')" />
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="daybookTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Party / Particulars</th>
+                    <th>Payment Mode</th>
+                    <th>Remarks</th>
+                    <th class="text-end">Bill Amt</th>
+                    <th class="text-end">Inflow / Received</th>
+                    <th class="text-end">Outflow / Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-muted">No daybook transactions recorded in this date range.</td></tr>
+                }
+                @foreach (var t in Model)
+                {
+                    <tr>
+                        <td>@t.TransactionDate</td>
+                        <td><span class="badge bg-light text-dark border">@t.TransactionType</span></td>
+                        <td class="fw-semibold">@(t.Party?.PartyName ?? "Walk-in / General")</td>
+                        <td>@t.PaymentMode</td>
+                        <td class="small text-muted">@t.Remarks</td>
+                        <td class="text-end">@(t.InvoiceAmount > 0 ? $"₹ {t.InvoiceAmount:N2}" : "—")</td>
+                        <td class="text-end text-success fw-semibold">@(t.ReceivedAmount > 0 ? $"₹ {t.ReceivedAmount:N2}" : "—")</td>
+                        <td class="text-end text-danger fw-semibold">@(t.PaidAmount > 0 ? $"₹ {t.PaidAmount:N2}" : "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

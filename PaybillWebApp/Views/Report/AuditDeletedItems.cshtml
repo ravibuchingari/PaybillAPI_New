@@ -1,0 +1,110 @@
+@{
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    var delSales = ViewBag.DeletedSalesItems as List<SalesItemVM> ?? [];
+    var delPurchases = ViewBag.DeletedPurchaseItems as List<PurchaseItemVM> ?? [];
+    ViewData["Title"] = "Deleted Invoice Items Audit Trail";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex gap-2 align-items-center">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <button type="submit" class="btn btn-paybill">Load Audit Log</button>
+        </div>
+    </form>
+</div>
+
+<div class="row g-4">
+    <!-- Deleted Sales Items -->
+    <div class="col-12">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title text-danger"><i class="bi bi-shield-exclamation me-2"></i>Deleted Sales Invoice Line Items (@delSales.Count)</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Sales Date</th>
+                            <th>Item / Service</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Amount</th>
+                            <th>Deleted By</th>
+                            <th>Deleted On</th>
+                            <th>Audit Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!delSales.Any())
+                        {
+                            <tr><td colspan="8" class="text-center py-4 text-muted">No deleted sales line items in this period.</td></tr>
+                        }
+                        @foreach (var s in delSales)
+                        {
+                            <tr>
+                                <td class="fw-bold">#@(string.IsNullOrWhiteSpace(s.InvoiceNumber) ? s.SalesId.ToString() : s.InvoiceNumber)</td>
+                                <td>@s.SalesDate</td>
+                                <td class="fw-semibold">@(s.Item?.ItemName ?? s.ServiceType?.ServiceTypeName ?? "Item")</td>
+                                <td class="text-center">@s.Quantity</td>
+                                <td class="text-end">₹ @s.TotalAmount.ToString("N2")</td>
+                                <td>@s.DeletedBy</td>
+                                <td class="small text-muted">@s.DeletedDate</td>
+                                <td class="text-danger small fw-medium">@s.Remarks</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deleted Purchase Items -->
+    <div class="col-12">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title text-warning"><i class="bi bi-shield-exclamation me-2"></i>Deleted Purchase Invoice Line Items (@delPurchases.Count)</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Bill #</th>
+                            <th>Purchase Date</th>
+                            <th>Item</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Amount</th>
+                            <th>Deleted By</th>
+                            <th>Deleted On</th>
+                            <th>Audit Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!delPurchases.Any())
+                        {
+                            <tr><td colspan="8" class="text-center py-4 text-muted">No deleted purchase line items in this period.</td></tr>
+                        }
+                        @foreach (var p in delPurchases)
+                        {
+                            <tr>
+                                <td class="fw-bold">#@(string.IsNullOrWhiteSpace(p.InvoiceNumber) ? p.PurchaseId.ToString() : p.InvoiceNumber)</td>
+                                <td>@p.PurchaseDate</td>
+                                <td class="fw-semibold">@(p.Item?.ItemName ?? "Item")</td>
+                                <td class="text-center">@p.Quantity</td>
+                                <td class="text-end">₹ @p.TotalAmount.ToString("N2")</td>
+                                <td>@p.DeletedBy</td>
+                                <td class="small text-muted">@p.DeletedDate</td>
+                                <td class="text-danger small fw-medium">@p.Remarks</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

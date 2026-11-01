@@ -1,0 +1,178 @@
+@{
+    ViewData["Title"] = "Reports & Business Analytics Hub";
+}
+
+<div class="mb-4">
+    <h5 class="fw-bold mb-1">Comprehensive Business Reports & GST Compliance</h5>
+    <p class="text-muted small mb-0">Select any report below to filter by date range, export to Excel/CSV, or print.</p>
+</div>
+
+<div class="row g-4">
+    <!-- GST & Tax Compliance -->
+    <div class="col-md-6 col-xl-4">
+        <div class="pb-card h-100">
+            <div class="pb-card-header bg-success-subtle">
+                <h6 class="pb-card-title text-success"><i class="bi bi-bank2 me-2"></i>GST & Tax Returns</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="@Url.Action("GstReturns", new { returnType = "GSTR-1" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">GSTR-1 Outward Supplies & JSON Export</div>
+                        <div class="small text-muted">B2B, B2CL, B2CS + Govt Portal JSON</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("GstReturns", new { returnType = "GSTR-3B" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">GSTR-3B Monthly Summary & ITC</div>
+                        <div class="small text-muted">Output Tax vs Input Tax Credit</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("GstReturns", new { returnType = "GSTR-2" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">GSTR-2A/2B Inward Purchases & CMP-08</div>
+                        <div class="small text-muted">HSN Summary & SAC Service Summary</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales & Purchase Registers -->
+    <div class="col-md-6 col-xl-4">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title text-primary"><i class="bi bi-receipt me-2"></i>Sales & Purchase Reports</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="@Url.Action("SalesDetails")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Detailed Item-wise Sales Report</div>
+                        <div class="small text-muted">Includes Official Excel (.xlsx) Export</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("SalesSummary")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Sales Summary Register</div>
+                        <div class="small text-muted">Invoice-level summary + Excel Export</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("PurchaseReport")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Purchase Register & Item-wise Purchases</div>
+                        <div class="small text-muted">Supplier bills, ITC, and item breakdown</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial & Party Accounting -->
+    <div class="col-md-6 col-xl-4">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title text-warning"><i class="bi bi-journal-bookmark-fill me-2"></i>Accounting & Ledgers</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="@Url.Action("Daybook")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Daybook & Daily Cash Flow</div>
+                        <div class="small text-muted">All sales, purchases, receipts & payments</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("BalanceSheet")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Customer & Supplier Balance Sheet</div>
+                        <div class="small text-muted">Receivables & Payables outstanding</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("Index", "Party")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Party-wise Ledger Statements</div>
+                        <div class="small text-muted">Detailed debit/credit running ledgers</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory & Stock Analytics -->
+    <div class="col-md-6 col-xl-4">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title text-info"><i class="bi bi-boxes me-2"></i>Inventory & Stock Analytics</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="@Url.Action("InventoryValuation")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Inventory Valuation & Category Summary</div>
+                        <div class="small text-muted">Stock value at purchase cost & sales price</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("ProductMovement")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Fast-Moving vs Slow-Moving Analysis</div>
+                        <div class="small text-muted">Velocity, turnover ratio & revenue share</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("AgedInventory")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Aged Inventory / Non-Moving Stock</div>
+                        <div class="small text-muted">Items unsold for 30 / 60 / 90+ days</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("OrderReadiness")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Order Readiness (Low Stock Alerts)</div>
+                        <div class="small text-muted">Items below minimum reorder threshold</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit, Service & Loyalty Reports -->
+    <div class="col-md-6 col-xl-4">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title text-danger"><i class="bi bi-shield-check me-2"></i>Audit, Service & Loyalty</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="@Url.Action("AuditDeletedItems")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Deleted Sales & Purchase Items Audit</div>
+                        <div class="small text-muted">Track deleted line items with user & remarks</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("Index", "JobCard")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Service / Job Card Reports</div>
+                        <div class="small text-muted">Pending, Completed & Delivered Job Cards</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="@Url.Action("Index", "Reward")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">Customer Loyalty & Redemption Reports</div>
+                        <div class="small text-muted">Earned, redeemed & expired points</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+

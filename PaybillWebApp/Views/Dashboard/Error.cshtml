@@ -1,0 +1,11 @@
+@{
+    ViewData["Title"] = "Application Error";
+}
+
+<div class="text-center py-5">
+    <i class="bi bi-exclamation-octagon text-danger" style="font-size: 4rem;"></i>
+    <h3 class="fw-bold mt-3">Something went wrong</h3>
+    <p class="text-muted">An unexpected error occurred while processing your request. Please verify that the PayBill API service is running.</p>
+    <a href="@Url.Action("Index", "Dashboard")" class="btn btn-paybill mt-2">Return to Dashboard</a>
+</div>
+

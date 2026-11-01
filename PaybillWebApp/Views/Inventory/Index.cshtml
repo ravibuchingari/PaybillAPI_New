@@ -1,0 +1,712 @@
+@model InventoryPageViewModel
+@{
+    ViewData["Title"] = "Inventory & Master Management";
+    var measures = new[] { "PCS", "KG", "GM", "LTR", "ML", "BOX", "PKT", "BAG", "MTR", "SET", "DOZ", "NOS" };
+}
+
+<!-- Top Summary Strip -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="pb-kpi-card py-2 px-3">
+            <div class="pb-kpi-label">Total Products</div>
+            <div class="fs-4 fw-bold text-primary">@Model.Items.Count</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="pb-kpi-card py-2 px-3">
+            <div class="pb-kpi-label">Categories</div>
+            <div class="fs-4 fw-bold">@Model.Categories.Count</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="pb-kpi-card py-2 px-3">
+            <div class="pb-kpi-label">GST Tax Slabs</div>
+            <div class="fs-4 fw-bold text-success">@Model.GstSlabs.Count</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="pb-kpi-card py-2 px-3">
+            <div class="pb-kpi-label">Low Stock Alerts</div>
+            <div class="fs-4 fw-bold text-danger">@Model.MinStockItems.Count</div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="pb-card">
+    <div class="pb-card-header flex-wrap gap-2">
+        <ul class="nav nav-pills gap-1" id="invTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "items" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#pane-items" type="button">
+                    <i class="bi bi-box-seam me-1"></i>Item Master (@Model.Items.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "categories" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#pane-categories" type="button">
+                    <i class="bi bi-tags me-1"></i>Categories (@Model.Categories.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "gst" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#pane-gst" type="button">
+                    <i class="bi bi-percent me-1"></i>GST Slabs (@Model.GstSlabs.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "services" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#pane-services" type="button">
+                    <i class="bi bi-wrench-adjustable me-1"></i>Service Types (@Model.ServiceTypes.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "lowstock" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#pane-lowstock" type="button">
+                    <i class="bi bi-exclamation-triangle me-1 text-warning"></i>Low Stock (@Model.MinStockItems.Count)
+                </button>
+            </li>
+        </ul>
+
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-primary" onclick="openItemModal()">
+                <i class="bi bi-plus-lg me-1"></i>Add Item
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
+                <i class="bi bi-file-earmark-excel me-1"></i>Bulk Excel Import
+            </button>
+            <a href="@Url.Action("PrintBarcodes", "Inventory")" target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-upc-scan me-1"></i>Print Barcodes
+            </a>
+            <form asp-action="ResetStock" method="post" class="d-inline" onsubmit="return confirm('Recalculate closing stock for all items from purchase & sales history?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-outline-warning" title="Recalculate Stock">
+                    <i class="bi bi-arrow-repeat me-1"></i>Sync Stock
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="tab-content p-3">
+        <!-- TAB 1: ITEMS MASTER -->
+        <div class="tab-pane fade @(Model.ActiveTab == "items" ? "show active" : "")" id="pane-items">
+            <div class="row g-2 mb-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="itemSearchInput" class="form-control" placeholder="Search by Item Name, Code, HSN, Category..." onkeyup="PayBillUI.filterTable('itemSearchInput', 'itemsTable')" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <form method="get" class="d-flex gap-2">
+                        <select name="categoryId" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="0">All Categories</option>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.CategoryId" selected="@(Model.SelectedCategoryId == cat.CategoryId)">@cat.CategoryName (@cat.ItemCount)</option>
+                            }
+                        </select>
+                    </form>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="PayBillUI.exportTableToCsv('itemsTable', 'paybill_items.csv')">
+                        <i class="bi bi-download me-1"></i>Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table pb-table table-hover align-middle" id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th>Code / Barcode</th>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>HSN</th>
+                            <th class="text-end">Purchase ₹</th>
+                            <th class="text-end">MRP ₹</th>
+                            <th class="text-end">Sale Price ₹</th>
+                            <th class="text-center">GST %</th>
+                            <th class="text-end">Available Stock</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end no-export">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items.Count == 0)
+                        {
+                            <tr><td colspan="11" class="text-center text-muted py-4">No items found. Click "Add Item" to create your first product.</td></tr>
+                        }
+                        @foreach (var item in Model.Items)
+                        {
+                            bool isLow = item.MinimumStock > 0 && item.ClosingStock < item.MinimumStock;
+                            var itemJson = System.Text.Json.JsonSerializer.Serialize(item);
+                            <tr>
+                                <td>
+                                    <span class="badge bg-body-secondary text-body font-monospace">@item.ItemCode</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">@item.ItemName</div>
+                                    @if (!string.IsNullOrWhiteSpace(item.ItemLocalName) && item.ItemLocalName != item.ItemName)
+                                    {
+                                        <div class="small text-muted">@item.ItemLocalName</div>
+                                    }
+                                </td>
+                                <td>@(item.CategoryModel?.CategoryName ?? "-")</td>
+                                <td class="small">@(string.IsNullOrWhiteSpace(item.HSncode) ? "-" : item.HSncode)</td>
+                                <td class="text-end">₹@item.PurchasePrice.ToString("N2")</td>
+                                <td class="text-end">₹@item.Mrp.ToString("N2")</td>
+                                <td class="text-end fw-bold text-primary">₹@item.SalesPrice.ToString("N2")</td>
+                                <td class="text-center">
+                                    @if (item.GstModel != null && item.GstModel.IgstPer > 0)
+                                    {
+                                        <span class="badge bg-info-subtle text-info-emphasis">@item.GstModel.IgstPer%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">0%</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold @(isLow ? "text-danger" : "text-success")">
+                                        @item.ClosingStock @item.Measure
+                                    </span>
+                                    @if (isLow)
+                                    {
+                                        <i class="bi bi-exclamation-circle-fill text-danger ms-1" title="Below minimum stock (@item.MinimumStock)"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @(item.IsActive ? "bg-success-subtle text-success" : "bg-secondary-subtle text-secondary")">
+                                        @(item.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="text-end no-export">
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick='openItemModal(@Html.Raw(itemJson))' title="Edit Item">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <a href="@Url.Action("PrintBarcodes", "Inventory", new { itemIds = item.ItemId, copies = 4 })" target="_blank" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Print Barcode">
+                                        <i class="bi bi-upc"></i>
+                                    </a>
+                                    <form asp-action="DeleteItem" method="post" class="d-inline" onsubmit="return confirm('Delete item @item.ItemName?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.ItemId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: CATEGORIES -->
+        <div class="tab-pane fade @(Model.ActiveTab == "categories" ? "show active" : "")" id="pane-categories">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-body-tertiary">
+                        <h6 class="fw-bold mb-3" id="catFormTitle">Add / Edit Category</h6>
+                        <form asp-action="SaveCategory" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="categoryId" id="catIdInput" value="0" />
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Category Name *</label>
+                                <input type="text" name="categoryName" id="catNameInput" class="form-control" placeholder="e.g., Groceries, Electronics" required />
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm flex-grow-1"><i class="bi bi-check-lg me-1"></i>Save Category</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('catIdInput').value='0';document.getElementById('catNameInput').value='';document.getElementById('catFormTitle').textContent='Add Category';">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="table-responsive">
+                        <table class="table pb-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Category Name</th>
+                                    <th class="text-center">Items Count</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in Model.Categories)
+                                {
+                                    <tr>
+                                        <td>#@cat.CategoryId</td>
+                                        <td class="fw-semibold">@cat.CategoryName</td>
+                                        <td class="text-center"><span class="badge bg-primary-subtle text-primary">@cat.ItemCount Items</span></td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2"
+                                                    onclick="document.getElementById('catIdInput').value='@cat.CategoryId';document.getElementById('catNameInput').value='@Html.Raw(cat.CategoryName.Replace("'", "\\'"))';document.getElementById('catFormTitle').textContent='Edit Category #@cat.CategoryId';">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form asp-action="DeleteCategory" method="post" class="d-inline" onsubmit="return confirm('Delete category @cat.CategoryName?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@cat.CategoryId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: GST SLABS -->
+        <div class="tab-pane fade @(Model.ActiveTab == "gst" ? "show active" : "")" id="pane-gst">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-body-tertiary">
+                        <h6 class="fw-bold mb-3" id="gstFormTitle">Add / Edit GST Slab</h6>
+                        <form asp-action="SaveGst" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="gstId" id="gstIdInput" value="0" />
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">CGST % *</label>
+                                <input type="number" step="0.01" name="cgstPer" id="cgstInput" class="form-control form-control-sm" oninput="syncGstSlab()" required />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">SGST % *</label>
+                                <input type="number" step="0.01" name="sgstPer" id="sgstInput" class="form-control form-control-sm" oninput="syncGstSlab()" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">IGST % (Total GST) *</label>
+                                <input type="number" step="0.01" name="igstPer" id="igstInput" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="isActive" id="gstActiveInput" value="true" checked />
+                                <label class="form-check-label small" for="gstActiveInput">Active</label>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm flex-grow-1"><i class="bi bi-check-lg me-1"></i>Save GST Slab</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetGstForm()">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="table-responsive">
+                        <table class="table pb-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Slab ID</th>
+                                    <th class="text-end">CGST %</th>
+                                    <th class="text-end">SGST %</th>
+                                    <th class="text-end">IGST (Total) %</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var g in Model.GstSlabs)
+                                {
+                                    <tr>
+                                        <td>#@g.GstId</td>
+                                        <td class="text-end">@g.CgstPer%</td>
+                                        <td class="text-end">@g.SgstPer%</td>
+                                        <td class="text-end fw-bold text-primary">@g.IgstPer%</td>
+                                        <td class="text-center">
+                                            <span class="badge @(g.IsActive ? "bg-success-subtle text-success" : "bg-secondary-subtle text-secondary")">
+                                                @(g.IsActive ? "Active" : "Inactive")
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2"
+                                                    onclick="editGstSlab(@g.GstId, @g.CgstPer, @g.SgstPer, @g.IgstPer, @(g.IsActive ? "true" : "false"))">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form asp-action="DeleteGst" method="post" class="d-inline" onsubmit="return confirm('Delete GST slab @g.IgstPer%?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@g.GstId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SERVICE TYPES -->
+        <div class="tab-pane fade @(Model.ActiveTab == "services" ? "show active" : "")" id="pane-services">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-body-tertiary">
+                        <h6 class="fw-bold mb-3" id="srvFormTitle">Add / Edit Service Type</h6>
+                        <form asp-action="SaveServiceType" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="serviceTypeId" id="srvIdInput" value="0" />
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Service / Labour Name *</label>
+                                <input type="text" name="serviceTypeName" id="srvNameInput" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">Default Charge ₹ *</label>
+                                    <input type="number" step="0.01" name="serviceCharge" id="srvChargeInput" class="form-control form-control-sm" required />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold">SAC Code</label>
+                                    <input type="text" name="sacCode" id="srvSacInput" class="form-control form-control-sm" placeholder="e.g. 9987" />
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">GST Slab</label>
+                                <select name="gstId" id="srvGstInput" class="form-select form-select-sm">
+                                    <option value="">0% (Exempt / Non-GST)</option>
+                                    @foreach (var g in Model.GstSlabs)
+                                    {
+                                        <option value="@g.GstId">GST @g.IgstPer% (CGST @g.CgstPer% + SGST @g.SgstPer%)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Description</label>
+                                <textarea name="serviceDescription" id="srvDescInput" class="form-control form-control-sm" rows="2"></textarea>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="isActive" id="srvActiveInput" value="true" checked />
+                                <label class="form-check-label small" for="srvActiveInput">Active</label>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm flex-grow-1"><i class="bi bi-check-lg me-1"></i>Save Service</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetServiceForm()">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="table-responsive">
+                        <table class="table pb-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>SAC Code</th>
+                                    <th class="text-end">Service Charge ₹</th>
+                                    <th class="text-center">GST %</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in Model.ServiceTypes)
+                                {
+                                    var sJson = System.Text.Json.JsonSerializer.Serialize(s);
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@s.ServiceTypeName</div>
+                                            @if (!string.IsNullOrWhiteSpace(s.ServiceDescription))
+                                            {
+                                                <div class="small text-muted">@s.ServiceDescription</div>
+                                            }
+                                        </td>
+                                        <td>@(string.IsNullOrWhiteSpace(s.SacCode) ? "-" : s.SacCode)</td>
+                                        <td class="text-end fw-bold">₹@s.ServiceCharge.ToString("N2")</td>
+                                        <td class="text-center">@(s.GstModel != null ? $"{s.GstModel.IgstPer}%" : "0%")</td>
+                                        <td class="text-center">
+                                            <span class="badge @(s.IsActive ? "bg-success-subtle text-success" : "bg-secondary-subtle text-secondary")">
+                                                @(s.IsActive ? "Active" : "Inactive")
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick='editServiceType(@Html.Raw(sJson))'>
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form asp-action="DeleteServiceType" method="post" class="d-inline" onsubmit="return confirm('Delete service @s.ServiceTypeName?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@s.ServiceTypeId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: LOW STOCK ALERTS -->
+        <div class="tab-pane fade @(Model.ActiveTab == "lowstock" ? "show active" : "")" id="pane-lowstock">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Items Below Minimum Stock Level</h6>
+                <a href="@Url.Action("Create", "PurchaseOrder")" class="btn btn-sm btn-primary">
+                    <i class="bi bi-clipboard-plus me-1"></i>Create Purchase Order
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th class="text-end">Purchase Rate</th>
+                            <th class="text-end">Available Stock</th>
+                            <th class="text-end">Minimum Required</th>
+                            <th class="text-end">Reorder Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.MinStockItems.Count == 0)
+                        {
+                            <tr><td colspan="7" class="text-center text-success py-4">All items have sufficient stock!</td></tr>
+                        }
+                        @foreach (var item in Model.MinStockItems)
+                        {
+                            var deficit = Math.Max(0, item.MinimumStock - item.ClosingStock);
+                            <tr>
+                                <td class="font-monospace">@item.ItemCode</td>
+                                <td class="fw-semibold">@item.ItemName</td>
+                                <td>@(item.CategoryModel?.CategoryName ?? "-")</td>
+                                <td class="text-end">₹@item.PurchasePrice.ToString("N2")</td>
+                                <td class="text-end text-danger fw-bold">@item.ClosingStock @item.Measure</td>
+                                <td class="text-end">@item.MinimumStock @item.Measure</td>
+                                <td class="text-end"><span class="badge bg-danger">+@deficit @item.Measure</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add / Edit Item Modal -->
+<div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="SaveItem" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="itemId" id="modalItemId" value="0" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="itemModalTitle">Add New Item / Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Item Code / Barcode *</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="itemCode" id="modalItemCode" class="form-control" required />
+                                <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('modalItemCode').value = Math.floor(100000 + Math.random() * 900000);" title="Generate Code">
+                                    <i class="bi bi-magic"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-semibold">Item / Product Name *</label>
+                            <input type="text" name="itemName" id="modalItemName" class="form-control form-control-sm" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Local Language Name</label>
+                            <input type="text" name="itemLocalName" id="modalItemLocalName" class="form-control form-control-sm" placeholder="Optional regional name" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Short / Alias Name</label>
+                            <input type="text" name="aliasName" id="modalAliasName" class="form-control form-control-sm" placeholder="Quick search code" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Category *</label>
+                            <select name="categoryId" id="modalCategoryId" class="form-select form-select-sm" required>
+                                @foreach (var cat in Model.Categories)
+                                {
+                                    <option value="@cat.CategoryId">@cat.CategoryName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">GST Slab</label>
+                            <select name="gstId" id="modalGstId" class="form-select form-select-sm">
+                                <option value="">0% (Non-GST / Exempt)</option>
+                                @foreach (var g in Model.GstSlabs)
+                                {
+                                    <option value="@g.GstId">GST @g.IgstPer% (@g.CgstPer% + @g.SgstPer%)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Unit of Measure *</label>
+                            <select name="measure" id="modalMeasure" class="form-select form-select-sm">
+                                @foreach (var m in measures)
+                                {
+                                    <option value="@m">@m</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Purchase Price (₹) *</label>
+                            <input type="number" step="0.01" name="purchasePrice" id="modalPurchasePrice" class="form-control form-control-sm" value="0" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">MRP (₹) *</label>
+                            <input type="number" step="0.01" name="mrp" id="modalMrp" class="form-control form-control-sm" value="0" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Selling Price (₹) *</label>
+                            <input type="number" step="0.01" name="salesPrice" id="modalSalesPrice" class="form-control form-control-sm" value="0" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">HSN Code</label>
+                            <input type="text" name="hsnCode" id="modalHsnCode" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Opening Stock</label>
+                            <input type="number" step="0.01" name="openingStock" id="modalOpeningStock" class="form-control form-control-sm" value="0" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Minimum Stock Alert</label>
+                            <input type="number" step="0.01" name="minimumStock" id="modalMinimumStock" class="form-control form-control-sm" value="5" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Rack / Shelf</label>
+                            <input type="text" name="shelf" id="modalShelf" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="isActive" id="modalIsActive" value="true" checked />
+                                <label class="form-check-label small fw-semibold" for="modalIsActive">Item is Active for POS Billing</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Excel Upload Modal -->
+<div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="BulkUploadExcel" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i>Bulk Import Items from Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted">Upload an <code>.xlsx</code> spreadsheet with columns: <strong>ItemCode, ItemName, Category, MRP, SalesPrice, PurchasePrice, Measure, OpeningStock, MinimumStock, HSNCode</strong>.</p>
+                    <div class="mb-3">
+                        <a href="~/paybill_template.xlsx" download class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-download me-1"></i>Download Official PayBill Excel Template
+                        </a>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Select Excel File (.xlsx) *</label>
+                        <input type="file" name="excelFile" accept=".xlsx" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-1"></i>Upload &amp; Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openItemModal(item = null) {
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('itemModal'));
+            if (!item) {
+                document.getElementById('itemModalTitle').textContent = 'Add New Item / Product';
+                document.getElementById('modalItemId').value = '0';
+                document.getElementById('modalItemCode').value = '';
+                document.getElementById('modalItemName').value = '';
+                document.getElementById('modalItemLocalName').value = '';
+                document.getElementById('modalAliasName').value = '';
+                document.getElementById('modalPurchasePrice').value = '0';
+                document.getElementById('modalMrp').value = '0';
+                document.getElementById('modalSalesPrice').value = '0';
+                document.getElementById('modalHsnCode').value = '';
+                document.getElementById('modalOpeningStock').value = '0';
+                document.getElementById('modalMinimumStock').value = '5';
+                document.getElementById('modalShelf').value = '';
+                document.getElementById('modalIsActive').checked = true;
+            } else {
+                document.getElementById('itemModalTitle').textContent = 'Edit Item #' + (item.ItemId || item.itemId);
+                document.getElementById('modalItemId').value = item.ItemId ?? item.itemId ?? 0;
+                document.getElementById('modalItemCode').value = item.ItemCode ?? item.itemCode ?? '';
+                document.getElementById('modalItemName').value = item.ItemName ?? item.itemName ?? '';
+                document.getElementById('modalItemLocalName').value = item.ItemLocalName ?? item.itemLocalName ?? '';
+                document.getElementById('modalAliasName').value = item.AliasName ?? item.aliasName ?? '';
+                const cat = item.CategoryModel || item.categoryModel;
+                if (cat) document.getElementById('modalCategoryId').value = cat.CategoryId ?? cat.categoryId ?? '';
+                const gst = item.GstModel || item.gstModel;
+                document.getElementById('modalGstId').value = gst ? (gst.GstId ?? gst.gstId ?? '') : '';
+                document.getElementById('modalMeasure').value = item.Measure ?? item.measure ?? 'PCS';
+                document.getElementById('modalPurchasePrice').value = item.PurchasePrice ?? item.purchasePrice ?? 0;
+                document.getElementById('modalMrp').value = item.Mrp ?? item.mrp ?? 0;
+                document.getElementById('modalSalesPrice').value = item.SalesPrice ?? item.salesPrice ?? 0;
+                document.getElementById('modalHsnCode').value = item.HSncode ?? item.hSncode ?? '';
+                document.getElementById('modalOpeningStock').value = item.OpeningStock ?? item.openingStock ?? 0;
+                document.getElementById('modalMinimumStock').value = item.MinimumStock ?? item.minimumStock ?? 0;
+                document.getElementById('modalShelf').value = item.Shelf ?? item.shelf ?? '';
+                document.getElementById('modalIsActive').checked = (item.IsActive ?? item.isActive) !== false;
+            }
+            modal.show();
+        }
+
+        function syncGstSlab() {
+            const c = parseFloat(document.getElementById('cgstInput').value) || 0;
+            const s = parseFloat(document.getElementById('sgstInput').value) || 0;
+            document.getElementById('igstInput').value = (c + s).toFixed(2).replace(/\.00$/, '');
+        }
+
+        function editGstSlab(id, cgst, sgst, igst, active) {
+            document.getElementById('gstIdInput').value = id;
+            document.getElementById('cgstInput').value = cgst;
+            document.getElementById('sgstInput').value = sgst;
+            document.getElementById('igstInput').value = igst;
+            document.getElementById('gstActiveInput').checked = active;
+            document.getElementById('gstFormTitle').textContent = 'Edit GST Slab #' + id;
+        }
+
+        function resetGstForm() {
+            document.getElementById('gstIdInput').value = '0';
+            document.getElementById('cgstInput').value = '';
+            document.getElementById('sgstInput').value = '';
+            document.getElementById('igstInput').value = '';
+            document.getElementById('gstActiveInput').checked = true;
+            document.getElementById('gstFormTitle').textContent = 'Add / Edit GST Slab';
+        }
+
+        function editServiceType(s) {
+            document.getElementById('srvIdInput').value = s.ServiceTypeId ?? s.serviceTypeId ?? 0;
+            document.getElementById('srvNameInput').value = s.ServiceTypeName ?? s.serviceTypeName ?? '';
+            document.getElementById('srvChargeInput').value = s.ServiceCharge ?? s.serviceCharge ?? 0;
+            document.getElementById('srvSacInput').value = s.SacCode ?? s.sacCode ?? '';
+            document.getElementById('srvDescInput').value = s.ServiceDescription ?? s.serviceDescription ?? '';
+            const gst = s.GstModel || s.gstModel;
+            document.getElementById('srvGstInput').value = gst ? (gst.GstId ?? gst.gstId ?? '') : '';
+            document.getElementById('srvActiveInput').checked = (s.IsActive ?? s.isActive) !== false;
+            document.getElementById('srvFormTitle').textContent = 'Edit Service #' + (s.ServiceTypeId ?? s.serviceTypeId);
+        }
+
+        function resetServiceForm() {
+            document.getElementById('srvIdInput').value = '0';
+            document.getElementById('srvNameInput').value = '';
+            document.getElementById('srvChargeInput').value = '';
+            document.getElementById('srvSacInput').value = '';
+            document.getElementById('srvDescInput').value = '';
+            document.getElementById('srvGstInput').value = '';
+            document.getElementById('srvActiveInput').checked = true;
+            document.getElementById('srvFormTitle').textContent = 'Add / Edit Service Type';
+        }
+    </script>
+}
+

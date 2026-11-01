@@ -23,5 +23,6 @@ namespace PaybillAPI.Repositories.Service
         Task<ResponseMessage> UpdateUnlockRequest(int unlockRequestId, bool isApproved, string remarks, int userRowId);
         Task<ResponseMessage> CheckUnlockRequestStatus(int? salesId, int? purchaseId);
         Task<ResponseMessage> GetMaxServerBackups();
+        Task<ClientVM?> GetPrimaryClientInfo();
     }
 }

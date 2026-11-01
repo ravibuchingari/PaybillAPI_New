@@ -1,0 +1,379 @@
+@model List<GSTReturnDetailed>
+@{
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string returnType = ViewBag.ReturnType as string ?? "GSTR-1";
+    var hsnList = ViewBag.HsnSummary as List<GSTHSNSummary> ?? [];
+    var sacList = ViewBag.SacSummary as List<GSTHSNSummary> ?? [];
+    string companyGstin = ViewBag.CompanyGstin as string ?? "";
+    ViewData["Title"] = $"GST Returns & Tax Filing ({returnType})";
+
+    var salesRows = Model.Where(r => string.Equals(r.Type, "Sales", StringComparison.OrdinalIgnoreCase)).ToList();
+    var purchaseRows = Model.Where(r => string.Equals(r.Type, "Purchase", StringComparison.OrdinalIgnoreCase)).ToList();
+
+    var b2bSales = salesRows.Where(r => !string.IsNullOrWhiteSpace(r.Gstin) && r.Gstin.Length >= 15).ToList();
+    var b2cSales = salesRows.Where(r => string.IsNullOrWhiteSpace(r.Gstin) || r.Gstin.Length < 15).ToList();
+
+    double outTaxable = salesRows.Sum(r => r.TaxableAmount);
+    double outCgst = salesRows.Sum(r => r.CgstAmount);
+    double outSgst = salesRows.Sum(r => r.SgstAmount);
+    double outIgst = salesRows.Sum(r => r.IgstAmount);
+    double outTotalTax = outCgst + outSgst + outIgst;
+
+    double inTaxable = purchaseRows.Sum(r => r.TaxableAmount);
+    double inCgst = purchaseRows.Sum(r => r.CgstAmount);
+    double inSgst = purchaseRows.Sum(r => r.SgstAmount);
+    double inIgst = purchaseRows.Sum(r => r.IgstAmount);
+    double inTotalTax = inCgst + inSgst + inIgst;
+
+    double netTaxPayable = outTotalTax - inTotalTax;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 no-print">
+    <form method="get" class="d-flex flex-wrap gap-2 align-items-center">
+        <div class="input-group input-group-sm" style="width: auto;">
+            <span class="input-group-text">Return</span>
+            <select name="returnType" class="form-select">
+                <option value="GSTR-1" selected="@(returnType == "GSTR-1")">GSTR-1 (Outward Supplies)</option>
+                <option value="GSTR-3B" selected="@(returnType == "GSTR-3B")">GSTR-3B (Monthly Summary & ITC)</option>
+                <option value="GSTR-2" selected="@(returnType == "GSTR-2")">GSTR-2A/2B (Inward Purchases)</option>
+                <option value="CMP-08" selected="@(returnType == "CMP-08")">CMP-08 (Composition Return)</option>
+                <option value="GSTR-9" selected="@(returnType == "GSTR-9")">GSTR-9 (Annual Summary)</option>
+            </select>
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <button type="submit" class="btn btn-paybill"><i class="bi bi-funnel me-1"></i>Generate</button>
+        </div>
+    </form>
+
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("DownloadGstr1Json", new { fromDate, toDate })" class="btn btn-sm btn-success">
+            <i class="bi bi-filetype-json me-1"></i>Download GSTR-1 Govt JSON
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('gstMainTable', 'GST_@(returnType)_@(fromDate)_@(toDate).csv')">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print Return
+        </button>
+    </div>
+</div>
+
+<!-- GST Summary KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Outward Taxable Sales</div>
+            <div class="kpi-value text-success">₹ @outTaxable.ToString("N2")</div>
+            <div class="kpi-sub">B2B: @b2bSales.Count | B2C: @b2cSales.Count</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Output GST Liability</div>
+            <div class="kpi-value text-primary">₹ @outTotalTax.ToString("N2")</div>
+            <div class="kpi-sub">C: ₹@outCgst.ToString("N0") | S: ₹@outSgst.ToString("N0") | I: ₹@outIgst.ToString("N0")</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Eligible Input Tax Credit (ITC)</div>
+            <div class="kpi-value text-info">₹ @inTotalTax.ToString("N2")</div>
+            <div class="kpi-sub">Purchases Taxable: ₹@inTaxable.ToString("N0")</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Net GST Payable (3B)</div>
+            <div class="kpi-value @(netTaxPayable > 0 ? "text-danger" : "text-success")">₹ @netTaxPayable.ToString("N2")</div>
+            <div class="kpi-sub">@(netTaxPayable >= 0 ? "Tax Payable to Govt" : "Surplus ITC Credit")</div>
+        </div>
+    </div>
+</div>
+
+@if (returnType == "GSTR-3B" || returnType == "CMP-08" || returnType == "GSTR-9")
+{
+    <div class="pb-card mb-4">
+        <div class="pb-card-header">
+            <h6 class="pb-card-title"><i class="bi bi-table me-2 text-success"></i>@returnType Statutory Computation Summary (@fromDate to @toDate)</h6>
+            @if (!string.IsNullOrWhiteSpace(companyGstin))
+            {
+                <span class="badge bg-primary-subtle text-primary">GSTIN: @companyGstin</span>
+            }
+        </div>
+        <div class="table-responsive">
+            <table class="table pb-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Section / Nature of Supplies</th>
+                        <th class="text-end">Taxable Value (₹)</th>
+                        <th class="text-end">CGST (₹)</th>
+                        <th class="text-end">SGST / UTGST (₹)</th>
+                        <th class="text-end">IGST (₹)</th>
+                        <th class="text-end">Total Tax (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-semibold">3.1(a) Outward Taxable Supplies (B2B + B2C Sales)</td>
+                        <td class="text-end">₹ @outTaxable.ToString("N2")</td>
+                        <td class="text-end">₹ @outCgst.ToString("N2")</td>
+                        <td class="text-end">₹ @outSgst.ToString("N2")</td>
+                        <td class="text-end">₹ @outIgst.ToString("N2")</td>
+                        <td class="text-end fw-bold text-primary">₹ @outTotalTax.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold">4(A) Eligible Input Tax Credit (Inward Purchases)</td>
+                        <td class="text-end">₹ @inTaxable.ToString("N2")</td>
+                        <td class="text-end">₹ @inCgst.ToString("N2")</td>
+                        <td class="text-end">₹ @inSgst.ToString("N2")</td>
+                        <td class="text-end">₹ @inIgst.ToString("N2")</td>
+                        <td class="text-end fw-bold text-success">₹ @inTotalTax.ToString("N2")</td>
+                    </tr>
+                    <tr class="table-light fw-bold">
+                        <td>6.1 Net Tax Payable (Output Tax minus Input Credit)</td>
+                        <td class="text-end">—</td>
+                        <td class="text-end">₹ @((outCgst - inCgst).ToString("N2"))</td>
+                        <td class="text-end">₹ @((outSgst - inSgst).ToString("N2"))</td>
+                        <td class="text-end">₹ @((outIgst - inIgst).ToString("N2"))</td>
+                        <td class="text-end @(netTaxPayable > 0 ? "text-danger" : "text-success")">₹ @netTaxPayable.ToString("N2")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<!-- Sub-tabs for B2B / B2C / Purchases / HSN / SAC -->
+<div class="pb-card">
+    <div class="pb-card-header">
+        <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#gst-all" type="button">
+                    Invoice-wise Register (@(returnType == "GSTR-2" ? purchaseRows.Count : salesRows.Count))
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#gst-b2b" type="button">
+                    B2B Registered (@b2bSales.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#gst-b2c" type="button">
+                    B2C Unregistered (@b2cSales.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#gst-hsn" type="button">
+                    HSN Summary (@hsnList.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#gst-sac" type="button">
+                    SAC Summary (@sacList.Count)
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content">
+        <!-- Tab 1: Main Register -->
+        <div class="tab-pane fade show active" id="gst-all">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0" id="gstMainTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Party Name</th>
+                            <th>GSTIN</th>
+                            <th class="text-end">Taxable (₹)</th>
+                            <th class="text-center">GST %</th>
+                            <th class="text-end">CGST</th>
+                            <th class="text-end">SGST</th>
+                            <th class="text-end">IGST</th>
+                            <th class="text-end">Invoice Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var rowsToDisplay = returnType == "GSTR-2" ? purchaseRows : (returnType == "GSTR-1" ? salesRows : Model);
+                        }
+                        @if (!rowsToDisplay.Any())
+                        {
+                            <tr><td colspan="11" class="text-center py-5 text-muted">No GST records found for the selected period.</td></tr>
+                        }
+                        @foreach (var r in rowsToDisplay)
+                        {
+                            <tr>
+                                <td><span class="badge @(r.Type == "Sales" ? "bg-success-subtle text-success" : "bg-primary-subtle text-primary")">@r.Type</span></td>
+                                <td>@r.TransactionDate</td>
+                                <td class="fw-bold">#@r.InvoiceNumber</td>
+                                <td>@(string.IsNullOrWhiteSpace(r.PartyName) ? "Walk-in / Cash" : r.PartyName)</td>
+                                <td class="font-monospace small">@(string.IsNullOrWhiteSpace(r.Gstin) ? "URP" : r.Gstin)</td>
+                                <td class="text-end">₹ @r.TaxableAmount.ToString("N2")</td>
+                                <td class="text-center">@r.GstPer%</td>
+                                <td class="text-end">₹ @r.CgstAmount.ToString("N2")</td>
+                                <td class="text-end">₹ @r.SgstAmount.ToString("N2")</td>
+                                <td class="text-end">₹ @r.IgstAmount.ToString("N2")</td>
+                                <td class="text-end fw-bold">₹ @r.InvoiceTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 2: B2B -->
+        <div class="tab-pane fade" id="gst-b2b">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Customer Name</th>
+                            <th>Customer GSTIN</th>
+                            <th class="text-end">Taxable (₹)</th>
+                            <th class="text-center">Rate</th>
+                            <th class="text-end">CGST</th>
+                            <th class="text-end">SGST</th>
+                            <th class="text-end">IGST</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in b2bSales)
+                        {
+                            <tr>
+                                <td>@r.TransactionDate</td>
+                                <td class="fw-bold">#@r.InvoiceNumber</td>
+                                <td>@r.PartyName</td>
+                                <td class="font-monospace fw-semibold text-primary">@r.Gstin</td>
+                                <td class="text-end">₹ @r.TaxableAmount.ToString("N2")</td>
+                                <td class="text-center">@r.GstPer%</td>
+                                <td class="text-end">₹ @r.CgstAmount.ToString("N2")</td>
+                                <td class="text-end">₹ @r.SgstAmount.ToString("N2")</td>
+                                <td class="text-end">₹ @r.IgstAmount.ToString("N2")</td>
+                                <td class="text-end fw-bold">₹ @r.InvoiceTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: B2C -->
+        <div class="tab-pane fade" id="gst-b2c">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Customer</th>
+                            <th class="text-end">Taxable (₹)</th>
+                            <th class="text-center">Rate</th>
+                            <th class="text-end">CGST</th>
+                            <th class="text-end">SGST</th>
+                            <th class="text-end">IGST</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in b2cSales)
+                        {
+                            <tr>
+                                <td>@r.TransactionDate</td>
+                                <td class="fw-bold">#@r.InvoiceNumber</td>
+                                <td>@(string.IsNullOrWhiteSpace(r.PartyName) ? "Walk-in Customer" : r.PartyName)</td>
+                                <td class="text-end">₹ @r.TaxableAmount.ToString("N2")</td>
+                                <td class="text-center">@r.GstPer%</td>
+                                <td class="text-end">₹ @r.CgstAmount.ToString("N2")</td>
+                                <td class="text-end">₹ @r.SgstAmount.ToString("N2")</td>
+                                <td class="text-end">₹ @r.IgstAmount.ToString("N2")</td>
+                                <td class="text-end fw-bold">₹ @r.InvoiceTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 4: HSN Summary -->
+        <div class="tab-pane fade" id="gst-hsn">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>HSN Code</th>
+                            <th>Description</th>
+                            <th class="text-center">UQC</th>
+                            <th class="text-end">Total Qty</th>
+                            <th class="text-end">Taxable Value</th>
+                            <th class="text-center">GST %</th>
+                            <th class="text-end">CGST</th>
+                            <th class="text-end">SGST</th>
+                            <th class="text-end">IGST</th>
+                            <th class="text-end">Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in hsnList)
+                        {
+                            <tr>
+                                <td class="fw-bold font-monospace">@(string.IsNullOrWhiteSpace(h.HsnCode) ? "N/A" : h.HsnCode)</td>
+                                <td>@h.ItemName</td>
+                                <td class="text-center">@h.Measure</td>
+                                <td class="text-end">@h.TotalQuantity</td>
+                                <td class="text-end">₹ @h.TotalTaxableAmount.ToString("N2")</td>
+                                <td class="text-center">@h.GstPer%</td>
+                                <td class="text-end">₹ @h.TotalCgst.ToString("N2")</td>
+                                <td class="text-end">₹ @h.TotalSgst.ToString("N2")</td>
+                                <td class="text-end">₹ @h.TotalIgst.ToString("N2")</td>
+                                <td class="text-end fw-bold">₹ @h.TotalValue.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 5: SAC Summary -->
+        <div class="tab-pane fade" id="gst-sac">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Service Description</th>
+                            <th class="text-end">Job Count</th>
+                            <th class="text-end">Taxable Value</th>
+                            <th class="text-center">GST %</th>
+                            <th class="text-end">CGST</th>
+                            <th class="text-end">SGST</th>
+                            <th class="text-end">Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in sacList)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@s.ItemName</td>
+                                <td class="text-end">@s.TotalQuantity</td>
+                                <td class="text-end">₹ @s.TotalTaxableAmount.ToString("N2")</td>
+                                <td class="text-center">@s.GstPer%</td>
+                                <td class="text-end">₹ @s.TotalCgst.ToString("N2")</td>
+                                <td class="text-end">₹ @s.TotalSgst.ToString("N2")</td>
+                                <td class="text-end fw-bold">₹ @s.TotalValue.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

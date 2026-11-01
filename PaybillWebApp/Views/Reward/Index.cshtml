@@ -1,0 +1,270 @@
+@model RewardsDashboardViewModel
+@{
+    ViewData["Title"] = "Loyalty & Customer Rewards";
+    var ov = Model.OverallSummary;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <span class="badge @(Model.Settings.EnableCustomerRewards ? "bg-success" : "bg-secondary") me-2">
+            @(Model.Settings.EnableCustomerRewards ? "Rewards Enabled" : "Rewards Disabled")
+        </span>
+        <span class="text-muted small">
+            Earn Rate: <strong>@Model.Settings.RewardPointsPerHundredRupees pts / ₹100</strong> |
+            1 Point = <strong>₹@Model.Settings.RewardPointValue</strong> |
+            Min Bill: <strong>₹@Model.Settings.RewardMinInvoiceAmount</strong> |
+            Expiry: <strong>@(Model.Settings.RewardPointsExpiryDays > 0 ? $"{Model.Settings.RewardPointsExpiryDays} Days" : "Never")</strong>
+        </span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index", "Settings", new { tab = "rewards" })" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-sliders me-1"></i>Configure Rules
+        </a>
+        <form asp-action="ExpirePoints" method="post" onsubmit="return confirm('Run FIFO expiration check for old unredeemed points?');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-sm btn-outline-warning">
+                <i class="bi bi-hourglass-bottom me-1"></i>Process Expired Points
+            </button>
+        </form>
+        <button type="button" class="btn btn-sm btn-paybill" data-bs-toggle="modal" data-bs-target="#adjustPtsModal">
+            <i class="bi bi-plus-slash-minus me-1"></i>Manual Points Adjustment
+        </button>
+    </div>
+</div>
+
+<!-- KPI Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Customers with Rewards</div>
+            <div class="kpi-value">@ov.TotalCustomersWithRewards</div>
+            <div class="kpi-sub">Active Loyalty Members</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Points Earned</div>
+            <div class="kpi-value text-success">@ov.TotalPointsEarned.ToString("N0") pts</div>
+            <div class="kpi-sub">Adjusted: @ov.TotalPointsAdjusted.ToString("N0") pts</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Points Redeemed</div>
+            <div class="kpi-value text-primary">@ov.TotalPointsRedeemed.ToString("N0") pts</div>
+            <div class="kpi-sub">Expired: @ov.TotalPointsExpired.ToString("N0") pts</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Active Available Points</div>
+            <div class="kpi-value text-warning">@ov.TotalAvailablePoints.ToString("N0") pts</div>
+            <div class="kpi-sub">Value: ₹ @((ov.TotalAvailablePoints * Model.Settings.RewardPointValue).ToString("N2"))</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter & Tabs -->
+<div class="pb-card">
+    <div class="pb-card-header flex-wrap gap-2">
+        <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "summary" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#tab-cust-summary" type="button">
+                    <i class="bi bi-people me-1"></i>Customer Balances (@Model.CustomerSummaries.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "transactions" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#tab-tx-log" type="button">
+                    <i class="bi bi-list-check me-1"></i>Transactions Log (@Model.Transactions.Count)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(Model.ActiveTab == "redemptions" ? "active" : "")" data-bs-toggle="pill" data-bs-target="#tab-redemptions" type="button">
+                    <i class="bi bi-gift me-1"></i>Redemption Report (@Model.Redemptions.Count)
+                </button>
+            </li>
+        </ul>
+
+        <form method="get" class="d-flex gap-2 align-items-center">
+            <input type="date" name="fromDate" value="@Model.FromDate" class="form-control form-control-sm" />
+            <input type="date" name="toDate" value="@Model.ToDate" class="form-control form-control-sm" />
+            <input type="text" name="searchQuery" value="@Model.SearchQuery" class="form-control form-control-sm" placeholder="Customer / mobile..." />
+            <button type="submit" class="btn btn-sm btn-paybill">Filter</button>
+        </form>
+    </div>
+
+    <div class="tab-content">
+        <!-- Tab 1: Customer Summary -->
+        <div class="tab-pane fade @(Model.ActiveTab == "summary" ? "show active" : "")" id="tab-cust-summary">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0" id="custRewardsTable">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Mobile</th>
+                            <th class="text-end">Earned</th>
+                            <th class="text-end">Redeemed</th>
+                            <th class="text-end">Expired</th>
+                            <th class="text-end">Adjusted</th>
+                            <th class="text-end">Available Balance</th>
+                            <th class="text-end">Cash Value (₹)</th>
+                            <th>Last Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.CustomerSummaries.Any())
+                        {
+                            <tr><td colspan="9" class="text-center py-5 text-muted">No customer reward balances found.</td></tr>
+                        }
+                        @foreach (var c in Model.CustomerSummaries)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@c.CustomerName</td>
+                                <td>@c.Mobile</td>
+                                <td class="text-end text-success">+@c.TotalPointsEarned.ToString("N0")</td>
+                                <td class="text-end text-primary">-@c.TotalPointsRedeemed.ToString("N0")</td>
+                                <td class="text-end text-muted">@c.TotalPointsExpired.ToString("N0")</td>
+                                <td class="text-end">@c.TotalPointsAdjusted.ToString("N0")</td>
+                                <td class="text-end fw-bold fs-6">@c.AvailablePoints.ToString("N0") pts</td>
+                                <td class="text-end fw-semibold text-success">₹ @((c.AvailablePoints * Model.Settings.RewardPointValue).ToString("N2"))</td>
+                                <td class="small text-muted">@c.LastTransactionDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 2: Transactions Log -->
+        <div class="tab-pane fade @(Model.ActiveTab == "transactions" ? "show active" : "")" id="tab-tx-log">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Mobile</th>
+                            <th>Type</th>
+                            <th>Invoice #</th>
+                            <th class="text-end">Invoice Amt</th>
+                            <th class="text-end">Points</th>
+                            <th>Expiry Date</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Transactions.Any())
+                        {
+                            <tr><td colspan="9" class="text-center py-5 text-muted">No reward transactions found.</td></tr>
+                        }
+                        @foreach (var t in Model.Transactions)
+                        {
+                            string badge = t.TransactionType switch
+                            {
+                                "EARNED" => "badge-soft-success",
+                                "REDEEMED" => "badge-soft-info",
+                                "EXPIRED" => "badge-soft-danger",
+                                _ => "badge-soft-warning"
+                            };
+                            <tr>
+                                <td>@t.TransactionDate</td>
+                                <td class="fw-semibold">@t.PartyName</td>
+                                <td>@t.Mobile</td>
+                                <td><span class="badge-soft @badge">@t.TransactionType</span></td>
+                                <td>@(string.IsNullOrWhiteSpace(t.InvoiceNumber) ? "—" : $"#{t.InvoiceNumber}")</td>
+                                <td class="text-end">@(t.InvoiceAmount > 0 ? $"₹ {t.InvoiceAmount:N2}" : "—")</td>
+                                <td class="text-end fw-bold @(t.Points >= 0 ? "text-success" : "text-danger")">
+                                    @(t.Points >= 0 ? "+" : "")@t.Points.ToString("N0")
+                                </td>
+                                <td class="small text-muted">@(string.IsNullOrWhiteSpace(t.ExpiryDate) ? "—" : t.ExpiryDate)</td>
+                                <td class="small text-muted">@t.Description</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Redemption Report -->
+        <div class="tab-pane fade @(Model.ActiveTab == "redemptions" ? "show active" : "")" id="tab-redemptions">
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Invoice #</th>
+                            <th>Customer</th>
+                            <th>Mobile</th>
+                            <th class="text-end">Bill Amount</th>
+                            <th class="text-end">Points Redeemed</th>
+                            <th class="text-end">Discount Given (₹)</th>
+                            <th class="text-end">Points Earned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Redemptions.Any())
+                        {
+                            <tr><td colspan="8" class="text-center py-5 text-muted">No reward point redemptions found in this period.</td></tr>
+                        }
+                        @foreach (var r in Model.Redemptions)
+                        {
+                            <tr>
+                                <td>@r.SalesDate</td>
+                                <td class="fw-bold">
+                                    <a href="@Url.Action("Create", "Sales", new { id = r.SalesId })">#@r.InvoiceNumber</a>
+                                </td>
+                                <td class="fw-semibold">@r.CustomerName</td>
+                                <td>@r.CustomerPhone</td>
+                                <td class="text-end">₹ @r.InvoiceAmount.ToString("N2")</td>
+                                <td class="text-end fw-bold text-primary">@r.PointsRedeemed.ToString("N0") pts</td>
+                                <td class="text-end fw-bold text-success">₹ @r.PointsDiscount.ToString("N2")</td>
+                                <td class="text-end">+@r.PointsEarned.ToString("N0") pts</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Points Adjustment Modal -->
+<div class="modal fade" id="adjustPtsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="AdjustPoints" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Manual Reward Points Adjustment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Customer *</label>
+                        <select name="partyId" class="form-select" required>
+                            <option value="">-- Choose Customer --</option>
+                            @foreach (var c in Model.Customers)
+                            {
+                                <option value="@c.PartyId">@c.PartyName (@c.Mobile)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Points to Add or Deduct *</label>
+                        <input type="number" step="1" name="points" class="form-control" placeholder="e.g. 100 to add, -50 to deduct" required />
+                        <div class="form-text">Use positive value to add bonus points, or negative value to deduct points.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reason / Description *</label>
+                        <input type="text" name="reason" class="form-control" placeholder="e.g. Promotional Festive Bonus" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-paybill">Save Adjustment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

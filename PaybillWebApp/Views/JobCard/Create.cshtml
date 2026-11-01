@@ -1,0 +1,409 @@
+@model JobCardPageViewModel
+@using System.Text.Json
+@{
+    bool isEdit = Model.JobCard.ServiceRequestId > 0;
+    ViewData["Title"] = isEdit ? $"Job Card #{Model.JobCard.JobCardNumber}" : "Create Service Job Card";
+}
+
+<div class="row g-4">
+    <!-- Left Column: Complaints/Services & Spare Parts -->
+    <div class="col-lg-8">
+        <!-- Service Complaints Card -->
+        <div class="pb-card mb-4">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title"><i class="bi bi-wrench-adjustable me-2 text-success"></i>1. Service Complaints & Labour Charges</h6>
+                <div style="width: 300px;">
+                    <select id="jcServiceSelect" class="form-select form-select-sm" onchange="addJcService(this.value)">
+                        <option value="">+ Add Service / Labour Type...</option>
+                        @foreach (var s in Model.ServiceTypes)
+                        {
+                            <option value="@s.ServiceTypeId">@s.ServiceTypeName (₹@s.Rate)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Service Type</th>
+                            <th>Customer Complaint / Technician Notes</th>
+                            <th style="width: 85px;" class="text-center">Qty</th>
+                            <th style="width: 110px;" class="text-end">Labour (₹)</th>
+                            <th style="width: 110px;" class="text-end">Total (₹)</th>
+                            <th style="width: 45px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="jcServicesBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Spare Parts Card -->
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title"><i class="bi bi-gear-wide-connected me-2 text-primary"></i>2. Spare Parts & Consumables</h6>
+                <div style="width: 300px;">
+                    <select id="jcSpareSelect" class="form-select form-select-sm" onchange="addJcSpare(this.value)">
+                        <option value="">+ Add Spare Part / Item...</option>
+                        @foreach (var item in Model.Items)
+                        {
+                            <option value="@item.ItemId">@item.ItemName (@item.ItemCode) — ₹@item.SalesPrice</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Spare Part / Item</th>
+                            <th style="width: 90px;" class="text-center">Qty</th>
+                            <th style="width: 110px;" class="text-end">Rate (₹)</th>
+                            <th style="width: 95px;" class="text-end">Disc (₹)</th>
+                            <th style="width: 100px;" class="text-end">GST (₹)</th>
+                            <th style="width: 115px;" class="text-end">Total (₹)</th>
+                            <th style="width: 45px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="jcSparesBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Customer, Status & Summary -->
+    <div class="col-lg-4">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title">Job Card Header & Totals</h6>
+            </div>
+            <div class="pb-card-body">
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label mb-1">Job Card #</label>
+                        <input type="text" id="JobCardNumber" class="form-control form-control-sm fw-bold bg-light" value="@Model.JobCard.JobCardNumber" readonly />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Request Date</label>
+                        <input type="date" id="RequestDate" class="form-control form-control-sm" value="@Model.JobCard.RequestDate" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label mb-1">Customer *</label>
+                    <select id="PartyId" class="form-select">
+                        <option value="0">-- Select Customer --</option>
+                        @foreach (var c in Model.Customers)
+                        {
+                            <option value="@c.PartyId" selected="@(Model.JobCard.PartyId == c.PartyId)">
+                                @c.PartyName (@c.Mobile)
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label mb-1">Service Status</label>
+                    <select id="JobCardStatusId" class="form-select">
+                        <option value="1" selected="@(Model.JobCard.JobCardStatusId == 1)">Pending</option>
+                        <option value="2" selected="@(Model.JobCard.JobCardStatusId == 2)">In Progress</option>
+                        <option value="3" selected="@(Model.JobCard.JobCardStatusId == 3)">Completed</option>
+                        <option value="4" selected="@(Model.JobCard.JobCardStatusId == 4)">Delivered</option>
+                        <option value="5" selected="@(Model.JobCard.JobCardStatusId == 5)">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label mb-1">Vehicle / Device / Job Summary</label>
+                    <input type="text" id="Summary" class="form-control form-control-sm" placeholder="e.g. KA-01-AB-1234 / iPhone 15 Screen" value="@Model.JobCard.Summary" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label mb-1">Remarks / Condition Notes</label>
+                    <textarea id="Remarks" class="form-control form-control-sm" rows="2">@Model.JobCard.Remarks</textarea>
+                </div>
+
+                <div class="border-top pt-2 mb-3">
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Labour / Service Total:</span>
+                        <span class="fw-semibold" id="lblJcServiceTotal">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Spare Parts Total:</span>
+                        <span class="fw-semibold" id="lblJcSpareTotal">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Total GST:</span>
+                        <span class="fw-semibold" id="lblJcTaxTotal">₹ 0.00</span>
+                    </div>
+                </div>
+
+                <div class="pos-total-box mb-3">
+                    <div class="small opacity-75 text-uppercase fw-bold">Total Job Card Estimate</div>
+                    <div class="pos-grand-total" id="lblJcGrandTotal">₹ 0.00</div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-paybill py-2" onclick="saveJobCard()">
+                        <i class="bi bi-check2-circle me-1"></i>Save Job Card
+                    </button>
+                    @if (isEdit && (!Model.JobCard.SalesId.HasValue || Model.JobCard.SalesId.Value == 0))
+                    {
+                        <form asp-action="GenerateInvoice" method="post" class="d-grid">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.JobCard.ServiceRequestId" />
+                            <button type="submit" class="btn btn-outline-success">
+                                <i class="bi bi-receipt me-1"></i>Convert to Sales Invoice
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const serviceCatalog = @Html.Raw(JsonSerializer.Serialize(Model.ServiceTypes));
+        const itemCatalog = @Html.Raw(JsonSerializer.Serialize(Model.Items));
+        const existingServices = @Html.Raw(JsonSerializer.Serialize(Model.JobCard.ServiceTypes));
+        const existingSpares = @Html.Raw(JsonSerializer.Serialize(Model.JobCard.Spares));
+        const serviceRequestId = @Model.JobCard.ServiceRequestId;
+
+        let jcServices = (existingServices || []).map(s => ({
+            complaintId: s.ComplaintId || 0,
+            serviceTypeId: s.ServiceTypeId,
+            serviceTypeName: s.ServiceTypeName || 'Service',
+            customerRemarks: s.CustomerRemarks || '',
+            technicianRemarks: s.TechnicianRemarks || '',
+            quantity: s.Quantity || 1,
+            price: s.Price || 0,
+            discountRs: s.DiscountRs || 0,
+            gstId: s.GstId || 1,
+            gstPer: (s.CgstPer || 0) + (s.SgstPer || 0) + (s.IgstPer || 0)
+        }));
+
+        let jcSpares = (existingSpares || []).map(sp => ({
+            spareId: sp.SpareId || 0,
+            itemId: sp.ItemId,
+            itemName: sp.Item?.ItemName || 'Spare Part',
+            quantity: sp.Quantity || 1,
+            salesPrice: sp.SalesPrice || 0,
+            mrp: sp.Mrp || sp.SalesPrice || 0,
+            discountRs: sp.DiscountRs || 0,
+            gstId: sp.GstId || 1,
+            gstPer: (sp.CgstPer || 0) + (sp.SgstPer || 0) + (sp.IgstPer || 0)
+        }));
+
+        document.addEventListener('DOMContentLoaded', recalcJobCard);
+
+        function addJcService(val) {
+            if (!val) return;
+            const st = serviceCatalog.find(s => s.ServiceTypeId === parseInt(val));
+            if (st) {
+                jcServices.push({
+                    complaintId: 0,
+                    serviceTypeId: st.ServiceTypeId,
+                    serviceTypeName: st.ServiceTypeName,
+                    customerRemarks: '',
+                    technicianRemarks: '',
+                    quantity: 1,
+                    price: st.Rate || 0,
+                    discountRs: 0,
+                    gstId: st.GstId || 1,
+                    gstPer: (st.Gst?.CgstPer || 0) + (st.Gst?.SgstPer || 0)
+                });
+                recalcJobCard();
+            }
+            document.getElementById('jcServiceSelect').value = '';
+        }
+
+        function addJcSpare(val) {
+            if (!val) return;
+            const item = itemCatalog.find(i => i.ItemId === parseInt(val));
+            if (item) {
+                jcSpares.push({
+                    spareId: 0,
+                    itemId: item.ItemId,
+                    itemName: item.ItemName,
+                    quantity: 1,
+                    salesPrice: item.SalesPrice || 0,
+                    mrp: item.Mrp || item.SalesPrice || 0,
+                    discountRs: 0,
+                    gstId: item.GstId || 1,
+                    gstPer: (item.Gst?.CgstPer || 0) + (item.Gst?.SgstPer || 0)
+                });
+                recalcJobCard();
+            }
+            document.getElementById('jcSpareSelect').value = '';
+        }
+
+        async function removeJcService(idx) {
+            const row = jcServices[idx];
+            if (row.complaintId > 0) {
+                const fd = new URLSearchParams({ complaintId: row.complaintId });
+                await fetch('@Url.Action("DeleteComplaint")', { method: 'POST', body: fd });
+            }
+            jcServices.splice(idx, 1);
+            recalcJobCard();
+        }
+
+        async function removeJcSpare(idx) {
+            const row = jcSpares[idx];
+            if (row.spareId > 0) {
+                const fd = new URLSearchParams({ spareId: row.spareId });
+                await fetch('@Url.Action("DeleteSpare")', { method: 'POST', body: fd });
+            }
+            jcSpares.splice(idx, 1);
+            recalcJobCard();
+        }
+
+        function recalcJobCard() {
+            const sBody = document.getElementById('jcServicesBody');
+            const pBody = document.getElementById('jcSparesBody');
+
+            let srvTotal = 0, spareTotal = 0, totalTaxable = 0, totalCgst = 0, totalSgst = 0;
+
+            if (jcServices.length === 0) {
+                sBody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">No service complaints added yet.</td></tr>`;
+            } else {
+                sBody.innerHTML = jcServices.map((s, idx) => {
+                    const taxable = Math.max(0, s.quantity * s.price - (s.discountRs || 0));
+                    const tax = (taxable * (s.gstPer || 0)) / 100;
+                    s.taxableAmount = Number(taxable.toFixed(2));
+                    s.cgstPer = (s.gstPer || 0) / 2; s.sgstPer = (s.gstPer || 0) / 2;
+                    s.cgstAmount = Number((tax / 2).toFixed(2));
+                    s.sgstAmount = Number((tax / 2).toFixed(2));
+                    s.totalAmount = Number((taxable + tax).toFixed(2));
+
+                    srvTotal += s.totalAmount;
+                    totalTaxable += s.taxableAmount;
+                    totalCgst += s.cgstAmount;
+                    totalSgst += s.sgstAmount;
+
+                    return `
+                        <tr>
+                            <td class="fw-semibold">${s.serviceTypeName}</td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Complaint / Work note" value="${s.customerRemarks}" onchange="jcServices[${idx}].customerRemarks=this.value" />
+                            </td>
+                            <td><input type="number" step="1" class="form-control form-control-sm text-center" value="${s.quantity}" onchange="jcServices[${idx}].quantity=parseFloat(this.value)||1;recalcJobCard();" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="${s.price}" onchange="jcServices[${idx}].price=parseFloat(this.value)||0;recalcJobCard();" /></td>
+                            <td class="text-end fw-bold">₹ ${s.totalAmount.toFixed(2)}</td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeJcService(${idx})"><i class="bi bi-x"></i></button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            if (jcSpares.length === 0) {
+                pBody.innerHTML = `<tr><td colspan="7" class="text-center py-3 text-muted">No spare parts added yet.</td></tr>`;
+            } else {
+                pBody.innerHTML = jcSpares.map((sp, idx) => {
+                    const taxable = Math.max(0, sp.quantity * sp.salesPrice - (sp.discountRs || 0));
+                    const tax = (taxable * (sp.gstPer || 0)) / 100;
+                    sp.taxableAmount = Number(taxable.toFixed(2));
+                    sp.cgstPer = (sp.gstPer || 0) / 2; sp.sgstPer = (sp.gstPer || 0) / 2;
+                    sp.cgstAmount = Number((tax / 2).toFixed(2));
+                    sp.sgstAmount = Number((tax / 2).toFixed(2));
+                    sp.totalAmount = Number((taxable + tax).toFixed(2));
+
+                    spareTotal += sp.totalAmount;
+                    totalTaxable += sp.taxableAmount;
+                    totalCgst += sp.cgstAmount;
+                    totalSgst += sp.sgstAmount;
+
+                    return `
+                        <tr>
+                            <td class="fw-semibold">${sp.itemName}</td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-center" value="${sp.quantity}" onchange="jcSpares[${idx}].quantity=parseFloat(this.value)||1;recalcJobCard();" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="${sp.salesPrice}" onchange="jcSpares[${idx}].salesPrice=parseFloat(this.value)||0;recalcJobCard();" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="${sp.discountRs}" onchange="jcSpares[${idx}].discountRs=parseFloat(this.value)||0;recalcJobCard();" /></td>
+                            <td class="text-end">₹ ${(sp.cgstAmount + sp.sgstAmount).toFixed(2)}</td>
+                            <td class="text-end fw-bold">₹ ${sp.totalAmount.toFixed(2)}</td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeJcSpare(${idx})"><i class="bi bi-x"></i></button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            const grandTotal = Math.round(srvTotal + spareTotal);
+            document.getElementById('lblJcServiceTotal').innerText = `₹ ${srvTotal.toFixed(2)}`;
+            document.getElementById('lblJcSpareTotal').innerText = `₹ ${spareTotal.toFixed(2)}`;
+            document.getElementById('lblJcTaxTotal').innerText = `₹ ${(totalCgst + totalSgst).toFixed(2)}`;
+            document.getElementById('lblJcGrandTotal').innerText = `₹ ${grandTotal.toFixed(2)}`;
+        }
+
+        async function saveJobCard() {
+            const partyId = parseInt(document.getElementById('PartyId').value || '0');
+            if (partyId <= 0) {
+                PaybillUI.showToast('Please select a Customer.', 'warning');
+                return;
+            }
+            const grandTotal = parseFloat(document.getElementById('lblJcGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const payload = {
+                ServiceRequestId: serviceRequestId,
+                JobCardNumber: document.getElementById('JobCardNumber').value,
+                RequestDate: document.getElementById('RequestDate').value,
+                PartyId: partyId,
+                JobCardStatusId: parseInt(document.getElementById('JobCardStatusId').value || '1'),
+                Summary: document.getElementById('Summary').value,
+                Remarks: document.getElementById('Remarks').value,
+                TotalTaxableAmount: jcServices.reduce((s, i) => s + i.taxableAmount, 0) + jcSpares.reduce((s, i) => s + i.taxableAmount, 0),
+                TotalCgst: jcServices.reduce((s, i) => s + i.cgstAmount, 0) + jcSpares.reduce((s, i) => s + i.cgstAmount, 0),
+                TotalSgst: jcServices.reduce((s, i) => s + i.sgstAmount, 0) + jcSpares.reduce((s, i) => s + i.sgstAmount, 0),
+                TotalNetAmount: grandTotal,
+                ServiceTypes: jcServices.map(s => ({
+                    ComplaintId: s.complaintId,
+                    ServiceRequestId: serviceRequestId,
+                    ServiceTypeId: s.serviceTypeId,
+                    ServiceTypeName: s.serviceTypeName,
+                    CustomerRemarks: s.customerRemarks,
+                    TechnicianRemarks: s.technicianRemarks,
+                    Quantity: s.quantity,
+                    Price: s.price,
+                    TaxableAmount: s.taxableAmount,
+                    GstId: s.gstId,
+                    CgstPer: s.cgstPer,
+                    SgstPer: s.sgstPer,
+                    CgstAmount: s.cgstAmount,
+                    SgstAmount: s.sgstAmount,
+                    DiscountRs: s.discountRs,
+                    TotalAmount: s.totalAmount
+                })),
+                Spares: jcSpares.map(sp => ({
+                    SpareId: sp.spareId,
+                    ServiceRequestId: serviceRequestId,
+                    ItemId: sp.itemId,
+                    Quantity: sp.quantity,
+                    Mrp: sp.mrp,
+                    SalesPrice: sp.salesPrice,
+                    TaxableAmount: sp.taxableAmount,
+                    GstId: sp.gstId,
+                    CgstPer: sp.cgstPer,
+                    SgstPer: sp.sgstPer,
+                    CgstAmount: sp.cgstAmount,
+                    SgstAmount: sp.sgstAmount,
+                    DiscountRs: sp.discountRs,
+                    TotalAmount: sp.totalAmount
+                }))
+            };
+
+            const res = await fetch('@Url.Action("SaveJobCard")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.isSuccess) {
+                PaybillUI.showToast(data.message || 'Job Card saved!', 'success');
+                window.location.href = '@Url.Action("Index")';
+            } else {
+                PaybillUI.showToast(data.message || 'Failed to save Job Card.', 'danger');
+            }
+        }
+    </script>
+}
+

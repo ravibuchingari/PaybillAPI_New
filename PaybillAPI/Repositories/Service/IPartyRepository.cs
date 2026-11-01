@@ -20,5 +20,6 @@ namespace PaybillAPI.Repositories.Service
         Task<RewardOverallSummaryVM> GetOverallRewardsSummary();
         Task<List<RewardRedemptionDetailVM>> GetRedemptionDetails(string? specificDate, string? fromDate, string? toDate, string? searchQuery, string? filterInvoiceNo);
         Task<ResponseMessage> GetCustomerEarliestUpcomingExpiryDate(int partyId);
+        Task<ResponseMessage> ExpireOldPoints(int userRowId);
     }
 }

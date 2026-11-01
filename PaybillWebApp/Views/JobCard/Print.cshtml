@@ -1,0 +1,130 @@
+@model JobCardVM
+@{
+    Layout = "_PrintLayout";
+    var hdr = ViewBag.Header as PrintHeader ?? new PrintHeader();
+    ViewData["Title"] = $"Job Card #{Model.JobCardNumber ?? Model.ServiceRequestId.ToString()}";
+}
+
+<div class="print-a4">
+    <div class="row border-bottom border-dark pb-3 mb-3 align-items-center">
+        <div class="col-8">
+            <h3 class="fw-bold mb-0" style="color: #174204;">@hdr.HeaderLine1</h3>
+            <div class="small">@hdr.HeaderLine2 @hdr.HeaderLine3</div>
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5))
+            {
+                <div class="small fw-bold">GSTIN: @hdr.HeaderLine5</div>
+            }
+        </div>
+        <div class="col-4 text-end">
+            <h4 class="fw-bold text-uppercase mb-1">SERVICE JOB CARD</h4>
+            <div class="small"><strong>Job Card No:</strong> #@Model.JobCardNumber</div>
+            <div class="small"><strong>Date:</strong> @Model.RequestDate</div>
+            <div class="small"><strong>Status:</strong> <span class="badge bg-dark">@Model.Status</span></div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <div class="p-2 border rounded bg-light h-100">
+                <div class="small text-muted text-uppercase fw-bold">Customer Details:</div>
+                <div class="fw-bold">@(Model.Party?.PartyName ?? "Customer")</div>
+                @if (!string.IsNullOrWhiteSpace(Model.Party?.Mobile)) { <div class="small">Mobile: @Model.Party.Mobile</div> }
+                @if (!string.IsNullOrWhiteSpace(Model.Party?.Address)) { <div class="small">@Model.Party.Address</div> }
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="p-2 border rounded h-100">
+                <div class="small text-muted text-uppercase fw-bold">Vehicle / Device / Job Summary:</div>
+                <div class="fw-semibold">@Model.Summary</div>
+                @if (!string.IsNullOrWhiteSpace(Model.Remarks)) { <div class="small text-muted mt-1">@Model.Remarks</div> }
+            </div>
+        </div>
+    </div>
+
+    @if (Model.ServiceTypes.Any())
+    {
+        <h6 class="fw-bold small text-uppercase">1. Service Requests & Labour</h6>
+        <table class="table table-bordered border-dark table-sm mb-3" style="font-size: 12px;">
+            <thead class="table-light border-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Service Type</th>
+                    <th>Complaint / Notes</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Rate</th>
+                    <th class="text-end">Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int sr = 1; }
+                @foreach (var s in Model.ServiceTypes)
+                {
+                    <tr>
+                        <td>@(sr++)</td>
+                        <td class="fw-semibold">@s.ServiceTypeName</td>
+                        <td>@s.CustomerRemarks</td>
+                        <td class="text-center">@s.Quantity</td>
+                        <td class="text-end">@s.Price.ToString("N2")</td>
+                        <td class="text-end fw-bold">@s.TotalAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (Model.Spares.Any())
+    {
+        <h6 class="fw-bold small text-uppercase">2. Spare Parts & Materials</h6>
+        <table class="table table-bordered border-dark table-sm mb-3" style="font-size: 12px;">
+            <thead class="table-light border-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Spare Part</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Rate</th>
+                    <th class="text-end">Tax</th>
+                    <th class="text-end">Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int spSr = 1; }
+                @foreach (var sp in Model.Spares)
+                {
+                    <tr>
+                        <td>@(spSr++)</td>
+                        <td class="fw-semibold">@(sp.Item?.ItemName ?? $"Item #{sp.ItemId}")</td>
+                        <td class="text-center">@sp.Quantity</td>
+                        <td class="text-end">@sp.SalesPrice.ToString("N2")</td>
+                        <td class="text-end">@((sp.CgstAmount + sp.SgstAmount + sp.IgstAmount).ToString("N2"))</td>
+                        <td class="text-end fw-bold">@sp.TotalAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row mt-3">
+        <div class="col-7">
+            <div class="small text-muted">
+                <strong>Terms:</strong> Estimate subject to change if additional spares are required during inspection.
+            </div>
+        </div>
+        <div class="col-5">
+            <table class="table table-sm table-bordered">
+                <tr><td>Taxable Total</td><td class="text-end">₹ @Model.TotalTaxableAmount.ToString("N2")</td></tr>
+                <tr><td>Total GST</td><td class="text-end">₹ @((Model.TotalCgst + Model.TotalSgst + Model.TotalIgst).ToString("N2"))</td></tr>
+                <tr class="table-success fw-bold"><td>Estimated Net Total</td><td class="text-end">₹ @Model.TotalNetAmount.ToString("N2")</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mt-5 pt-4">
+        <div class="col-6">
+            <div class="small border-top border-dark d-inline-block pt-1 px-4">Customer Signature</div>
+        </div>
+        <div class="col-6 text-end">
+            <div class="small border-top border-dark d-inline-block pt-1 px-4">For @hdr.HeaderLine1</div>
+        </div>
+    </div>
+</div>
+

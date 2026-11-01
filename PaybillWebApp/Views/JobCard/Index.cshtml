@@ -1,0 +1,184 @@
+@model List<JobCardVM>
+@{
+    ViewData["Title"] = "Service & Job Cards Management";
+    int? statusFilter = ViewBag.StatusFilter as int?;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div class="btn-group">
+        <a href="@Url.Action("Index")" class="btn @(statusFilter == null ? "btn-paybill" : "btn-outline-paybill")">All (@Model.Count)</a>
+        <a href="@Url.Action("Index", new { statusFilter = 1 })" class="btn @(statusFilter == 1 ? "btn-paybill" : "btn-outline-paybill")">Pending</a>
+        <a href="@Url.Action("Index", new { statusFilter = 2 })" class="btn @(statusFilter == 2 ? "btn-paybill" : "btn-outline-paybill")">In Progress</a>
+        <a href="@Url.Action("Index", new { statusFilter = 3 })" class="btn @(statusFilter == 3 ? "btn-paybill" : "btn-outline-paybill")">Completed</a>
+        <a href="@Url.Action("Index", new { statusFilter = 4 })" class="btn @(statusFilter == 4 ? "btn-paybill" : "btn-outline-paybill")">Delivered</a>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index", "Inventory", new { tab = "services" })" class="btn btn-outline-secondary">
+            <i class="bi bi-wrench-adjustable me-1"></i>Service Catalogue
+        </a>
+        <a href="@Url.Action("Create")" class="btn btn-paybill">
+            <i class="bi bi-plus-circle me-1"></i>New Job Card
+        </a>
+    </div>
+</div>
+
+<!-- KPI Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Pending / Open</div>
+            <div class="kpi-value text-warning">@Model.Count(j => j.JobCardStatusId == 1)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">In Progress</div>
+            <div class="kpi-value text-primary">@Model.Count(j => j.JobCardStatusId == 2)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Completed (Ready)</div>
+            <div class="kpi-value text-success">@Model.Count(j => j.JobCardStatusId == 3)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Service Value</div>
+            <div class="kpi-value">₹ @Model.Sum(j => j.TotalNetAmount).ToString("N2")</div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title"><i class="bi bi-tools me-2 text-success"></i>Service Requests & Job Cards</h6>
+        <input type="text" id="jcSearch" class="form-control form-control-sm" placeholder="Search job card #, customer, mobile..." style="width: 250px;"
+               onkeyup="PaybillUI.filterTable('jcSearch', 'jcTable')" />
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="jcTable">
+            <thead>
+                <tr>
+                    <th>Job Card #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Summary / Vehicle / Device</th>
+                    <th class="text-end">Estimated Amt</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Linked Invoice</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-muted">No job cards found. Click "New Job Card" to create one.</td></tr>
+                }
+                @foreach (var jc in Model)
+                {
+                    string badgeCls = jc.JobCardStatusId switch
+                    {
+                        1 => "badge-soft-warning",
+                        2 => "badge-soft-info",
+                        3 => "badge-soft-success",
+                        4 => "badge-soft-secondary",
+                        _ => "badge-soft-danger"
+                    };
+                    <tr>
+                        <td class="fw-bold">
+                            <a href="@Url.Action("Create", new { id = jc.ServiceRequestId })" class="text-decoration-none">
+                                #@(string.IsNullOrWhiteSpace(jc.JobCardNumber) ? jc.ServiceRequestId.ToString() : jc.JobCardNumber)
+                            </a>
+                        </td>
+                        <td>@jc.RequestDate</td>
+                        <td>
+                            <div class="fw-semibold">@(jc.Party?.PartyName ?? "Customer")</div>
+                            @if (!string.IsNullOrWhiteSpace(jc.Party?.Mobile))
+                            {
+                                <div class="small text-muted">@jc.Party.Mobile</div>
+                            }
+                        </td>
+                        <td class="small text-muted">@(string.IsNullOrWhiteSpace(jc.Summary) ? jc.Remarks : jc.Summary)</td>
+                        <td class="text-end fw-bold">₹ @jc.TotalNetAmount.ToString("N2")</td>
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-sm dropdown-toggle @badgeCls border-0" type="button" data-bs-toggle="dropdown">
+                                    @(string.IsNullOrWhiteSpace(jc.Status) ? "Pending" : jc.Status)
+                                </button>
+                                <ul class="dropdown-menu shadow-sm">
+                                    <li>
+                                        <form asp-action="UpdateStatus" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@jc.ServiceRequestId" />
+                                            <input type="hidden" name="statusId" value="1" />
+                                            <button type="submit" class="dropdown-item">1. Pending</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form asp-action="UpdateStatus" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@jc.ServiceRequestId" />
+                                            <input type="hidden" name="statusId" value="2" />
+                                            <button type="submit" class="dropdown-item">2. In Progress</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form asp-action="UpdateStatus" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@jc.ServiceRequestId" />
+                                            <input type="hidden" name="statusId" value="3" />
+                                            <button type="submit" class="dropdown-item text-success fw-semibold">3. Completed</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form asp-action="UpdateStatus" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@jc.ServiceRequestId" />
+                                            <input type="hidden" name="statusId" value="4" />
+                                            <button type="submit" class="dropdown-item">4. Delivered</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            @if (jc.SalesId.HasValue && jc.SalesId.Value > 0)
+                            {
+                                <a href="@Url.Action("Create", "Sales", new { id = jc.SalesId.Value })" class="badge bg-success-subtle text-success text-decoration-none">
+                                    <i class="bi bi-receipt me-1"></i>Invoice #@jc.SalesId.Value
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-action="GenerateInvoice" method="post" class="d-inline" onsubmit="return confirm('Convert this Job Card into a Sales Invoice?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@jc.ServiceRequestId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-File-earmark-check me-1"></i>Convert to Invoice
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="@Url.Action("Create", new { id = jc.ServiceRequestId })" class="btn btn-outline-primary" title="View / Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="@Url.Action("Print", new { id = jc.ServiceRequestId })" target="_blank" class="btn btn-outline-secondary" title="Print Job Card">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <form asp-action="DeleteJobCard" method="post" class="d-inline" onsubmit="return confirm('Delete this Job Card?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@jc.ServiceRequestId" />
+                                    <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

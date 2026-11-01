@@ -1,0 +1,413 @@
+@model SalesPrintViewModel
+@{
+    Layout = "_PrintLayout";
+    var inv = Model.Invoice;
+    var raw = Model.RawInvoice;
+    var hdr = Model.Header;
+    bool isPos80 = Model.Format == "POS80";
+    bool isPos58 = Model.Format == "POS58";
+    bool isPos = isPos80 || isPos58;
+    bool isNonGst = Model.Format == "A4_NONGST" || string.Equals(inv.SalesType, "Non-GST", StringComparison.OrdinalIgnoreCase);
+
+    string invoiceNo = !string.IsNullOrWhiteSpace(inv.InvoiceNo) ? inv.InvoiceNo : (raw?.InvoiceNumber ?? inv.SalesId.ToString());
+    ViewData["Title"] = $"Invoice #{invoiceNo}";
+
+    string customerPhone = (inv.Mobile ?? raw?.Party?.Mobile ?? "").Replace(" ", "").Replace("+91", "");
+    string waUrl = !string.IsNullOrWhiteSpace(customerPhone)
+        ? $"https://wa.me/91{customerPhone}?text={Uri.EscapeDataString(Model.WhatsAppMessage)}"
+        : $"https://wa.me/?text={Uri.EscapeDataString(Model.WhatsAppMessage)}";
+
+    string upiUri = !string.IsNullOrWhiteSpace(Model.Settings.UpiId)
+        ? $"upi://pay?pa={Model.Settings.UpiId}&pn={Uri.EscapeDataString(hdr.HeaderLine1)}&am={inv.TotalInvoiceAmount:F2}&cu=INR"
+        : "";
+}
+
+<!-- Top Format Switcher Bar (Hidden when printing) -->
+<div class="no-print bg-white border-bottom py-2 px-4 d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div class="btn-group btn-group-sm">
+        <a href="@Url.Action("Print", new { id = inv.SalesId, format = "A4" })" class="btn @(Model.Format == "A4" ? "btn-success" : "btn-outline-secondary")">A4 Tax Invoice</a>
+        <a href="@Url.Action("Print", new { id = inv.SalesId, format = "A4_NONGST" })" class="btn @(Model.Format == "A4_NONGST" ? "btn-success" : "btn-outline-secondary")">A4 Non-GST / Bill</a>
+        <a href="@Url.Action("Print", new { id = inv.SalesId, format = "POS80" })" class="btn @(Model.Format == "POS80" ? "btn-success" : "btn-outline-secondary")">80mm Thermal POS</a>
+        <a href="@Url.Action("Print", new { id = inv.SalesId, format = "POS58" })" class="btn @(Model.Format == "POS58" ? "btn-success" : "btn-outline-secondary")">58mm Thermal POS</a>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@waUrl" target="_blank" class="btn btn-sm btn-success">
+            <i class="bi bi-whatsapp me-1"></i>Share on WhatsApp
+        </a>
+        <a href="@Url.Action("Create", new { id = inv.SalesId })" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i>Edit Invoice
+        </a>
+    </div>
+</div>
+
+@if (isPos)
+{
+    <!-- 80mm / 58mm Thermal Receipt Layout -->
+    <div class="@(isPos58 ? "print-pos-58" : "print-pos-80")">
+        <div class="text-center mb-2">
+            <div class="fw-bold" style="font-size: 14px;">@hdr.HeaderLine1</div>
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine2)) { <div>@hdr.HeaderLine2</div> }
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine3)) { <div>@hdr.HeaderLine3</div> }
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine4)) { <div>@hdr.HeaderLine4</div> }
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5) && !isNonGst) { <div class="fw-bold">GSTIN: @hdr.HeaderLine5</div> }
+            <div class="border-top border-bottom border-dark my-1 py-1 fw-bold">
+                @(isNonGst ? "CASH / RETAIL BILL" : "TAX INVOICE")
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <span>Bill No: <strong>#@invoiceNo</strong></span>
+            <span>Date: @inv.SalesDate</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+            <span>Mode: @inv.PaymentMode</span>
+            @if (!string.IsNullOrWhiteSpace(inv.SalesTime)) { <span>@inv.SalesTime</span> }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(inv.PartyName))
+        {
+            <div>Cust: <strong>@inv.PartyName</strong> @(string.IsNullOrWhiteSpace(inv.Mobile) ? "" : $"({inv.Mobile})")</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(inv.Gstin) && !isNonGst)
+        {
+            <div>Cust GSTIN: @inv.Gstin</div>
+        }
+
+        <div class="border-top border-bottom border-dark my-1 py-1">
+            <table class="w-100" style="font-size: @(isPos58 ? "10px" : "11px");">
+                <thead>
+                    <tr class="border-bottom border-dark">
+                        <th class="text-start">Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Rate</th>
+                        <th class="text-end">Amt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in inv.SalesItems)
+                    {
+                        <tr>
+                            <td colspan="4" class="fw-semibold pt-1">@item.ItemName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">@(isNonGst ? "" : $"GST {item.CgstPer + item.SgstPer + item.IgstPer}%")</td>
+                            <td class="text-center">@item.Quantity @item.Measure</td>
+                            <td class="text-end">@item.SalesPrice.ToString("N2")</td>
+                            <td class="text-end fw-bold">@item.TotalAmount.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="py-1">
+            <div class="d-flex justify-content-between">
+                <span>Taxable Total:</span>
+                <span>@inv.TotalTaxableAmount.ToString("N2")</span>
+            </div>
+            @if (!isNonGst && (inv.TotalCgst + inv.TotalSgst + inv.TotalIgst) > 0)
+            {
+                @if (inv.TotalIgst > 0)
+                {
+                    <div class="d-flex justify-content-between">
+                        <span>IGST:</span>
+                        <span>@inv.TotalIgst.ToString("N2")</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-between">
+                        <span>CGST + SGST:</span>
+                        <span>@inv.TotalCgst.ToString("N2") + @inv.TotalSgst.ToString("N2")</span>
+                    </div>
+                }
+            }
+            @if ((inv.TotalDiscount + inv.TotalSavings) > 0)
+            {
+                <div class="d-flex justify-content-between">
+                    <span>Total Savings / Disc:</span>
+                    <span>-@((inv.TotalDiscount + inv.TotalSavings).ToString("N2"))</span>
+                </div>
+            }
+            @if (inv.PointsDiscount > 0)
+            {
+                <div class="d-flex justify-content-between">
+                    <span>Loyalty Redeemed (@inv.PointsRedeemed pts):</span>
+                    <span>-@inv.PointsDiscount.ToString("N2")</span>
+                </div>
+            }
+            <div class="d-flex justify-content-between border-top border-bottom border-dark my-1 py-1 fw-bold" style="font-size: 14px;">
+                <span>NET AMOUNT:</span>
+                <span>₹ @inv.TotalInvoiceAmount.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>Received: ₹@inv.ReceivedAmount.ToString("N2")</span>
+                <span>Bal: ₹@inv.BalanceAmount.ToString("N2")</span>
+            </div>
+            @if (inv.PointsEarned > 0)
+            {
+                <div class="text-center mt-1 fw-semibold">
+                    * Points Earned on this Bill: @inv.PointsEarned *
+                </div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(upiUri) && Model.Settings.PrintQrCode)
+        {
+            <div class="text-center my-2">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=@Uri.EscapeDataString(upiUri)" alt="UPI QR" style="width: 100px; height: 100px;" />
+                <div style="font-size: 10px;">Scan to Pay via UPI</div>
+            </div>
+        }
+
+        <div class="text-center border-top border-dark pt-1 mt-1" style="font-size: 10px;">
+            @if (!string.IsNullOrWhiteSpace(hdr.FooterLine1)) { <div>@hdr.FooterLine1</div> }
+            @if (!string.IsNullOrWhiteSpace(hdr.FooterLine2)) { <div>@hdr.FooterLine2</div> }
+            @foreach (var cl in Model.CustomLines)
+            {
+                <div style="font-weight: @(cl.IsBold ? "bold" : "normal"); font-style: @(cl.IsItalic ? "italic" : "normal");">@cl.LineText</div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <!-- Standard A4 Tax / Non-GST Invoice Layout -->
+    <div class="print-a4">
+        <!-- Header -->
+        <div class="row border-bottom border-dark pb-3 mb-3 align-items-center">
+            <div class="col-8">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="~/logo.png" alt="Logo" style="width: 56px; height: 56px; object-fit: contain;" />
+                    <div>
+                        <h3 class="fw-bold mb-0" style="color: #174204;">@hdr.HeaderLine1</h3>
+                        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine2)) { <div class="small">@hdr.HeaderLine2</div> }
+                        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine3)) { <div class="small">@hdr.HeaderLine3</div> }
+                        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine4)) { <div class="small">@hdr.HeaderLine4</div> }
+                        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5) && !isNonGst)
+                        {
+                            <div class="fw-bold small mt-1">GSTIN: @hdr.HeaderLine5</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 text-end">
+                <h4 class="fw-bold text-uppercase mb-1" style="color: #174204;">
+                    @(isNonGst ? "INVOICE / BILL OF SUPPLY" : "TAX INVOICE")
+                </h4>
+                <div class="small"><strong>Invoice No:</strong> #@invoiceNo</div>
+                <div class="small"><strong>Date:</strong> @inv.SalesDate @inv.SalesTime</div>
+                <div class="small"><strong>Payment Mode:</strong> @inv.PaymentMode</div>
+            </div>
+        </div>
+
+        <!-- Customer Details -->
+        <div class="row mb-3">
+            <div class="col-7">
+                <div class="p-2 border rounded bg-light">
+                    <div class="small text-muted text-uppercase fw-bold">Billed To:</div>
+                    <div class="fw-bold fs-6">@(string.IsNullOrWhiteSpace(inv.PartyName) ? "Walk-in Customer" : inv.PartyName)</div>
+                    @if (!string.IsNullOrWhiteSpace(inv.Address)) { <div class="small">@inv.Address</div> }
+                    @if (!string.IsNullOrWhiteSpace(inv.Mobile)) { <div class="small">Mobile: @inv.Mobile</div> }
+                    @if (!string.IsNullOrWhiteSpace(inv.Gstin) && !isNonGst) { <div class="small fw-bold">Customer GSTIN: @inv.Gstin</div> }
+                </div>
+            </div>
+            <div class="col-5">
+                @if (!string.IsNullOrWhiteSpace(inv.Remarks))
+                {
+                    <div class="p-2 border rounded h-100">
+                        <div class="small text-muted text-uppercase fw-bold">Remarks / Reference:</div>
+                        <div class="small">@inv.Remarks</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="table table-bordered border-dark table-sm align-middle mb-3" style="font-size: 12px;">
+            <thead class="table-light border-dark">
+                <tr>
+                    <th style="width: 35px;">#</th>
+                    <th>Item / Service Description</th>
+                    @if (!isNonGst) { <th class="text-center">HSN/SAC</th> }
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">MRP</th>
+                    <th class="text-end">Rate</th>
+                    <th class="text-end">Disc</th>
+                    <th class="text-end">Taxable</th>
+                    @if (!isNonGst)
+                    {
+                        <th class="text-center">GST %</th>
+                        <th class="text-end">Tax Amt</th>
+                    }
+                    <th class="text-end">Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int sr = 1; }
+                @foreach (var item in inv.SalesItems)
+                {
+                    double gstPer = item.CgstPer + item.SgstPer + item.IgstPer;
+                    double taxAmt = item.CgstAmount + item.SgstAmount + item.IgstAmount;
+                    <tr>
+                        <td>@(sr++)</td>
+                        <td class="fw-semibold">@item.ItemName</td>
+                        @if (!isNonGst) { <td class="text-center">@item.HsnCode</td> }
+                        <td class="text-center">@item.Quantity @item.Measure</td>
+                        <td class="text-end">@item.Mrp.ToString("N2")</td>
+                        <td class="text-end">@item.SalesPrice.ToString("N2")</td>
+                        <td class="text-end">@item.DiscountRs.ToString("N2")</td>
+                        <td class="text-end">@item.TaxableAmount.ToString("N2")</td>
+                        @if (!isNonGst)
+                        {
+                            <td class="text-center">@gstPer%</td>
+                            <td class="text-end">@taxAmt.ToString("N2")</td>
+                        }
+                        <td class="text-end fw-bold">@item.TotalAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Summary & Bank / QR Footer -->
+        <div class="row g-3">
+            <div class="col-7">
+                <div class="p-2 border rounded mb-2">
+                    <span class="small text-muted">Amount in Words:</span>
+                    <div class="fw-bold small">@Model.AmountInWords</div>
+                </div>
+
+                @if (!isNonGst && inv.GstSummaries.Any())
+                {
+                    <div class="small fw-bold mb-1">GST Tax Breakdown:</div>
+                    <table class="table table-bordered table-sm mb-2" style="font-size: 11px;">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-end">Taxable</th>
+                                <th class="text-end">CGST</th>
+                                <th class="text-end">SGST</th>
+                                <th class="text-end">IGST</th>
+                                <th class="text-end">Total Tax</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var g in inv.GstSummaries)
+                            {
+                                <tr>
+                                    <td class="text-end">@g.TaxableAmount.ToString("N2")</td>
+                                    <td class="text-end">@g.CgstAmount.ToString("N2") (@g.CgstPer%)</td>
+                                    <td class="text-end">@g.SgstAmount.ToString("N2") (@g.SgstPer%)</td>
+                                    <td class="text-end">@g.IgstAmount.ToString("N2") (@g.IgstPer%)</td>
+                                    <td class="text-end fw-bold">@((g.CgstAmount + g.SgstAmount + g.IgstAmount).ToString("N2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+                <div class="d-flex gap-3 align-items-center mt-2">
+                    @if (!string.IsNullOrWhiteSpace(upiUri))
+                    {
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=@Uri.EscapeDataString(upiUri)" alt="UPI QR" class="border p-1" style="width: 85px; height: 85px;" />
+                    }
+                    <div class="small">
+                        @if (!string.IsNullOrWhiteSpace(Model.Settings.BankName))
+                        {
+                            <div><strong>Bank:</strong> @Model.Settings.BankName</div>
+                            <div><strong>A/C No:</strong> @Model.Settings.BankAccountNumber | <strong>IFSC:</strong> @Model.Settings.BankIfscCode</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.Settings.UpiId))
+                        {
+                            <div><strong>UPI ID:</strong> @Model.Settings.UpiId</div>
+                        }
+                        @if (inv.PointsEarned > 0 || inv.AvailablePoints > 0)
+                        {
+                            <div class="text-success fw-semibold mt-1">
+                                Loyalty Points Earned: @inv.PointsEarned | Available Balance: @inv.AvailablePoints pts
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5">
+                <table class="table table-sm table-bordered mb-2" style="font-size: 12px;">
+                    <tr>
+                        <td>Total Taxable Amount</td>
+                        <td class="text-end fw-semibold">₹ @inv.TotalTaxableAmount.ToString("N2")</td>
+                    </tr>
+                    @if (!isNonGst)
+                    {
+                        @if (inv.TotalIgst > 0)
+                        {
+                            <tr>
+                                <td>Total IGST</td>
+                                <td class="text-end">₹ @inv.TotalIgst.ToString("N2")</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>Total CGST</td>
+                                <td class="text-end">₹ @inv.TotalCgst.ToString("N2")</td>
+                            </tr>
+                            <tr>
+                                <td>Total SGST</td>
+                                <td class="text-end">₹ @inv.TotalSgst.ToString("N2")</td>
+                            </tr>
+                        }
+                    }
+                    @if ((inv.TotalDiscount + inv.TotalSavings) > 0)
+                    {
+                        <tr>
+                            <td>Total Discount / Savings</td>
+                            <td class="text-end text-danger">- ₹ @((inv.TotalDiscount + inv.TotalSavings).ToString("N2"))</td>
+                        </tr>
+                    }
+                    @if (inv.PointsDiscount > 0)
+                    {
+                        <tr>
+                            <td>Reward Points Redeemed (@inv.PointsRedeemed)</td>
+                            <td class="text-end text-success">- ₹ @inv.PointsDiscount.ToString("N2")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>Round Off</td>
+                        <td class="text-end">₹ @inv.RoundOff.ToString("N2")</td>
+                    </tr>
+                    <tr class="table-success fw-bold fs-6">
+                        <td>Grand Total</td>
+                        <td class="text-end">₹ @inv.TotalInvoiceAmount.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td>Amount Received</td>
+                        <td class="text-end">₹ @inv.ReceivedAmount.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td>Balance Due</td>
+                        <td class="text-end fw-bold @(inv.BalanceAmount > 0 ? "text-danger" : "")">₹ @inv.BalanceAmount.ToString("N2")</td>
+                    </tr>
+                </table>
+
+                <div class="text-end mt-4 pt-3">
+                    <div class="small fw-bold">For @hdr.HeaderLine1</div>
+                    <div class="small text-muted mt-4">Authorized Signatory</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms & Custom Receipt Lines -->
+        <div class="border-top pt-2 mt-3 small text-muted d-flex justify-content-between">
+            <div>
+                @if (!string.IsNullOrWhiteSpace(hdr.FooterLine1)) { <div>@hdr.FooterLine1</div> }
+                @if (!string.IsNullOrWhiteSpace(hdr.FooterLine2)) { <div>@hdr.FooterLine2</div> }
+            </div>
+            <div class="text-end">
+                @foreach (var cl in Model.CustomLines)
+                {
+                    <div style="font-weight: @(cl.IsBold ? "bold" : "normal"); font-style: @(cl.IsItalic ? "italic" : "normal");">@cl.LineText</div>
+                }
+            </div>
+        </div>
+    </div>
+}
+

@@ -1,0 +1,119 @@
+@model List<SalesVM>
+@{
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string? salesType = ViewBag.SalesType as string;
+    string? paymentMode = ViewBag.PaymentMode as string;
+    ViewData["Title"] = "Detailed Sales Report";
+
+    double totalSales = Model.Sum(s => s.TotalInvoiceAmount);
+    double totalTaxable = Model.Sum(s => s.TotalTaxableAmount);
+    double totalTax = Model.Sum(s => s.TotalCgst + s.TotalSgst + s.TotalIgst);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex flex-wrap gap-2 align-items-center">
+        <div class="input-group input-group-sm" style="width: auto;">
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <select name="salesType" class="form-select">
+                <option value="">All Bill Types</option>
+                <option value="GST" selected="@(salesType == "GST")">GST</option>
+                <option value="Non-GST" selected="@(salesType == "Non-GST")">Non-GST</option>
+            </select>
+            <select name="paymentMode" class="form-select">
+                <option value="">All Modes</option>
+                <option value="Cash" selected="@(paymentMode == "Cash")">Cash</option>
+                <option value="UPI" selected="@(paymentMode == "UPI")">UPI</option>
+                <option value="Card" selected="@(paymentMode == "Card")">Card</option>
+                <option value="Credit" selected="@(paymentMode == "Credit")">Credit</option>
+            </select>
+            <button type="submit" class="btn btn-paybill"><i class="bi bi-funnel me-1"></i>Filter</button>
+        </div>
+    </form>
+
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("DownloadSalesDetailsExcel", new { fromDate, toDate, salesType, paymentMode })" class="btn btn-sm btn-success">
+            <i class="bi bi-file-earmark-excel me-1"></i>Download Official Excel (.xlsx)
+        </a>
+        <a href="@Url.Action("SalesSummary", new { fromDate, toDate, salesType, paymentMode })" class="btn btn-sm btn-outline-primary">
+            Switch to Summary View
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Taxable Value</div>
+            <div class="kpi-value">₹ @totalTaxable.ToString("N2")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total GST Collected</div>
+            <div class="kpi-value text-primary">₹ @totalTax.ToString("N2")</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Net Sales (@Model.Count Invoices)</div>
+            <div class="kpi-value text-success">₹ @totalSales.ToString("N2")</div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title">Invoice & Item-wise Sales Register</h6>
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Mode</th>
+                    <th>Items Sold</th>
+                    <th class="text-end">Taxable</th>
+                    <th class="text-end">GST</th>
+                    <th class="text-end">Total Amt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-muted">No sales records found for the selected filter.</td></tr>
+                }
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td class="fw-bold"><a href="@Url.Action("Create", "Sales", new { id = s.SalesId })">#@(s.InvoiceNumber ?? s.SalesId.ToString())</a></td>
+                        <td>@s.SalesDate</td>
+                        <td>@(s.Party?.PartyName ?? "Walk-in Customer")</td>
+                        <td><span class="badge bg-light text-dark border">@s.PaymentMode</span></td>
+                        <td>
+                            @if (s.SalesItems.Any())
+                            {
+                                <div class="small">
+                                    @string.Join(", ", s.SalesItems.Select(i => $"{i.Item?.ItemName ?? i.ServiceType?.ServiceTypeName} (x{i.Quantity})"))
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                        <td class="text-end">₹ @s.TotalTaxableAmount.ToString("N2")</td>
+                        <td class="text-end">₹ @((s.TotalCgst + s.TotalSgst + s.TotalIgst).ToString("N2"))</td>
+                        <td class="text-end fw-bold">₹ @s.TotalInvoiceAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

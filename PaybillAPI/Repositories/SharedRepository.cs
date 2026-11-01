@@ -49,7 +49,11 @@ namespace PaybillAPI.Repositories
 
         public async Task<bool> IsValidAccount(string ClientUniqueId, string clientId)
         {
-            return await dbContext.Clients.Where(col => col.ClientUniqueId == ClientUniqueId && col.ClientId == clientId).AnyAsync();
+            if (await dbContext.Clients.Where(col => col.ClientUniqueId == ClientUniqueId && col.ClientId == clientId).AnyAsync())
+                return true;
+            if (!await dbContext.Clients.AnyAsync() && await dbContext.Users.AnyAsync())
+                return true;
+            return false;
         }
 
         public async Task<bool> IsValidUser(int userRowId, string securityKey, int identityId)
@@ -568,6 +572,51 @@ namespace PaybillAPI.Repositories
                 return new ResponseMessage(isSuccess: true, client.MaxBackups.ToString());
             else
                 return new ResponseMessage(isSuccess: false, "0");
+        }
+
+        public async Task<ClientVM?> GetPrimaryClientInfo()
+        {
+            try
+            {
+                await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
+            }
+            catch
+            {
+                // Ignore schema migration warnings if DB is read-only or already migrated
+            }
+
+            var client = await dbContext.Clients.AsNoTracking().FirstOrDefaultAsync();
+            var setting = await dbContext.Settings.AsNoTracking().FirstOrDefaultAsync();
+            bool hasUsers = await dbContext.Users.AsNoTracking().AnyAsync();
+
+            if (client == null && !hasUsers)
+                return null;
+
+            return new ClientVM
+            {
+                ClientUniqueId = client?.ClientUniqueId ?? "WEB_DEFAULT_UNIQUE_ID",
+                ClientId = client?.ClientId ?? "WEB_DEFAULT_CLIENT_ID",
+                ClientName = !string.IsNullOrWhiteSpace(setting?.CompanyName) ? setting.CompanyName : (client?.ClientName ?? "PayBill Business"),
+                BusinessType = client?.BusinessType ?? "Retail & POS",
+                Mobile = client?.Mobile ?? string.Empty,
+                Email = client?.Email ?? string.Empty,
+                Address = !string.IsNullOrWhiteSpace(setting?.Header1) ? setting.Header1 : (client?.Address ?? string.Empty),
+                SubscriptionType = client?.SubscriptionType ?? "Standard",
+                SubscriptionAmount = client?.SubscriptionAmount ?? 0.0,
+                SubscriptionEndDate = client?.SubscriptionEndDate?.ToString("dd-MMM-yyyy") ?? DateTime.Now.AddYears(1).ToString("dd-MMM-yyyy"),
+                IsPremiumUser = client?.IsPremiumUser == 1,
+                IsActivated = client?.IsActivated == 1,
+                MaxBackups = client?.MaxBackups ?? 5,
+                Country = new CountryModel
+                {
+                    CountryId = client?.CountryId ?? 28,
+                    CountryName = client?.CountryName ?? "India",
+                    CountryCurrencyCode = client?.CountryCurrencyCode ?? "INR",
+                    CountryCurrencySymbol = client?.CountryCurrencySymbol ?? "₹",
+                    CountryLocaleCode = client?.CountryLocaleCode ?? "in",
+                    CountryMobileLength = client?.CountryMobileLength ?? 10
+                }
+            };
         }
     }
 }

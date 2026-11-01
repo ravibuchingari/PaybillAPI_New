@@ -1,0 +1,66 @@
+@model List<PurchaseVM>
+@{
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    ViewData["Title"] = "Purchase Register & Item-wise Report";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex gap-2 align-items-center">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <button type="submit" class="btn btn-paybill">Filter</button>
+        </div>
+    </form>
+
+    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('purRepTable', 'Purchase_Report_@(fromDate)_@(toDate).csv')">
+        <i class="bi bi-download me-1"></i>Export CSV
+    </button>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title">Purchase Register (@Model.Count Bills | Total: ₹ @Model.Sum(p => p.TotalInvoiceAmount).ToString("N2"))</h6>
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="purRepTable">
+            <thead>
+                <tr>
+                    <th>Bill #</th>
+                    <th>Purchase Date</th>
+                    <th>Supplier</th>
+                    <th>Mode</th>
+                    <th>Items Purchased</th>
+                    <th class="text-end">Taxable</th>
+                    <th class="text-end">GST (ITC)</th>
+                    <th class="text-end">Total Amt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-muted">No purchase records found for the selected dates.</td></tr>
+                }
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="fw-bold"><a href="@Url.Action("Create", "Purchase", new { id = p.PurchaseId })">#@p.InvoiceNumber</a></td>
+                        <td>@p.PurchaseDate</td>
+                        <td class="fw-semibold">@(p.Party?.PartyName ?? "Vendor")</td>
+                        <td>@p.PaymentMode</td>
+                        <td class="small">
+                            @string.Join(", ", p.PurchaseItems.Select(i => $"{i.Item?.ItemName} (x{i.Quantity})"))
+                        </td>
+                        <td class="text-end">₹ @p.TotalTaxableAmount.ToString("N2")</td>
+                        <td class="text-end">₹ @((p.TotalCgst + p.TotalSgst + p.TotalIgst).ToString("N2"))</td>
+                        <td class="text-end fw-bold">₹ @p.TotalInvoiceAmount.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

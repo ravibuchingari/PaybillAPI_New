@@ -1,0 +1,706 @@
+@model SettingsPageViewModel
+@{
+    ViewData["Title"] = "System Settings, Users & Configuration";
+    var s = Model.Settings;
+}
+
+<div class="row g-4">
+    <!-- Left Settings Navigation -->
+    <div class="col-lg-3">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title"><i class="bi bi-sliders me-2 text-success"></i>Configuration Menu</h6>
+            </div>
+            <div class="list-group list-group-flush" role="tablist">
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "company" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-company">
+                    <i class="bi bi-printer me-2"></i>Receipt Header & Billing Rules
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "payments" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-payments">
+                    <i class="bi bi-qr-code me-2"></i>UPI, Bank & Payment Gateway
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "rewards" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-rewards">
+                    <i class="bi bi-gift me-2"></i>Loyalty & Reward Rules
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "email" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-email">
+                    <i class="bi bi-envelope-at me-2"></i>SMTP Email & Notifications
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "receiptlines" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-receiptlines">
+                    <i class="bi bi-card-text me-2"></i>Custom Receipt Footer Lines
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "messages" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-messages">
+                    <i class="bi bi-chat-dots me-2"></i>SMS / WhatsApp Templates
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "users" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-users">
+                    <i class="bi bi-people me-2"></i>Users & Role Management
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "unlocks" ? "active" : "") d-flex justify-content-between align-items-center"
+                   data-bs-toggle="list" href="#pane-unlocks">
+                    <span><i class="bi bi-unlock me-2"></i>Invoice Unlock Requests</span>
+                    @if (Model.UnlockRequests.Any())
+                    {
+                        <span class="badge bg-warning text-dark">@Model.UnlockRequests.Count</span>
+                    }
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "profile" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-profile">
+                    <i class="bi bi-building me-2"></i>Business Account Profile
+                </a>
+                <a class="list-group-item list-group-item-action @(Model.ActiveTab == "security" ? "active" : "")"
+                   data-bs-toggle="list" href="#pane-security">
+                    <i class="bi bi-key me-2"></i>Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Tab Panes -->
+    <div class="col-lg-9">
+        <div class="tab-content">
+            <!-- 1. Receipt Header, Billing, UPI, Rewards & Email (Unified Settings Form) -->
+            <div class="tab-pane fade @(Model.ActiveTab is "company" or "payments" or "rewards" or "email" ? "show active" : "")" id="pane-company">
+                <form asp-action="SaveSettings" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="SettingId" value="@s.SettingId" />
+                    <input type="hidden" name="returnTab" value="company" />
+
+                    <div class="pb-card mb-4">
+                        <div class="pb-card-header">
+                            <h6 class="pb-card-title">Invoice & Receipt Print Header / Footer</h6>
+                        </div>
+                        <div class="pb-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Header Line 1 (Company / Store Name) *</label>
+                                    <input type="text" name="ReceiptHeaderLine1" class="form-control fw-bold" value="@s.ReceiptHeaderLine1" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Header Line 5 (Company GSTIN)</label>
+                                    <input type="text" name="ReceiptHeaderLine5" class="form-control text-uppercase font-monospace" value="@s.ReceiptHeaderLine5" maxlength="15" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Header Line 2 (Address Line 1)</label>
+                                    <input type="text" name="ReceiptHeaderLine2" class="form-control" value="@s.ReceiptHeaderLine2" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Header Line 3 (City / State / PIN)</label>
+                                    <input type="text" name="ReceiptHeaderLine3" class="form-control" value="@s.ReceiptHeaderLine3" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Header Line 4 (Phone / Contact)</label>
+                                    <input type="text" name="ReceiptHeaderLine4" class="form-control" value="@s.ReceiptHeaderLine4" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Receipt Footer Line 1</label>
+                                    <input type="text" name="ReceiptFooterLine1" class="form-control" value="@s.ReceiptFooterLine1" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Receipt Footer Line 2</label>
+                                    <input type="text" name="ReceiptFooterLine2" class="form-control" value="@s.ReceiptFooterLine2" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pb-card mb-4">
+                        <div class="pb-card-header">
+                            <h6 class="pb-card-title">POS Billing, Inventory & Print Rules</h6>
+                        </div>
+                        <div class="pb-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="IsGstInvoice" value="true" id="chkGstInv" checked="@s.IsGstInvoice" />
+                                        <label class="form-check-label" for="chkGstInv">Default to GST Invoice</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="ResetInvoiceNumberFinancialYear" value="true" id="chkResetFy" checked="@s.ResetInvoiceNumberFinancialYear" />
+                                        <label class="form-check-label" for="chkResetFy">Reset Invoice # Every FY</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="DisplayItemStockOnSales" value="true" id="chkShowStock" checked="@s.DisplayItemStockOnSales" />
+                                        <label class="form-check-label" for="chkShowStock">Show Stock on POS Screen</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="AllowNegativeStock" value="true" id="chkNegStock" checked="@s.AllowNegativeStock" />
+                                        <label class="form-check-label" for="chkNegStock">Allow Negative Stock Billing</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="PrintQrCode" value="true" id="chkQr" checked="@s.PrintQrCode" />
+                                        <label class="form-check-label" for="chkQr">Print UPI QR Code on Bills</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="PrintTotalSavings" value="true" id="chkSavings" checked="@s.PrintTotalSavings" />
+                                        <label class="form-check-label" for="chkSavings">Print Total Savings on Receipt</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pb-card mb-4">
+                        <div class="pb-card-header">
+                            <h6 class="pb-card-title">UPI, Bank Details & Payment Gateway</h6>
+                        </div>
+                        <div class="pb-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Merchant UPI ID (VPA)</label>
+                                    <input type="text" name="UpiId" class="form-control" value="@s.UpiId" placeholder="e.g. storename@okaxis" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Bank Name</label>
+                                    <input type="text" name="BankName" class="form-control" value="@s.BankName" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Bank Account Number</label>
+                                    <input type="text" name="BankAccountNumber" class="form-control" value="@s.BankAccountNumber" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Bank IFSC Code</label>
+                                    <input type="text" name="BankIfscCode" class="form-control text-uppercase" value="@s.BankIfscCode" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Payment Gateway Provider</label>
+                                    <input type="text" name="PaymentGatewayName" class="form-control" value="@s.PaymentGatewayName" placeholder="Razorpay / Cashfree / PayU" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Gateway Key ID</label>
+                                    <input type="text" name="PaymentGatewayKeyId" class="form-control" value="@s.PaymentGatewayKeyId" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pb-card mb-4">
+                        <div class="pb-card-header">
+                            <h6 class="pb-card-title">Customer Loyalty & Reward Points Configuration</h6>
+                        </div>
+                        <div class="pb-card-body">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="EnableCustomerRewards" value="true" id="chkRewards" checked="@s.EnableCustomerRewards" />
+                                        <label class="form-check-label fw-semibold" for="chkRewards">Enable Customer Loyalty & Reward Points System</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Points Earned per ₹100</label>
+                                    <input type="number" step="0.1" name="RewardPointsPerHundredRupees" class="form-control" value="@s.RewardPointsPerHundredRupees" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">1 Reward Point Value (₹)</label>
+                                    <input type="number" step="0.01" name="RewardPointValue" class="form-control" value="@s.RewardPointValue" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Min Invoice Amount (₹)</label>
+                                    <input type="number" step="1" name="RewardMinInvoiceAmount" class="form-control" value="@s.RewardMinInvoiceAmount" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Points Expiry (Days, 0=Never)</label>
+                                    <input type="number" step="1" name="RewardPointsExpiryDays" class="form-control" value="@s.RewardPointsExpiryDays" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pb-card mb-4">
+                        <div class="pb-card-header">
+                            <h6 class="pb-card-title">SMTP Email & Backup Settings</h6>
+                        </div>
+                        <div class="pb-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">SMTP Host</label>
+                                    <input type="text" name="SmtpHost" class="form-control" value="@s.SmtpHost" placeholder="smtp.gmail.com" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">SMTP Port</label>
+                                    <input type="number" name="SmtpPort" class="form-control" value="@s.SmtpPort" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Sender Email</label>
+                                    <input type="email" name="SenderEmail" class="form-control" value="@s.SenderEmail" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">App Password</label>
+                                    <input type="password" name="SenderPassword" class="form-control" value="@s.SenderPassword" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pb-card-body border-top text-end">
+                            <button type="submit" class="btn btn-paybill px-4">
+                                <i class="bi bi-check2-circle me-1"></i>Save All System Settings
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Custom Receipt Lines Pane -->
+            <div class="tab-pane fade @(Model.ActiveTab == "receiptlines" ? "show active" : "")" id="pane-receiptlines">
+                <div class="pb-card">
+                    <div class="pb-card-header">
+                        <h6 class="pb-card-title">Custom Receipt Footer Lines</h6>
+                        <button type="button" class="btn btn-sm btn-paybill" data-bs-toggle="modal" data-bs-target="#customLineModal">
+                            <i class="bi bi-plus-lg me-1"></i>Add Line
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table pb-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Line Text</th>
+                                    <th class="text-center">Style</th>
+                                    <th class="text-center">Active</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cl in Model.CustomReceiptLines.OrderBy(c => c.DisplayOrder))
+                                {
+                                    <tr>
+                                        <td>@cl.DisplayOrder</td>
+                                        <td style="font-weight:@(cl.IsBold ? "bold" : "normal"); font-style:@(cl.IsItalic ? "italic" : "normal");">@cl.LineText</td>
+                                        <td class="text-center small text-muted">@(cl.IsBold ? "Bold " : "")@(cl.IsItalic ? "Italic" : "")</td>
+                                        <td class="text-center">
+                                            <form asp-action="ToggleCustomLine" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@cl.CustomLineId" />
+                                                <input type="hidden" name="isActive" value="@((!cl.IsActive).ToString().ToLower())" />
+                                                <button type="submit" class="btn btn-sm @(cl.IsActive ? "btn-success" : "btn-outline-secondary")">
+                                                    @(cl.IsActive ? "Active" : "Inactive")
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteCustomLine" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@cl.CustomLineId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Templates Pane -->
+            <div class="tab-pane fade @(Model.ActiveTab == "messages" ? "show active" : "")" id="pane-messages">
+                <div class="pb-card">
+                    <div class="pb-card-header">
+                        <h6 class="pb-card-title">SMS & WhatsApp Message Templates</h6>
+                        <button type="button" class="btn btn-sm btn-paybill" data-bs-toggle="modal" data-bs-target="#msgModal">
+                            <i class="bi bi-plus-lg me-1"></i>Add Template
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table pb-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Message Content</th>
+                                    <th class="text-center">Default</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in Model.MessageTemplates)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-light text-dark border">@m.MessageType</span></td>
+                                        <td class="small">@m.Description</td>
+                                        <td class="text-center">
+                                            @if (m.IsSelected)
+                                            {
+                                                <span class="badge bg-success">Selected</span>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="SelectMessageTemplate" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@m.MessageId" />
+                                                    <input type="hidden" name="messageType" value="@m.MessageType" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Set Default</button>
+                                                </form>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteMessageTemplate" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@m.MessageId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users & Role Management Pane -->
+            <div class="tab-pane fade @(Model.ActiveTab == "users" ? "show active" : "")" id="pane-users">
+                <div class="pb-card">
+                    <div class="pb-card-header">
+                        <h6 class="pb-card-title">User Accounts & Role Access (@Model.Users.Count)</h6>
+                        @if (Model.IsAdmin)
+                        {
+                            <button type="button" class="btn btn-sm btn-paybill" onclick="openUserModal()">
+                                <i class="bi bi-person-plus me-1"></i>Add Staff / Admin User
+                            </button>
+                        }
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table pb-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Full Name</th>
+                                    <th>Mobile</th>
+                                    <th>Role</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in Model.Users)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@u.UserId</td>
+                                        <td>@u.FirstName @u.LastName</td>
+                                        <td>@u.Mobile</td>
+                                        <td>
+                                            <span class="badge @(u.IsAdmin ? "bg-primary" : "bg-secondary")">
+                                                @(u.IsAdmin ? "Administrator" : "POS Staff")
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge-soft @(u.IsActive ? "badge-soft-success" : "badge-soft-danger")">
+                                                @(u.IsActive ? "Active" : "Disabled")
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            @if (Model.IsAdmin)
+                                            {
+                                                <form asp-action="DeleteUser" method="post" class="d-inline" onsubmit="return confirm('Delete user @u.UserId?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="userRowId" value="@u.UserRowId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                                </form>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unlock Requests Pane -->
+            <div class="tab-pane fade @(Model.ActiveTab == "unlocks" ? "show active" : "")" id="pane-unlocks">
+                <div class="pb-card">
+                    <div class="pb-card-header">
+                        <h6 class="pb-card-title">Pending Invoice Unlock Requests (@Model.UnlockRequests.Count)</h6>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table pb-table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Request #</th>
+                                    <th>Invoice / Bill</th>
+                                    <th>Requested By</th>
+                                    <th>Reason / Remarks</th>
+                                    <th class="text-end">Admin Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.UnlockRequests.Any())
+                                {
+                                    <tr><td colspan="5" class="text-center py-5 text-muted">No pending unlock requests.</td></tr>
+                                }
+                                @foreach (var req in Model.UnlockRequests)
+                                {
+                                    <tr>
+                                        <td>#@req.UnlockRequestId</td>
+                                        <td class="fw-bold">
+                                            @if (req.SalesId.HasValue && req.SalesId.Value > 0)
+                                            {
+                                                <a href="@Url.Action("Create", "Sales", new { id = req.SalesId.Value })">Sales Invoice #@(req.InvoiceNumber ?? req.SalesId.Value.ToString())</a>
+                                            }
+                                            else if (req.PurchaseId.HasValue && req.PurchaseId.Value > 0)
+                                            {
+                                                <a href="@Url.Action("Create", "Purchase", new { id = req.PurchaseId.Value })">Purchase Bill #@(req.InvoiceNumber ?? req.PurchaseId.Value.ToString())</a>
+                                            }
+                                        </td>
+                                        <td>@req.RequestedBy</td>
+                                        <td>@req.Remarks</td>
+                                        <td class="text-end">
+                                            @if (Model.IsAdmin)
+                                            {
+                                                <form asp-action="ProcessUnlockRequest" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="unlockRequestId" value="@req.UnlockRequestId" />
+                                                    <input type="hidden" name="isApproved" value="true" />
+                                                    <input type="hidden" name="remarks" value="Approved by Admin" />
+                                                    <button type="submit" class="btn btn-sm btn-success me-1"><i class="bi bi-check-lg me-1"></i>Approve & Unlock</button>
+                                                </form>
+                                                <form asp-action="ProcessUnlockRequest" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="unlockRequestId" value="@req.UnlockRequestId" />
+                                                    <input type="hidden" name="isApproved" value="false" />
+                                                    <input type="hidden" name="remarks" value="Rejected by Admin" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                                                </form>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Profile Pane -->
+            <div class="tab-pane fade @(Model.ActiveTab == "profile" ? "show active" : "")" id="pane-profile">
+                <div class="pb-card">
+                    <div class="pb-card-header">
+                        <h6 class="pb-card-title">Registered Business Account Profile</h6>
+                    </div>
+                    <div class="pb-card-body">
+                        <form asp-action="SaveProfile" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ClientRowId" value="@Model.ClientProfile.ClientRowId" />
+                            <input type="hidden" name="ClientUniqueId" value="@Model.ClientProfile.ClientUniqueId" />
+                            <input type="hidden" name="ClientId" value="@Model.ClientProfile.ClientId" />
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Business / Company Name</label>
+                                    <input type="text" name="ClientName" class="form-control" value="@Model.ClientProfile.ClientName" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Business Category</label>
+                                    <input type="text" name="BusinessType" class="form-control" value="@Model.ClientProfile.BusinessType" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Registered Mobile</label>
+                                    <input type="text" name="Mobile" class="form-control" value="@Model.ClientProfile.Mobile" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Registered Email</label>
+                                    <input type="email" name="Email" class="form-control" value="@Model.ClientProfile.Email" />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" name="Address" class="form-control" value="@Model.ClientProfile.Address" />
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-paybill">Update Business Profile</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password Pane -->
+            <div class="tab-pane fade @(Model.ActiveTab == "security" ? "show active" : "")" id="pane-security">
+                <div class="pb-card" style="max-width: 520px;">
+                    <div class="pb-card-header">
+                        <h6 class="pb-card-title">Change Account Password</h6>
+                    </div>
+                    <div class="pb-card-body">
+                        <form asp-action="ChangePassword" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label class="form-label">Current Password *</label>
+                                <input type="password" name="oldPassword" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password *</label>
+                                <input type="password" name="newPassword" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm New Password *</label>
+                                <input type="password" name="confirmPassword" class="form-control" required />
+                            </div>
+                            <button type="submit" class="btn btn-paybill w-100">Update Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="SaveUser" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="UserRowId" value="0" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Create User Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Login User ID *</label>
+                            <input type="text" name="UserId" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Password *</label>
+                            <input type="password" name="Password" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" name="FirstName" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="LastName" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mobile Number *</label>
+                            <input type="text" name="Mobile" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="Email" class="form-control" />
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="IsAdmin" value="true" id="uIsAdmin" />
+                                <label class="form-check-label" for="uIsAdmin">Admin Privileges</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="IsActive" value="true" id="uIsActive" checked />
+                                <label class="form-check-label" for="uIsActive">Active User</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-paybill">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Custom Receipt Line Modal -->
+<div class="modal fade" id="customLineModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="SaveCustomLine" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Add Custom Receipt Line</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Line Text *</label>
+                        <input type="text" name="LineText" class="form-control" required placeholder="e.g. Goods once sold will not be exchanged" />
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Display Order</label>
+                            <input type="number" name="DisplayOrder" class="form-control" value="1" />
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="IsBold" value="true" id="clBold" />
+                                <label class="form-check-label" for="clBold">Bold</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="IsItalic" value="true" id="clItalic" />
+                                <label class="form-check-label" for="clItalic">Italic</label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="IsActive" value="true" />
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-paybill">Save Line</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Message Template Modal -->
+<div class="modal fade" id="msgModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="SaveMessageTemplate" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="messageId" value="0" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Add Message Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Template Type</label>
+                        <select name="messageType" class="form-select">
+                            <option value="Sales Invoice">Sales Invoice</option>
+                            <option value="Payment Receipt">Payment Receipt</option>
+                            <option value="Job Card">Job Card</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message Text *</label>
+                        <textarea name="description" class="form-control" rows="3" required placeholder="Thank you for shopping at {CompanyName}! Your bill #{InvoiceNo} for Rs. {Amount} is ready."></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="isSelected" value="true" id="msgSel" checked />
+                        <label class="form-check-label" for="msgSel">Set as Default Template</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-paybill">Save Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openUserModal() {
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        }
+    </script>
+}
+

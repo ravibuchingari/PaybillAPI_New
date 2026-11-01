@@ -1,0 +1,90 @@
+@model List<PurchaseOrderVM>
+@{
+    ViewData["Title"] = "Purchase Orders";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h5 class="mb-0 fw-bold">Purchase Orders</h5>
+        <div class="text-muted small">Create purchase orders for suppliers and convert them into purchase invoices upon delivery.</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("OrderReadiness", "Report")" class="btn btn-outline-warning">
+            <i class="bi bi-exclamation-triangle me-1"></i>Low Stock / Order Readiness
+        </a>
+        <a href="@Url.Action("Create")" class="btn btn-paybill">
+            <i class="bi bi-plus-circle me-1"></i>New Purchase Order
+        </a>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title"><i class="bi bi-clipboard-check me-2 text-success"></i>Purchase Orders List (@Model.Count)</h6>
+        <input type="text" id="poSearch" class="form-control form-control-sm" placeholder="Search PO #, supplier..." style="width: 240px;"
+               onkeyup="PaybillUI.filterTable('poSearch', 'poTable')" />
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="poTable">
+            <thead>
+                <tr>
+                    <th>PO #</th>
+                    <th>Order Date</th>
+                    <th>Supplier / Vendor</th>
+                    <th>Mobile</th>
+                    <th>Remarks</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center py-5 text-muted">No purchase orders created yet.</td></tr>
+                }
+                @foreach (var po in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">#PO-@po.PurchaseOrderId</td>
+                        <td>@po.OrderDate</td>
+                        <td class="fw-semibold">@(po.Party?.PartyName ?? "Vendor")</td>
+                        <td>@(po.Party?.Mobile ?? "—")</td>
+                        <td class="small text-muted">@po.Remarks</td>
+                        <td class="text-center">
+                            @if (po.IsActive)
+                            {
+                                <span class="badge-soft badge-soft-warning">Open / Pending</span>
+                            }
+                            else
+                            {
+                                <span class="badge-soft badge-soft-success">Converted to Purchase</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                @if (po.IsActive)
+                                {
+                                    <a href="@Url.Action("Create", "Purchase", new { poId = po.PurchaseOrderId })" class="btn btn-outline-success" title="Convert to Purchase Invoice">
+                                        <i class="bi bi-arrow-right-circle me-1"></i>Convert to Bill
+                                    </a>
+                                }
+                                <a href="@Url.Action("Create", new { id = po.PurchaseOrderId })" class="btn btn-outline-primary" title="View / Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="@Url.Action("Print", new { id = po.PurchaseOrderId })" target="_blank" class="btn btn-outline-secondary" title="Print PO">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <form asp-action="DeleteOrder" method="post" class="d-inline" onsubmit="return confirm('Delete this Purchase Order?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@po.PurchaseOrderId" />
+                                    <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

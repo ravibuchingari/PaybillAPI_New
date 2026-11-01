@@ -1,0 +1,511 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Business Dashboard";
+    var today = Model.SalesSummary.Today;
+    var weekly = Model.SalesSummary.Weekly;
+    var monthly = Model.SalesSummary.Monthly;
+}
+
+@if (Model.PendingUnlockRequests.Count > 0)
+{
+    <div class="alert alert-warning d-flex align-items-center justify-content-between shadow-sm mb-4 py-2 px-3 border-warning">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-unlock-fill fs-5 text-warning-emphasis"></i>
+            <span><strong>@Model.PendingUnlockRequests.Count Pending Invoice Unlock Request(s)</strong> require administrator review.</span>
+        </div>
+        <a href="@Url.Action("Index", "Settings", new { tab = "unlock" })" class="btn btn-sm btn-warning fw-semibold">
+            Review Requests <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+}
+
+<!-- Top KPI Cards Row 1: Sales, Collections, Receivables, Payables -->
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-xl-3">
+        <div class="pb-kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="pb-kpi-label">Today's Sales (@today.TotalInvoiceCount Bills)</div>
+                    <div class="pb-kpi-value text-primary mt-1">₹@today.TotalSalesAmount.ToString("N2")</div>
+                    <div class="small text-muted mt-1">
+                        Collected: <strong class="text-success">₹@today.AmountCollected.ToString("N2")</strong>
+                    </div>
+                </div>
+                <div class="pb-kpi-icon bg-success-subtle text-success">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="pb-kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="pb-kpi-label">Month Sales &amp; Purchases</div>
+                    <div class="pb-kpi-value mt-1">₹@monthly.TotalSalesAmount.ToString("N2")</div>
+                    <div class="small text-muted mt-1">
+                        Purchases (@Model.MonthlyPurchaseCount): <strong class="text-info">₹@Model.MonthlyPurchaseTotal.ToString("N2")</strong>
+                    </div>
+                </div>
+                <div class="pb-kpi-icon bg-primary-subtle text-primary">
+                    <i class="bi bi-calendar3-range"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="pb-kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="pb-kpi-label">Customer Outstanding</div>
+                    <div class="pb-kpi-value text-danger mt-1">₹@Model.TotalCustomerReceivables.ToString("N2")</div>
+                    <div class="small text-muted mt-1">
+                        Today Credit: <strong>₹@today.TodayPendingCreditAmount.ToString("N2")</strong>
+                    </div>
+                </div>
+                <div class="pb-kpi-icon bg-danger-subtle text-danger">
+                    <i class="bi bi-person-exclamation"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="pb-kpi-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="pb-kpi-label">Supplier Payable &amp; Expenses</div>
+                    <div class="pb-kpi-value text-warning-emphasis mt-1">₹@Model.TotalVendorPayables.ToString("N2")</div>
+                    <div class="small text-muted mt-1">
+                        Today Paid Out: <strong class="text-danger">₹@Model.TodayPaymentsOut.ToString("N2")</strong>
+                    </div>
+                </div>
+                <div class="pb-kpi-icon bg-warning-subtle text-warning-emphasis">
+                    <i class="bi bi-building-exclamation"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 2: Payment Modes Breakdown + Inventory Valuation + Low Stock Count -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <span><i class="bi bi-wallet2 me-2 text-primary"></i>Sales &amp; Collection Performance</span>
+                <ul class="nav nav-pills nav-fill gap-1" id="salesPeriodTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-1 px-3 small" data-bs-toggle="pill" data-bs-target="#tab-today" type="button">Today</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-1 px-3 small" data-bs-toggle="pill" data-bs-target="#tab-weekly" type="button">This Week</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-1 px-3 small" data-bs-toggle="pill" data-bs-target="#tab-monthly" type="button">This Month</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="p-3 tab-content">
+                @foreach (var period in new[] { (Id: "tab-today", Active: true, Data: today), (Id: "tab-weekly", Active: false, Data: weekly), (Id: "tab-monthly", Active: false, Data: monthly) })
+                {
+                    <div class="tab-pane fade @(period.Active ? "show active" : "")" id="@period.Id" role="tabpanel">
+                        <div class="small text-muted mb-2"><i class="bi bi-calendar-event me-1"></i>Period: <strong>@period.Data.InvoiceDate</strong> &bull; Invoices: <strong>@period.Data.TotalInvoiceCount</strong></div>
+                        <div class="row g-2 text-center">
+                            <div class="col-6 col-md-2">
+                                <div class="p-2 rounded border bg-body-tertiary">
+                                    <div class="small text-muted">Cash</div>
+                                    <div class="fw-bold text-success">₹@period.Data.CashAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="p-2 rounded border bg-body-tertiary">
+                                    <div class="small text-muted">UPI</div>
+                                    <div class="fw-bold text-info">₹@period.Data.UpiAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="p-2 rounded border bg-body-tertiary">
+                                    <div class="small text-muted">Card</div>
+                                    <div class="fw-bold text-primary">₹@period.Data.CardAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="p-2 rounded border bg-body-tertiary">
+                                    <div class="small text-muted">Credit Sales</div>
+                                    <div class="fw-bold text-danger">₹@period.Data.TotalCreditSalesAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="p-2 rounded border bg-body-tertiary">
+                                    <div class="small text-muted">GST Tax</div>
+                                    <div class="fw-bold">₹@period.Data.TotalGstAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="p-2 rounded border bg-body-tertiary">
+                                    <div class="small text-muted">Discounts</div>
+                                    <div class="fw-bold text-secondary">₹@period.Data.TotalDiscountAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pb-card h-100 p-3 d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold"><i class="bi bi-box-seam me-2 text-primary"></i>Inventory Valuation</span>
+                <a href="@Url.Action("InventoryValuation", "Report")" class="btn btn-sm btn-link text-decoration-none p-0">Full Report</a>
+            </div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="p-2 rounded border bg-body-tertiary">
+                        <div class="small text-muted">Stock Cost Value</div>
+                        <div class="fw-bold fs-6">₹@Model.TotalInventoryPurchaseValue.ToString("N2")</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded border bg-body-tertiary">
+                        <div class="small text-muted">Stock Sale Value</div>
+                        <div class="fw-bold fs-6 text-success">₹@Model.TotalInventorySalesValue.ToString("N2")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top small">
+                <span>Active Products: <strong>@Model.TotalActiveItemsCount</strong></span>
+                <a href="@Url.Action("Index", "Inventory", new { tab = "lowstock" })" class="text-danger fw-semibold text-decoration-none">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>Low Stock Alerts: @Model.LowStockItems.Count
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 3: Graphical Analytics -->
+<div class="pb-card mb-4">
+    <div class="pb-card-header flex-wrap gap-2">
+        <span><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Business Performance Analytics</span>
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label class="small text-muted mb-0">Date Range:</label>
+            <input type="date" name="fromDate" value="@ViewBag.ChartFrom" class="form-control form-control-sm" style="width:140px;" />
+            <span class="small">to</span>
+            <input type="date" name="toDate" value="@ViewBag.ChartTo" class="form-control form-control-sm" style="width:140px;" />
+            <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+        </form>
+    </div>
+    <div class="p-3">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <h6 class="fw-semibold small text-uppercase text-muted mb-2">Date-Wise Sales Performance</h6>
+                <div style="height: 250px;"><canvas id="dayWiseChart"></canvas></div>
+            </div>
+            <div class="col-lg-4">
+                <h6 class="fw-semibold small text-uppercase text-muted mb-2">Monthly Sales Trend</h6>
+                <div style="height: 250px;"><canvas id="monthWiseChart"></canvas></div>
+            </div>
+            <div class="col-lg-3">
+                <h6 class="fw-semibold small text-uppercase text-muted mb-2">Payment Mode Split</h6>
+                <div style="height: 250px;"><canvas id="paymentModeChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 4: Recent Sales, Recent Purchases, Active Job Cards, Low Stock Alerts -->
+<div class="row g-4">
+    <!-- Recent Sales Invoices -->
+    <div class="col-lg-6">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <span><i class="bi bi-receipt me-2 text-primary"></i>Recent Sales Invoices</span>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("Create", "Sales")" class="btn btn-sm btn-primary">+ New Sale</a>
+                    <a href="@Url.Action("Index", "Sales")" class="btn btn-sm btn-outline-secondary">View All</a>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Mode</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentSales.Count == 0)
+                        {
+                            <tr><td colspan="6" class="text-center text-muted py-4">No recent sales invoices found.</td></tr>
+                        }
+                        @foreach (var s in Model.RecentSales)
+                        {
+                            var netAmt = Math.Max(0, (s.Summary?.TotalInvoiceAmount ?? 0) - s.RewardDiscountAmount);
+                            <tr>
+                                <td class="fw-semibold">@s.InvoiceNo</td>
+                                <td class="small">@s.InvoiceDate</td>
+                                <td>@(s.PartyModel?.PartyName ?? "Walk-in Customer")</td>
+                                <td>
+                                    <span class="badge @(s.SalesType == "Credit" ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success")">
+                                        @(!string.IsNullOrWhiteSpace(s.PaymentMode) ? s.PaymentMode : s.SalesType)
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold">₹@netAmt.ToString("N2")</td>
+                                <td class="text-end">
+                                    <a href="@Url.Action("Print", "Sales", new { id = s.SalesId })" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" title="Print Invoice">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                    <a href="@Url.Action("Create", "Sales", new { id = s.SalesId })" class="btn btn-sm btn-outline-secondary py-0 px-2" title="View / Edit">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Service / Job Cards -->
+    <div class="col-lg-6">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <span><i class="bi bi-tools me-2 text-primary"></i>Recent Service / Job Cards</span>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("Create", "JobCard")" class="btn btn-sm btn-primary">+ New Job Card</a>
+                    <a href="@Url.Action("Index", "JobCard")" class="btn btn-sm btn-outline-secondary">View All</a>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Job #</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                            <th class="text-end">Est. Charges</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ActiveJobCards.Count == 0)
+                        {
+                            <tr><td colspan="6" class="text-center text-muted py-4">No service job cards found.</td></tr>
+                        }
+                        @foreach (var jc in Model.ActiveJobCards)
+                        {
+                            var badgeClass = jc.ServiceRequestStatusId switch
+                            {
+                                1 => "bg-warning-subtle text-warning-emphasis",
+                                2 => "bg-info-subtle text-info-emphasis",
+                                3 => "bg-success-subtle text-success",
+                                4 => "bg-danger-subtle text-danger",
+                                5 => "bg-primary-subtle text-primary",
+                                _ => "bg-secondary-subtle text-secondary"
+                            };
+                            <tr>
+                                <td class="fw-semibold">#JC-@jc.ServiceRequestId</td>
+                                <td class="small">@jc.ServiceRequestDate</td>
+                                <td>@jc.PartyModel?.PartyName</td>
+                                <td><span class="badge @badgeClass">@jc.StatusName</span></td>
+                                <td class="text-end fw-bold">₹@jc.TotalCharges.ToString("N2")</td>
+                                <td class="text-end">
+                                    <a href="@Url.Action("Create", "JobCard", new { id = jc.ServiceRequestId })" class="btn btn-sm btn-outline-secondary py-0 px-2">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Print", "JobCard", new { id = jc.ServiceRequestId })" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Purchases -->
+    <div class="col-lg-6">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <span><i class="bi bi-bag-check me-2 text-primary"></i>Recent Purchases</span>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("Create", "Purchase")" class="btn btn-sm btn-primary">+ New Purchase</a>
+                    <a href="@Url.Action("Index", "Purchase")" class="btn btn-sm btn-outline-secondary">View All</a>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Bill #</th>
+                            <th>Date</th>
+                            <th>Supplier / Vendor</th>
+                            <th>Type</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentPurchases.Count == 0)
+                        {
+                            <tr><td colspan="6" class="text-center text-muted py-4">No recent purchases in this month.</td></tr>
+                        }
+                        @foreach (var p in Model.RecentPurchases)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@p.InvoiceNo</td>
+                                <td class="small">@p.InvoiceDate</td>
+                                <td>@p.PartyModel?.PartyName</td>
+                                <td>
+                                    <span class="badge @(p.PurchaseType == "Credit" ? "bg-warning-subtle text-warning-emphasis" : "bg-success-subtle text-success")">
+                                        @p.PurchaseType
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold">₹@((p.Summary?.TotalInvoiceAmount ?? 0).ToString("N2"))</td>
+                                <td class="text-end">
+                                    <a href="@Url.Action("Create", "Purchase", new { id = p.PurchaseId })" class="btn btn-sm btn-outline-secondary py-0 px-2">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Print", "Purchase", new { id = p.PurchaseId })" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low-Stock Item Alerts -->
+    <div class="col-lg-6">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <span><i class="bi bi-exclamation-diamond-fill me-2 text-danger"></i>Low-Stock Item Alerts</span>
+                <a href="@Url.Action("OrderReadiness", "Report")" class="btn btn-sm btn-outline-danger">Order Readiness Report</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Item Name</th>
+                            <th class="text-end">Current Stock</th>
+                            <th class="text-end">Min Level</th>
+                            <th class="text-end">Shortfall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.LowStockItems.Count == 0)
+                        {
+                            <tr><td colspan="5" class="text-center text-success py-4"><i class="bi bi-check-circle me-1"></i>All items are above minimum stock levels!</td></tr>
+                        }
+                        @foreach (var item in Model.LowStockItems)
+                        {
+                            var shortfall = Math.Max(0, item.MinimumStock - item.ClosingStock);
+                            <tr>
+                                <td class="small fw-semibold">@item.ItemCode</td>
+                                <td>@item.ItemName</td>
+                                <td class="text-end text-danger fw-bold">@item.ClosingStock @item.Measure</td>
+                                <td class="text-end">@item.MinimumStock @item.Measure</td>
+                                <td class="text-end"><span class="badge bg-danger-subtle text-danger">+@shortfall @item.Measure</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dayData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DayWiseSalesChart));
+            const monthData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthWiseSalesChart));
+            const modeData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PaymentModeChart));
+
+            // 1. Day-wise Sales Line/Bar Chart
+            const ctxDay = document.getElementById('dayWiseChart');
+            if (ctxDay) {
+                new Chart(ctxDay, {
+                    type: 'bar',
+                    data: {
+                        labels: dayData.map(d => d.xLabel || d.XLabel),
+                        datasets: [{
+                            label: 'Sales (₹)',
+                            data: dayData.map(d => d.yAxis ?? d.YAxis ?? 0),
+                            backgroundColor: '#2c6e0a',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // 2. Month-wise Sales Chart
+            const ctxMonth = document.getElementById('monthWiseChart');
+            if (ctxMonth) {
+                new Chart(ctxMonth, {
+                    type: 'line',
+                    data: {
+                        labels: monthData.map(d => d.xLabel || d.XLabel),
+                        datasets: [{
+                            label: 'Monthly Sales (₹)',
+                            data: monthData.map(d => d.yAxis ?? d.YAxis ?? 0),
+                            borderColor: '#174204',
+                            backgroundColor: 'rgba(129, 199, 132, 0.25)',
+                            fill: true,
+                            tension: 0.35
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // 3. Payment Mode Doughnut Chart
+            const ctxMode = document.getElementById('paymentModeChart');
+            if (ctxMode) {
+                const labels = modeData.length ? modeData.map(d => d.xLabel || d.XLabel) : ['Cash', 'UPI', 'Card', 'Credit'];
+                const values = modeData.length ? modeData.map(d => d.yAxis ?? d.YAxis ?? 0) : [@today.CashAmount, @today.UpiAmount, @today.CardAmount, @today.TotalCreditSalesAmount];
+                new Chart(ctxMode, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: ['#2c6e0a', '#0dcaf0', '#0d6efd', '#dc3545', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+        });
+    </script>
+}
+

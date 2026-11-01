@@ -1,0 +1,67 @@
+@model List<ItemVM>
+@{
+    Layout = "_PrintLayout";
+    ViewData["Title"] = "Barcode & Price Label Sheet";
+    int copies = ViewBag.Copies ?? 2;
+    string companyName = ViewBag.CompanyName ?? "PayBill Store";
+}
+
+<div class="print-toolbar no-print">
+    <div class="d-flex align-items-center gap-3">
+        <span class="fw-bold"><i class="bi bi-upc-scan me-2"></i>Barcode Label Sheet Preview (@(Model.Count * copies) Labels)</span>
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label class="small">Copies per Item:</label>
+            <input type="number" name="copies" value="@copies" min="1" max="20" class="form-control form-control-sm" style="width:70px;" onchange="this.form.submit()" />
+        </form>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-light fw-semibold" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i>Print Labels
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-light" onclick="window.close()">Close</button>
+    </div>
+</div>
+
+<div class="print-sheet-a4">
+    <div class="row g-2">
+        @foreach (var item in Model)
+        {
+            for (int c = 0; c < copies; c++)
+            {
+                <div class="col-4">
+                    <div class="border rounded p-2 text-center" style="page-break-inside: avoid;">
+                        <div class="fw-bold small text-truncate">@companyName</div>
+                        <div class="small text-truncate">@item.ItemName</div>
+                        <svg class="barcode-svg my-1" data-code="@item.ItemCode" style="max-width:100%;height:42px;"></svg>
+                        <div class="d-flex justify-content-around small fw-bold">
+                            <span>MRP: ₹@item.Mrp.ToString("N2")</span>
+                            <span>Price: ₹@item.SalesPrice.ToString("N2")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.barcode-svg').forEach(svg => {
+                const code = svg.getAttribute('data-code') || '0000';
+                try {
+                    JsBarcode(svg, code, {
+                        format: "CODE128",
+                        width: 1.5,
+                        height: 34,
+                        displayValue: true,
+                        fontSize: 11,
+                        margin: 2
+                    });
+                } catch (e) {}
+            });
+        });
+    </script>
+}
+

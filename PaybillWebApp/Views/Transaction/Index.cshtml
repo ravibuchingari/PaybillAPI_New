@@ -1,0 +1,241 @@
+@model TransactionPageViewModel
+@{
+    string modeTitle = Model.IsPayment ? "Payments Out & Expenses" : "Customer Receipts (Collections)";
+    string entityLabel = Model.IsPayment ? "Supplier / Payee" : "Customer";
+    ViewData["Title"] = modeTitle;
+
+    double totalAmount = Model.Transactions.Sum(t => Model.IsPayment ? t.PaidAmount : t.ReceivedAmount);
+    double totalDiscount = Model.Transactions.Sum(t => t.Discount);
+    double cashTotal = Model.Transactions.Where(t => string.Equals(t.PaymentMode, "Cash", StringComparison.OrdinalIgnoreCase))
+        .Sum(t => Model.IsPayment ? t.PaidAmount : t.ReceivedAmount);
+    double digitalTotal = totalAmount - cashTotal;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <div class="btn-group">
+            <a href="@Url.Action("Index", new { isPayment = false, fromDate = Model.FromDate, toDate = Model.ToDate })"
+               class="btn @(!Model.IsPayment ? "btn-paybill" : "btn-outline-paybill")">
+                <i class="bi bi-arrow-down-left-circle me-1"></i>Receipts (In)
+            </a>
+            <a href="@Url.Action("Index", new { isPayment = true, fromDate = Model.FromDate, toDate = Model.ToDate })"
+               class="btn @(Model.IsPayment ? "btn-paybill" : "btn-outline-paybill")">
+                <i class="bi bi-arrow-up-right-circle me-1"></i>Payments & Expenses (Out)
+            </a>
+        </div>
+
+        <form method="get" class="d-flex gap-2 align-items-center ms-2">
+            <input type="hidden" name="isPayment" value="@Model.IsPayment.ToString().ToLower()" />
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">From</span>
+                <input type="date" name="fromDate" value="@Model.FromDate" class="form-control" />
+                <span class="input-group-text">To</span>
+                <input type="date" name="toDate" value="@Model.ToDate" class="form-control" />
+                <button type="submit" class="btn btn-paybill"><i class="bi bi-funnel me-1"></i>Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Daybook", "Report", new { fromDate = Model.FromDate, toDate = Model.ToDate })" class="btn btn-outline-secondary">
+            <i class="bi bi-journal-bookmark-fill me-1"></i>Daybook Report
+        </a>
+        <button type="button" class="btn btn-paybill" data-bs-toggle="modal" data-bs-target="#newTxModal">
+            <i class="bi bi-plus-circle me-1"></i>New @(Model.IsPayment ? "Payment / Expense" : "Customer Receipt")
+        </button>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Total @(Model.IsPayment ? "Paid Out" : "Received In")</div>
+            <div class="kpi-value @(Model.IsPayment ? "text-danger" : "text-success")">₹ @totalAmount.ToString("N2")</div>
+            <div class="kpi-sub">@Model.Transactions.Count vouchers</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Cash @(Model.IsPayment ? "Payments" : "Collections")</div>
+            <div class="kpi-value">₹ @cashTotal.ToString("N2")</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">UPI / Bank / Card</div>
+            <div class="kpi-value text-primary">₹ @digitalTotal.ToString("N2")</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Discount Allowed</div>
+            <div class="kpi-value text-warning">₹ @totalDiscount.ToString("N2")</div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title"><i class="bi bi-cash-stack me-2 text-success"></i>@modeTitle Register</h6>
+        <div class="d-flex gap-2">
+            <input type="text" id="txSearch" class="form-control form-control-sm" placeholder="Search party, mode, remarks..." style="width: 240px;"
+                   onkeyup="PaybillUI.filterTable('txSearch', 'txTable')" />
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('txTable', '@(Model.IsPayment ? "Payments" : "Receipts")_Register.csv')">
+                <i class="bi bi-download me-1"></i>CSV
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="txTable">
+            <thead>
+                <tr>
+                    <th>Voucher #</th>
+                    <th>Date</th>
+                    <th>@entityLabel</th>
+                    <th>Mode</th>
+                    <th>Remarks / Particulars</th>
+                    <th class="text-end">Amount (₹)</th>
+                    <th class="text-end">Discount (₹)</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Transactions.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-muted">No @(Model.IsPayment ? "payment" : "receipt") vouchers found for this period.</td></tr>
+                }
+                @foreach (var t in Model.Transactions)
+                {
+                    double amt = Model.IsPayment ? t.PaidAmount : t.ReceivedAmount;
+                    <tr>
+                        <td class="fw-bold">#@(Model.IsPayment ? "PAY" : "RCT")-@t.TransactionId</td>
+                        <td>@t.TransactionDate</td>
+                        <td>
+                            <a href="@Url.Action("Ledger", "Party", new { id = t.PartyId })" class="fw-semibold text-decoration-none">
+                                @(t.Party?.PartyName ?? $"Party #{t.PartyId}")
+                            </a>
+                            @if (!string.IsNullOrWhiteSpace(t.Party?.Mobile))
+                            {
+                                <div class="small text-muted">@t.Party.Mobile</div>
+                            }
+                        </td>
+                        <td><span class="badge bg-light text-dark border">@t.PaymentMode</span></td>
+                        <td class="small text-muted">@t.Remarks</td>
+                        <td class="text-end fw-bold @(Model.IsPayment ? "text-danger" : "text-success")">₹ @amt.ToString("N2")</td>
+                        <td class="text-end">@(t.Discount > 0 ? $"₹ {t.Discount:N2}" : "—")</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="@Url.Action("PrintVoucher", new { id = t.TransactionId, isPayment = Model.IsPayment, fromDate = Model.FromDate, toDate = Model.ToDate })"
+                                   target="_blank" class="btn btn-outline-success" title="Print Voucher">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" title="Delete"
+                                        onclick="openDeleteTxModal(@t.TransactionId)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- New Transaction Modal -->
+<div class="modal fade" id="newTxModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="SaveTransaction" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IsPayment" value="@Model.IsPayment.ToString().ToLower()" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Record @(Model.IsPayment ? "Supplier Payment / Expense (Out)" : "Customer Payment Receipt (In)")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">@entityLabel *</label>
+                            <select name="PartyId" class="form-select" required>
+                                <option value="">-- Select @entityLabel --</option>
+                                @foreach (var p in Model.Parties)
+                                {
+                                    <option value="@p.PartyId">@p.PartyName (@p.Mobile)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Voucher Date *</label>
+                            <input type="date" name="TransactionDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Payment Mode *</label>
+                            <select name="PaymentMode" class="form-select">
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Card">Card</option>
+                                <option value="Bank Transfer">Bank Transfer / NEFT</option>
+                                <option value="Cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Amount @(Model.IsPayment ? "Paid" : "Received") (₹) *</label>
+                            <input type="number" step="0.01" min="0.01" name="@(Model.IsPayment ? "PaidAmount" : "ReceivedAmount")" class="form-control fw-bold" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Settlement Discount (₹)</label>
+                            <input type="number" step="0.01" min="0" name="Discount" class="form-control" value="0" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Particulars / Reference / Expense Category</label>
+                            <input type="text" name="Remarks" class="form-control" placeholder="e.g. Bill #102 settlement / UPI Ref / Shop Rent" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-paybill"><i class="bi bi-check2-circle me-1"></i>Save Voucher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Transaction Modal -->
+<div class="modal fade" id="delTxModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="DeleteTransaction" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="DelTxId" />
+                <input type="hidden" name="isPayment" value="@Model.IsPayment.ToString().ToLower()" />
+                <input type="hidden" name="fromDate" value="@Model.FromDate" />
+                <input type="hidden" name="toDate" value="@Model.ToDate" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-danger">Delete Voucher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Audit Remarks for Deletion *</label>
+                    <input type="text" name="remarks" class="form-control" required placeholder="Reason for deleting voucher" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openDeleteTxModal(id) {
+            document.getElementById('DelTxId').value = id;
+            new bootstrap.Modal(document.getElementById('delTxModal')).show();
+        }
+    </script>
+}
+

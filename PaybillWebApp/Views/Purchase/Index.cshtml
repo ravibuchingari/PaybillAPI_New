@@ -1,0 +1,194 @@
+@model List<PurchaseVM>
+@{
+    ViewData["Title"] = "Purchase Invoices Register";
+    string fromDate = ViewBag.FromDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string toDate = ViewBag.ToDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    bool isAdmin = ViewBag.IsAdmin is bool b && b;
+
+    double totalPurchase = Model.Sum(p => p.TotalInvoiceAmount);
+    double totalTax = Model.Sum(p => p.TotalCgst + p.TotalSgst + p.TotalIgst);
+    double totalPaid = Model.Sum(p => p.PaidAmount);
+    double totalBalance = Model.Sum(p => p.BalanceAmount);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex flex-wrap gap-2 align-items-center">
+        <div class="input-group input-group-sm" style="width: auto;">
+            <span class="input-group-text">From</span>
+            <input type="date" name="fromDate" value="@fromDate" class="form-control" />
+            <span class="input-group-text">To</span>
+            <input type="date" name="toDate" value="@toDate" class="form-control" />
+            <button type="submit" class="btn btn-paybill"><i class="bi bi-funnel me-1"></i>Load Purchases</button>
+        </div>
+    </form>
+
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index", "PurchaseOrder")" class="btn btn-outline-secondary">
+            <i class="bi bi-clipboard-check me-1"></i>Purchase Orders
+        </a>
+        <a href="@Url.Action("Create")" class="btn btn-paybill">
+            <i class="bi bi-plus-circle me-1"></i>New Purchase Invoice
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Purchases (@Model.Count Bills)</div>
+            <div class="kpi-value text-primary">₹ @totalPurchase.ToString("N2")</div>
+            <div class="kpi-sub">Period: @fromDate to @toDate</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Input GST Credit (ITC)</div>
+            <div class="kpi-value text-success">₹ @totalTax.ToString("N2")</div>
+            <div class="kpi-sub">CGST + SGST + IGST</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Amount Paid</div>
+            <div class="kpi-value">₹ @totalPaid.ToString("N2")</div>
+            <div class="kpi-sub">Settled to Suppliers</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-label">Supplier Payable Due</div>
+            <div class="kpi-value text-danger">₹ @totalBalance.ToString("N2")</div>
+            <div class="kpi-sub">Credit Purchase Balance</div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title"><i class="bi bi-bag-check me-2 text-success"></i>Purchase Register</h6>
+        <div class="d-flex gap-2">
+            <input type="text" id="purSearch" class="form-control form-control-sm" placeholder="Search supplier, bill #..." style="width: 240px;"
+                   onkeyup="PaybillUI.filterTable('purSearch', 'purTable')" />
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('purTable', 'Purchase_Register.csv')">
+                <i class="bi bi-download me-1"></i>CSV
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="purTable">
+            <thead>
+                <tr>
+                    <th>Bill / Inv #</th>
+                    <th>Purchase Date</th>
+                    <th>Supplier / Vendor</th>
+                    <th>Mode</th>
+                    <th class="text-end">Tax (₹)</th>
+                    <th class="text-end">Total Amt</th>
+                    <th class="text-end">Paid</th>
+                    <th class="text-end">Balance</th>
+                    <th class="text-center">Lock</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="10" class="text-center py-5 text-muted">No purchase invoices found for the selected dates.</td></tr>
+                }
+                @foreach (var p in Model)
+                {
+                    double tax = p.TotalCgst + p.TotalSgst + p.TotalIgst;
+                    <tr>
+                        <td class="fw-bold">
+                            <a href="@Url.Action("Create", new { id = p.PurchaseId })" class="text-decoration-none">
+                                #@(string.IsNullOrWhiteSpace(p.InvoiceNumber) ? p.PurchaseId.ToString() : p.InvoiceNumber)
+                            </a>
+                        </td>
+                        <td>@p.PurchaseDate</td>
+                        <td>
+                            <div class="fw-semibold">@(p.Party?.PartyName ?? "Vendor")</div>
+                            @if (!string.IsNullOrWhiteSpace(p.Party?.Gstin))
+                            {
+                                <div class="small text-muted">GSTIN: @p.Party.Gstin</div>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge-soft @(p.PaymentMode == "Credit" ? "badge-soft-warning" : "badge-soft-success")">
+                                @p.PaymentMode
+                            </span>
+                        </td>
+                        <td class="text-end">₹ @tax.ToString("N2")</td>
+                        <td class="text-end fw-bold">₹ @p.TotalInvoiceAmount.ToString("N2")</td>
+                        <td class="text-end text-success">₹ @p.PaidAmount.ToString("N2")</td>
+                        <td class="text-end @(p.BalanceAmount > 0 ? "text-danger fw-bold" : "text-muted")">₹ @p.BalanceAmount.ToString("N2")</td>
+                        <td class="text-center">
+                            @if (p.IsLocked)
+                            {
+                                <span class="badge bg-secondary-subtle text-secondary"><i class="bi bi-lock-fill"></i> Locked</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success-subtle text-success"><i class="bi bi-unlock-fill"></i> Open</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="@Url.Action("Create", new { id = p.PurchaseId })" class="btn btn-outline-primary" title="View / Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="@Url.Action("Print", new { id = p.PurchaseId })" target="_blank" class="btn btn-outline-success" title="Print">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                @if (isAdmin)
+                                {
+                                    <button type="button" class="btn btn-outline-danger" title="Delete"
+                                            onclick="openDeletePurchaseModal(@p.PurchaseId, '@(p.InvoiceNumber ?? p.PurchaseId.ToString())')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Purchase Modal -->
+<div class="modal fade" id="deletePurModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="DeleteInvoice" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="DeletePurId" />
+                <input type="hidden" name="fromDate" value="@fromDate" />
+                <input type="hidden" name="toDate" value="@toDate" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-danger">Delete Purchase Invoice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small">Delete Purchase Invoice <strong id="DeletePurLabel"></strong>? Inventory stock added by this bill will be reversed.</p>
+                    <label class="form-label">Audit Remarks *</label>
+                    <input type="text" name="remarks" class="form-control" required placeholder="Reason for deleting purchase invoice" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openDeletePurchaseModal(id, invNo) {
+            document.getElementById('DeletePurId').value = id;
+            document.getElementById('DeletePurLabel').innerText = '#' + invNo;
+            new bootstrap.Modal(document.getElementById('deletePurModal')).show();
+        }
+    </script>
+}
+

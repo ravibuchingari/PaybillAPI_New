@@ -471,6 +471,96 @@ namespace PaybillAPI.Repositories
             return new ResponseMessage(isSuccess: true, message: formatted, data: formatted);
         }
 
+        public async Task<ResponseMessage> ExpireOldPoints(int userRowId)
+        {
+            var setting = await dbContext.Settings.AsNoTracking().FirstOrDefaultAsync();
+            if (setting == null || setting.RewardIsExpiryEnabled == 0)
+                return new ResponseMessage(isSuccess: true, message: "0", data: "0");
+
+            int expiryDays = setting.RewardExpiryDays > 0 ? setting.RewardExpiryDays : 365;
+            DateTime today = DateTime.Now.Date;
+
+            var allTxns = await dbContext.RewardTransactions.OrderBy(r => r.RewardTransId).ToListAsync();
+            var byParty = allTxns.GroupBy(r => r.PartyId);
+
+            int expiredCount = 0;
+            double totalExpiredPoints = 0.0;
+
+            foreach (var group in byParty)
+            {
+                double totalDebited = 0.0;
+                var credits = new List<(double Credited, DateTime Date)>();
+
+                foreach (var t in group)
+                {
+                    if (t.TransactionType == "REDEEMED" || t.TransactionType == "EXPIRED" || t.TransactionType == "REVERSED")
+                        totalDebited += t.PointsDebited;
+                    else if (t.TransactionType == "ADJUSTMENT")
+                    {
+                        if (t.PointsDebited > 0) totalDebited += t.PointsDebited;
+                        else if (t.PointsCredited > 0) credits.Add((t.PointsCredited, t.TransactionDate.Date));
+                    }
+                    else if (t.TransactionType == "EARNED" && t.PointsCredited > 0)
+                        credits.Add((t.PointsCredited, t.TransactionDate.Date));
+                }
+
+                double remainingDebits = totalDebited;
+                double partyExpired = 0.0;
+
+                foreach (var batch in credits)
+                {
+                    double activePoints = batch.Credited;
+                    if (remainingDebits > 0)
+                    {
+                        if (remainingDebits >= activePoints)
+                        {
+                            remainingDebits -= activePoints;
+                            activePoints = 0.0;
+                        }
+                        else
+                        {
+                            activePoints -= remainingDebits;
+                            remainingDebits = 0.0;
+                        }
+                    }
+
+                    if (activePoints > 0)
+                    {
+                        DateTime expDate = batch.Date.AddDays(expiryDays).Date;
+                        if (expDate < today)
+                        {
+                            partyExpired += activePoints;
+                        }
+                    }
+                }
+
+                if (partyExpired > 0.001)
+                {
+                    double pointVal = setting.RewardPointValue > 0 ? setting.RewardPointValue : 1.0;
+                    await dbContext.RewardTransactions.AddAsync(new RewardTransaction
+                    {
+                        PartyId = group.Key,
+                        SalesId = 0,
+                        TransactionType = "EXPIRED",
+                        PointsCredited = 0.0,
+                        PointsDebited = Math.Round(partyExpired, 2),
+                        MonetaryValue = Math.Round(partyExpired * pointVal, 2),
+                        TransactionDate = DateTime.Now,
+                        Description = $"Auto-expired points older than {expiryDays} days",
+                        RefTransId = 0,
+                        CreatedBy = userRowId
+                    });
+                    expiredCount++;
+                    totalExpiredPoints += partyExpired;
+                }
+            }
+
+            if (expiredCount > 0)
+                await SaveChangesAsync();
+
+            return new ResponseMessage(isSuccess: true, message: Math.Round(totalExpiredPoints, 2).ToString(), data: expiredCount.ToString());
+        }
+
         #endregion
     }
 }

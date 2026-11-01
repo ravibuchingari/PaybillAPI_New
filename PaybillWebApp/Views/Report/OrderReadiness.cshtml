@@ -1,0 +1,59 @@
+@model List<ItemVM>
+@{
+    ViewData["Title"] = "Order Readiness & Reorder Alert Report";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h6 class="fw-bold mb-0">Items Below Minimum Stock Threshold (@Model.Count items)</h6>
+        <div class="small text-muted">Generate a Purchase Order directly for items running low in stock.</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Create", "PurchaseOrder")" class="btn btn-sm btn-paybill">
+            <i class="bi bi-clipboard-plus me-1"></i>Create Purchase Order
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('readyTable', 'Order_Readiness_LowStock.csv')">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </button>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="readyTable">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th class="text-center">Current Stock</th>
+                    <th class="text-center">Min Stock Level</th>
+                    <th class="text-center">Suggested Reorder Qty</th>
+                    <th class="text-end">Purchase Rate</th>
+                    <th class="text-end">Est. Reorder Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center py-5 text-success"><i class="bi bi-check-circle me-2"></i>All items are sufficiently stocked above minimum levels!</td></tr>
+                }
+                @foreach (var item in Model)
+                {
+                    double reorderQty = Math.Max(1, item.MinStock - item.Stock);
+                    <tr>
+                        <td><code>@item.ItemCode</code></td>
+                        <td class="fw-semibold">@item.ItemName</td>
+                        <td>@item.Category?.CategoryName</td>
+                        <td class="text-center text-danger fw-bold">@item.Stock @item.Measure</td>
+                        <td class="text-center">@item.MinStock @item.Measure</td>
+                        <td class="text-center fw-bold text-primary">@reorderQty @item.Measure</td>
+                        <td class="text-end">₹ @item.PurchasePrice.ToString("N2")</td>
+                        <td class="text-end fw-semibold">₹ @((reorderQty * item.PurchasePrice).ToString("N2"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

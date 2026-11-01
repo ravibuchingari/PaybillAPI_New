@@ -1,0 +1,69 @@
+@model PurchaseOrderVM
+@{
+    Layout = "_PrintLayout";
+    var hdr = ViewBag.Header as PrintHeader ?? new PrintHeader();
+    ViewData["Title"] = $"Purchase Order #PO-{Model.PurchaseOrderId}";
+}
+
+<div class="print-a4">
+    <div class="row border-bottom border-dark pb-3 mb-3 align-items-center">
+        <div class="col-8">
+            <h3 class="fw-bold mb-0" style="color: #174204;">@hdr.HeaderLine1</h3>
+            <div class="small">@hdr.HeaderLine2 @hdr.HeaderLine3</div>
+            @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5))
+            {
+                <div class="small fw-bold">GSTIN: @hdr.HeaderLine5</div>
+            }
+        </div>
+        <div class="col-4 text-end">
+            <h4 class="fw-bold text-uppercase mb-1">PURCHASE ORDER</h4>
+            <div class="small"><strong>PO Number:</strong> #PO-@Model.PurchaseOrderId</div>
+            <div class="small"><strong>Order Date:</strong> @Model.OrderDate</div>
+        </div>
+    </div>
+
+    <div class="p-2 border rounded bg-light mb-3">
+        <div class="small text-muted text-uppercase fw-bold">To Supplier / Vendor:</div>
+        <div class="fw-bold fs-6">@(Model.Party?.PartyName ?? "Supplier")</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Party?.Address)) { <div class="small">@Model.Party.Address</div> }
+        @if (!string.IsNullOrWhiteSpace(Model.Party?.Mobile)) { <div class="small">Mobile: @Model.Party.Mobile</div> }
+        @if (!string.IsNullOrWhiteSpace(Model.Party?.Gstin)) { <div class="small fw-bold">GSTIN: @Model.Party.Gstin</div> }
+    </div>
+
+    <table class="table table-bordered border-dark table-sm align-middle mb-3">
+        <thead class="table-light border-dark">
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>Item Code</th>
+                <th>Item Description</th>
+                <th class="text-center" style="width: 150px;">Required Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int sr = 1; }
+            @foreach (var item in Model.PurchaseOrderItems)
+            {
+                <tr>
+                    <td>@(sr++)</td>
+                    <td>@item.Item?.ItemCode</td>
+                    <td class="fw-semibold">@item.Item?.ItemName</td>
+                    <td class="text-center fw-bold">@item.Quantity @item.Item?.Measure</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Remarks))
+    {
+        <div class="p-2 border rounded mb-4">
+            <div class="small text-muted fw-bold">Delivery Instructions / Remarks:</div>
+            <div class="small">@Model.Remarks</div>
+        </div>
+    }
+
+    <div class="text-end mt-5 pt-4">
+        <div class="small fw-bold">For @hdr.HeaderLine1</div>
+        <div class="small text-muted mt-4">Authorized Signatory</div>
+    </div>
+</div>
+

@@ -1,0 +1,110 @@
+@model List<BalanceSheet>
+@{
+    string filter = ViewBag.Filter as string ?? "all";
+    ViewData["Title"] = "Customer & Supplier Balance Sheet";
+
+    var customers = Model.Where(b => !string.Equals(b.PartyType, "Vendor", StringComparison.OrdinalIgnoreCase)).ToList();
+    var vendors = Model.Where(b => string.Equals(b.PartyType, "Vendor", StringComparison.OrdinalIgnoreCase)).ToList();
+
+    var displayed = filter switch
+    {
+        "customers" => customers,
+        "vendors" => vendors,
+        "outstanding" => Model.Where(b => Math.Abs(b.ClosingBalance) > 0.01).ToList(),
+        _ => Model
+    };
+
+    double totalReceivable = customers.Where(c => c.ClosingBalance > 0).Sum(c => c.ClosingBalance);
+    double totalPayable = vendors.Where(v => v.ClosingBalance > 0).Sum(v => v.ClosingBalance);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div class="btn-group">
+        <a href="@Url.Action("BalanceSheet", new { filter = "all" })" class="btn @(filter == "all" ? "btn-paybill" : "btn-outline-paybill")">All Parties (@Model.Count)</a>
+        <a href="@Url.Action("BalanceSheet", new { filter = "customers" })" class="btn @(filter == "customers" ? "btn-paybill" : "btn-outline-paybill")">Customers (@customers.Count)</a>
+        <a href="@Url.Action("BalanceSheet", new { filter = "vendors" })" class="btn @(filter == "vendors" ? "btn-paybill" : "btn-outline-paybill")">Suppliers (@vendors.Count)</a>
+        <a href="@Url.Action("BalanceSheet", new { filter = "outstanding" })" class="btn @(filter == "outstanding" ? "btn-paybill" : "btn-outline-paybill")">Only With Due Balance</a>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('bsTable', 'Balance_Sheet.csv')">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Customer Receivables</div>
+            <div class="kpi-value text-primary">₹ @totalReceivable.ToString("N2")</div>
+            <div class="kpi-sub">@customers.Count(c => c.ClosingBalance > 0) customers with due balance</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Supplier Payables</div>
+            <div class="kpi-value text-danger">₹ @totalPayable.ToString("N2")</div>
+            <div class="kpi-sub">@vendors.Count(v => v.ClosingBalance > 0) suppliers with due balance</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Net Working Position</div>
+            <div class="kpi-value @((totalReceivable - totalPayable) >= 0 ? "text-success" : "text-warning")">
+                ₹ @((totalReceivable - totalPayable).ToString("N2"))
+            </div>
+            <div class="kpi-sub">Receivables minus Payables</div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-card">
+    <div class="pb-card-header">
+        <h6 class="pb-card-title">Party Balance Sheet</h6>
+        <input type="text" id="bsSearch" class="form-control form-control-sm" placeholder="Search party, mobile..." style="width: 240px;"
+               onkeyup="PaybillUI.filterTable('bsSearch', 'bsTable')" />
+    </div>
+    <div class="table-responsive">
+        <table class="table pb-table align-middle mb-0" id="bsTable">
+            <thead>
+                <tr>
+                    <th>Party Name</th>
+                    <th>Mobile</th>
+                    <th>Type</th>
+                    <th class="text-end">Opening Bal</th>
+                    <th class="text-end">Total Billed (Dr)</th>
+                    <th class="text-end">Total Settled (Cr)</th>
+                    <th class="text-end">Discount</th>
+                    <th class="text-end">Closing Balance</th>
+                    <th class="text-end">Ledger</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in displayed)
+                {
+                    bool isVendor = string.Equals(b.PartyType, "Vendor", StringComparison.OrdinalIgnoreCase);
+                    <tr>
+                        <td class="fw-semibold">@b.PartyName</td>
+                        <td>@b.Mobile</td>
+                        <td><span class="badge @(isVendor ? "bg-warning-subtle text-warning" : "bg-info-subtle text-info")">@b.PartyType</span></td>
+                        <td class="text-end">₹ @b.OpeningBalance.ToString("N2")</td>
+                        <td class="text-end">₹ @((isVendor ? b.PurchaseAmount : b.SalesAmount).ToString("N2"))</td>
+                        <td class="text-end text-success">₹ @((isVendor ? b.PaidAmount : b.ReceivedAmount).ToString("N2"))</td>
+                        <td class="text-end">₹ @((b.SalesDiscount + b.PurchaseDiscount).ToString("N2"))</td>
+                        <td class="text-end fw-bold @(b.ClosingBalance > 0 ? "text-danger" : "text-success")">₹ @b.ClosingBalance.ToString("N2")</td>
+                        <td class="text-end">
+                            <a href="@Url.Action("Ledger", "Party", new { id = b.PartyId })" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-journal-text"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

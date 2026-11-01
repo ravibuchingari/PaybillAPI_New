@@ -1,0 +1,117 @@
+@model List<InventoryValuation>
+@{
+    string? filter = ViewBag.Filter as string;
+    var catCounts = ViewBag.CategoryCounts as List<CategoryVM> ?? [];
+    ViewData["Title"] = "Inventory Valuation & Stock Report";
+
+    double totalPurchaseValue = Model.Sum(i => i.PurchaseValue);
+    double totalSalesValue = Model.Sum(i => i.SalesValue);
+    double estMargin = totalSalesValue - totalPurchaseValue;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <form method="get" class="d-flex gap-2">
+        <input type="text" name="filter" value="@filter" class="form-control form-control-sm" placeholder="Filter item name / code..." style="width: 240px;" />
+        <button type="submit" class="btn btn-sm btn-paybill">Search</button>
+    </form>
+
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="PaybillUI.exportTableToCsv('valTable', 'Inventory_Valuation.csv')">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Stock Value at Purchase Cost</div>
+            <div class="kpi-value text-primary">₹ @totalPurchaseValue.ToString("N2")</div>
+            <div class="kpi-sub">@Model.Count items in stock</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Stock Value at Retail Sales Price</div>
+            <div class="kpi-value text-success">₹ @totalSalesValue.ToString("N2")</div>
+            <div class="kpi-sub">Total Retail Realizable Value</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-label">Estimated Gross Margin in Stock</div>
+            <div class="kpi-value text-warning">₹ @estMargin.ToString("N2")</div>
+            <div class="kpi-sub">Projected Profit on Current Stock</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title">Item-wise Stock Valuation</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0" id="valTable">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Item Name</th>
+                            <th class="text-center">Current Stock</th>
+                            <th class="text-end">Purchase Cost</th>
+                            <th class="text-end">Sales Price</th>
+                            <th class="text-end">Cost Valuation</th>
+                            <th class="text-end">Sales Valuation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><code>@item.ItemCode</code></td>
+                                <td class="fw-semibold">@item.ItemName</td>
+                                <td class="text-center fw-bold">@item.Stock @item.Measure</td>
+                                <td class="text-end">₹ @item.PurchasePrice.ToString("N2")</td>
+                                <td class="text-end">₹ @item.SalesPrice.ToString("N2")</td>
+                                <td class="text-end">₹ @item.PurchaseValue.ToString("N2")</td>
+                                <td class="text-end fw-bold text-success">₹ @item.SalesValue.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title">Category-wise Item Distribution</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th class="text-end">Total Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in catCounts)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@c.CategoryName</td>
+                                <td class="text-end"><span class="badge bg-light text-dark border">@c.ItemCount items</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

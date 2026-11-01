@@ -1,4 +1,4 @@
-﻿using AuthenticationManager;
+using AuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PaybillAPI.Models;
@@ -27,6 +27,16 @@ namespace PaybillAPI.Controllers
                 ContentType = "text/html",
                 Content = message
             };
+        }
+
+        [HttpGet]
+        [Route("client/info")]
+        public async Task<IActionResult> GetClientInfo()
+        {
+            var info = await sharedRepository.GetPrimaryClientInfo();
+            if (info == null)
+                return NotFound(new ResponseMessage(isSuccess: false, message: "NOT_CONFIGURED"));
+            return Ok(info);
         }
 
         //[HttpGet]

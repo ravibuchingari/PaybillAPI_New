@@ -1,0 +1,188 @@
+@model PurchaseOrderPageViewModel
+@using System.Text.Json
+@{
+    bool isEdit = Model.Order.PurchaseOrderId > 0;
+    ViewData["Title"] = isEdit ? $"Purchase Order #PO-{Model.Order.PurchaseOrderId}" : "Create Purchase Order";
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="pb-card mb-3">
+            <div class="pb-card-body">
+                <label class="form-label">Select Item to Add to Purchase Order</label>
+                <select id="poItemSelect" class="form-select" onchange="addPoItem(this.value)">
+                    <option value="">-- Choose Item (@Model.InitialItems.Count) --</option>
+                    @foreach (var item in Model.InitialItems)
+                    {
+                        <option value="@item.ItemId">@item.ItemName (@item.ItemCode) — Current Stock: @item.Stock @item.Measure (Min: @item.MinStock)</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title">Order Line Items (<span id="poItemCount">0</span>)</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item Name</th>
+                            <th>Code</th>
+                            <th style="width: 140px;" class="text-center">Order Quantity</th>
+                            <th style="width: 60px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="poItemsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="pb-card-title">Purchase Order Details</h6>
+            </div>
+            <div class="pb-card-body">
+                <div class="mb-3">
+                    <label class="form-label">Supplier / Vendor *</label>
+                    <select id="PartyId" class="form-select">
+                        <option value="0">-- Select Supplier --</option>
+                        @foreach (var v in Model.Vendors)
+                        {
+                            <option value="@v.PartyId" selected="@(Model.Order.PartyId == v.PartyId)">@v.PartyName (@v.Mobile)</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Order Date *</label>
+                    <input type="date" id="OrderDate" class="form-control" value="@Model.Order.OrderDate" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Remarks / Delivery Instructions</label>
+                    <textarea id="Remarks" class="form-control" rows="3">@Model.Order.Remarks</textarea>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-paybill py-2" onclick="savePurchaseOrder()">
+                        <i class="bi bi-check2-circle me-1"></i>Save Purchase Order
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const catalog = @Html.Raw(JsonSerializer.Serialize(Model.InitialItems));
+        const existing = @Html.Raw(JsonSerializer.Serialize(Model.Order.PurchaseOrderItems));
+        const poId = @Model.Order.PurchaseOrderId;
+
+        let poItems = (existing || []).map(x => ({
+            purchaseOrderItemId: x.PurchaseOrderItemId || 0,
+            itemId: x.ItemId,
+            itemName: x.Item?.ItemName || 'Item',
+            itemCode: x.Item?.ItemCode || '',
+            measure: x.Item?.Measure || 'NOS',
+            quantity: x.Quantity || 1
+        }));
+
+        document.addEventListener('DOMContentLoaded', renderPoItems);
+
+        function addPoItem(val) {
+            if (!val) return;
+            const item = catalog.find(i => i.ItemId === parseInt(val));
+            if (item) {
+                const ex = poItems.find(p => p.itemId === item.ItemId);
+                if (ex) ex.quantity += 1;
+                else poItems.push({
+                    purchaseOrderItemId: 0,
+                    itemId: item.ItemId,
+                    itemName: item.ItemName,
+                    itemCode: item.ItemCode,
+                    measure: item.Measure || 'NOS',
+                    quantity: Math.max(1, (item.MinStock || 10) - (item.Stock || 0))
+                });
+                renderPoItems();
+            }
+            document.getElementById('poItemSelect').value = '';
+        }
+
+        async function removePoItem(idx) {
+            const row = poItems[idx];
+            if (row.purchaseOrderItemId > 0) {
+                const fd = new URLSearchParams({ purchaseOrderItemId: row.purchaseOrderItemId });
+                await fetch('@Url.Action("DeleteItem")', { method: 'POST', body: fd });
+            }
+            poItems.splice(idx, 1);
+            renderPoItems();
+        }
+
+        function renderPoItems() {
+            document.getElementById('poItemCount').innerText = poItems.length;
+            const tbody = document.getElementById('poItemsBody');
+            if (poItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted">Select items above to build the Purchase Order.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = poItems.map((item, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td class="fw-semibold">${item.itemName}</td>
+                    <td><code>${item.itemCode}</code></td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input type="number" step="0.01" min="0.01" class="form-control text-center" value="${item.quantity}" onchange="poItems[${idx}].quantity=parseFloat(this.value)||1;" />
+                            <span class="input-group-text">${item.measure}</span>
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePoItem(${idx})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function savePurchaseOrder() {
+            const partyId = parseInt(document.getElementById('PartyId').value || '0');
+            if (partyId <= 0) {
+                PaybillUI.showToast('Please select a Supplier.', 'warning');
+                return;
+            }
+            if (poItems.length === 0) {
+                PaybillUI.showToast('Please add at least one item.', 'warning');
+                return;
+            }
+            const payload = {
+                PurchaseOrderId: poId,
+                PartyId: partyId,
+                OrderDate: document.getElementById('OrderDate').value,
+                Remarks: document.getElementById('Remarks').value,
+                IsActive: true,
+                PurchaseOrderItems: poItems.map(i => ({
+                    PurchaseOrderItemId: i.purchaseOrderItemId,
+                    PurchaseOrderId: poId,
+                    ItemId: i.itemId,
+                    Quantity: i.quantity
+                }))
+            };
+            const res = await fetch('@Url.Action("SaveOrder")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.isSuccess) {
+                PaybillUI.showToast(data.message || 'Purchase Order saved!', 'success');
+                window.location.href = '@Url.Action("Index")';
+            } else {
+                PaybillUI.showToast(data.message || 'Failed to save Purchase Order.', 'danger');
+            }
+        }
+    </script>
+}
+

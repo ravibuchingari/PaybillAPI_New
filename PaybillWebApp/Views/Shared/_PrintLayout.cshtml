@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Print Preview</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: #e9ecef;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        .print-toolbar {
+            background: #174204;
+            color: #fff;
+            padding: 0.65rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .print-sheet-a4 {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 12mm 14mm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+        }
+        .print-sheet-pos80 {
+            background: #fff;
+            width: 80mm;
+            margin: 20px auto;
+            padding: 4mm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.25;
+        }
+        .print-sheet-pos58 {
+            background: #fff;
+            width: 58mm;
+            margin: 20px auto;
+            padding: 3mm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+        .pos-divider {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+        }
+        @@media print {
+            body {
+                background: #fff !important;
+            }
+            .no-print, .print-toolbar {
+                display: none !important;
+            }
+            .print-sheet-a4, .print-sheet-pos80, .print-sheet-pos58 {
+                margin: 0 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                min-height: auto !important;
+            }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @RenderBody()
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

@@ -1,0 +1,464 @@
+@model PurchaseInvoicePageViewModel
+@using System.Text.Json
+@{
+    bool isEdit = Model.Purchase.PurchaseId > 0;
+    bool isLocked = Model.Purchase.IsLocked;
+    ViewData["Title"] = isEdit ? $"Purchase Invoice #{Model.Purchase.InvoiceNumber ?? Model.Purchase.PurchaseId.ToString()}" : "New Purchase Entry";
+}
+
+@if (isLocked)
+{
+    <div class="alert alert-warning d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <i class="bi bi-lock-fill me-2"></i><strong>This purchase invoice is locked.</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.PendingUnlockMessage))
+            {
+                <span class="ms-2 badge bg-info text-dark">@Model.PendingUnlockMessage</span>
+            }
+        </div>
+        <form asp-action="RequestUnlock" method="post" class="d-flex gap-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="purchaseId" value="@Model.Purchase.PurchaseId" />
+            <input type="text" name="remarks" class="form-control form-control-sm" placeholder="Reason to unlock..." required />
+            <button type="submit" class="btn btn-sm btn-warning">Request Unlock</button>
+        </form>
+    </div>
+}
+
+<div class="pos-grid">
+    <!-- Left Column: Item Search & Purchase Items -->
+    <div>
+        <div class="pb-card mb-3">
+            <div class="pb-card-body py-3">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label mb-1">Select Item to Add</label>
+                        <select id="purItemSelect" class="form-select" onchange="onPurItemChosen(this.value)">
+                            <option value="">-- Search / Select Product (@Model.InitialItems.Count) --</option>
+                            @foreach (var item in Model.InitialItems)
+                            {
+                                <option value="@item.ItemId">@item.ItemName (@item.ItemCode) — Cost: ₹@item.PurchasePrice | Stock: @item.Stock</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label mb-1">Load from Purchase Order (PO)</label>
+                        <select id="PurchaseOrderId" class="form-select" onchange="onPoSelected(this.value)">
+                            <option value="">-- Direct Purchase (No PO) --</option>
+                            @foreach (var po in Model.ActivePurchaseOrders)
+                            {
+                                <option value="@po.PurchaseOrderId" selected="@(Model.Purchase.PurchaseOrderId == po.PurchaseOrderId)">
+                                    PO #@po.PurchaseOrderId — @(po.Party?.PartyName) (@po.OrderDate)
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <a href="@Url.Action("Index", "Inventory")" class="btn btn-outline-secondary">
+                            <i class="bi bi-box-seam me-1"></i>New Master Item
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pb-card">
+            <div class="pb-card-header py-2">
+                <h6 class="pb-card-title mb-0"><i class="bi bi-cart-plus me-2 text-success"></i>Purchase Line Items (<span id="purCountBadge">0</span>)</h6>
+                <span class="badge bg-primary-subtle text-primary" id="purGstBadge">Intra-State (CGST + SGST)</span>
+            </div>
+            <div class="table-responsive" style="min-height: 360px;">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item</th>
+                            <th style="width: 90px;" class="text-center">Qty</th>
+                            <th style="width: 80px;" class="text-center">Free</th>
+                            <th style="width: 110px;" class="text-end">Pur Rate (₹)</th>
+                            <th style="width: 95px;" class="text-end">Disc (₹)</th>
+                            <th style="width: 85px;" class="text-center">GST %</th>
+                            <th style="width: 100px;" class="text-end">Tax (₹)</th>
+                            <th style="width: 120px;" class="text-end">Total (₹)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="purItemsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Vendor & Bill Summary -->
+    <div>
+        <div class="pb-card pos-summary-panel">
+            <div class="pb-card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label mb-0">Supplier / Vendor *</label>
+                        <a href="@Url.Action("Index", "Party", new { isVendor = true })" class="small text-decoration-none">+ Manage Vendors</a>
+                    </div>
+                    <select id="PartyId" class="form-select" onchange="recalcPurchase()">
+                        <option value="0" data-gstin="">-- Select Supplier --</option>
+                        @foreach (var v in Model.Vendors)
+                        {
+                            <option value="@v.PartyId" data-gstin="@v.Gstin" selected="@(Model.Purchase.PartyId == v.PartyId)">
+                                @v.PartyName (@v.Mobile) @(string.IsNullOrWhiteSpace(v.Gstin) ? "" : $"[{v.Gstin}]")
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12">
+                        <label class="form-label mb-1">Supplier Bill / Invoice Number *</label>
+                        <input type="text" id="InvoiceNumber" class="form-control form-control-sm fw-bold" value="@Model.Purchase.InvoiceNumber" placeholder="Enter vendor's invoice number" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Entry Date</label>
+                        <input type="date" id="PurchaseDate" class="form-control form-control-sm" value="@Model.Purchase.PurchaseDate" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Supplier Bill Date</label>
+                        <input type="date" id="InvoiceDate" class="form-control form-control-sm" value="@Model.Purchase.InvoiceDate" />
+                    </div>
+                </div>
+
+                <div class="border-top pt-2 mb-3">
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Taxable Amount:</span>
+                        <span class="fw-semibold" id="lblPurTaxable">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Total GST (ITC):</span>
+                        <span class="fw-semibold text-success" id="lblPurTax">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Total Discount:</span>
+                        <span class="text-danger" id="lblPurDisc">- ₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Round Off:</span>
+                        <span id="lblPurRoundOff">₹ 0.00</span>
+                    </div>
+                </div>
+
+                <div class="pos-total-box mb-3">
+                    <div class="small opacity-75 text-uppercase fw-bold">Total Purchase Bill</div>
+                    <div class="pos-grand-total" id="lblPurGrandTotal">₹ 0.00</div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label mb-1">Payment Mode</label>
+                        <select id="PaymentMode" class="form-select form-select-sm" onchange="onPurModeChanged()">
+                            <option value="Cash" selected="@(Model.Purchase.PaymentMode == "Cash")">Cash</option>
+                            <option value="UPI" selected="@(Model.Purchase.PaymentMode == "UPI")">UPI / Online</option>
+                            <option value="Bank Transfer" selected="@(Model.Purchase.PaymentMode == "Bank Transfer")">Bank Transfer</option>
+                            <option value="Credit" selected="@(Model.Purchase.PaymentMode == "Credit")">Credit (Payable)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Amount Paid (₹)</label>
+                        <input type="number" step="0.01" id="PaidAmount" class="form-control form-control-sm fw-bold" value="@Model.Purchase.PaidAmount" oninput="updatePurBalance()" />
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Balance Payable to Vendor:</span>
+                            <span class="fw-bold text-danger" id="lblPurBalance">₹ 0.00</span>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <input type="text" id="Remarks" class="form-control form-control-sm" placeholder="Purchase remarks / transport details" value="@Model.Purchase.Remarks" />
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-paybill py-2" id="btnSavePurchase" onclick="savePurchase()">
+                        <i class="bi bi-check2-circle me-1"></i>Save Purchase & Update Stock
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const catalogItems = @Html.Raw(JsonSerializer.Serialize(Model.InitialItems));
+        const existingItems = @Html.Raw(JsonSerializer.Serialize(Model.Purchase.PurchaseItems));
+        const companyGstin = '@(Model.CompanyGstin ?? "")';
+        const purchaseId = @Model.Purchase.PurchaseId;
+        const isLocked = @(isLocked ? "true" : "false");
+
+        let purItems = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (existingItems && existingItems.length > 0) {
+                purItems = existingItems.map(x => ({
+                    purchaseItemId: x.PurchaseItemId || 0,
+                    itemId: x.ItemId,
+                    itemName: x.Item?.ItemName || 'Item',
+                    itemCode: x.Item?.ItemCode || '',
+                    quantity: x.Quantity || 1,
+                    freeQuantity: x.FreeQuantity || 0,
+                    purchasePrice: x.PurchasePrice || x.Item?.PurchasePrice || 0,
+                    mrp: x.Mrp || x.Item?.Mrp || 0,
+                    salesPrice: x.SalesPrice || x.Item?.SalesPrice || 0,
+                    discountPer: x.DiscountPer || 0,
+                    discountRs: x.DiscountRs || 0,
+                    gstId: x.GstId || x.Item?.GstId || 1,
+                    gstPer: (x.CgstPer || 0) + (x.SgstPer || 0) + (x.IgstPer || 0) || ((x.Item?.Gst?.CgstPer || 0) + (x.Item?.Gst?.SgstPer || 0))
+                }));
+            }
+            recalcPurchase();
+        });
+
+        function isInterStateVendor() {
+            const sel = document.getElementById('PartyId');
+            const gstin = (sel.options[sel.selectedIndex]?.getAttribute('data-gstin') || '').trim();
+            if (companyGstin.length >= 2 && gstin.length >= 2) {
+                return companyGstin.substring(0, 2) !== gstin.substring(0, 2);
+            }
+            return false;
+        }
+
+        function onPurItemChosen(val) {
+            if (!val) return;
+            const item = catalogItems.find(i => i.ItemId === parseInt(val));
+            if (item) {
+                const existing = purItems.find(p => p.itemId === item.ItemId);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    const gstPer = (item.Gst?.CgstPer || 0) + (item.Gst?.SgstPer || 0);
+                    purItems.push({
+                        purchaseItemId: 0,
+                        itemId: item.ItemId,
+                        itemName: item.ItemName,
+                        itemCode: item.ItemCode,
+                        quantity: 1,
+                        freeQuantity: 0,
+                        purchasePrice: item.PurchasePrice || 0,
+                        mrp: item.Mrp || 0,
+                        salesPrice: item.SalesPrice || 0,
+                        discountPer: 0,
+                        discountRs: 0,
+                        gstId: item.GstId || 1,
+                        gstPer: gstPer
+                    });
+                }
+                recalcPurchase();
+            }
+            document.getElementById('purItemSelect').value = '';
+        }
+
+        async function onPoSelected(poId) {
+            if (!poId) return;
+            const res = await fetch(`@Url.Action("LoadPurchaseOrderItemsJson")?poId=${poId}`);
+            const data = await res.json();
+            if (data.order && data.order.partyId) {
+                document.getElementById('PartyId').value = data.order.partyId;
+            }
+            if (data.items && data.items.length > 0) {
+                purItems = data.items.map(x => ({
+                    purchaseItemId: 0,
+                    itemId: x.itemId,
+                    itemName: x.item?.itemName || 'Item',
+                    itemCode: x.item?.itemCode || '',
+                    quantity: x.quantity || 1,
+                    freeQuantity: 0,
+                    purchasePrice: x.purchasePrice || x.item?.purchasePrice || 0,
+                    mrp: x.mrp || x.item?.mrp || 0,
+                    salesPrice: x.salesPrice || x.item?.salesPrice || 0,
+                    discountPer: 0,
+                    discountRs: 0,
+                    gstId: x.gstId || x.item?.gstId || 1,
+                    gstPer: (x.cgstPer || 0) + (x.sgstPer || 0) + (x.igstPer || 0)
+                }));
+                recalcPurchase();
+                PaybillUI.showToast('Loaded items from Purchase Order #' + poId, 'info');
+            }
+        }
+
+        async function removePurItem(idx) {
+            const row = purItems[idx];
+            if (row.purchaseItemId > 0) {
+                if (isLocked) {
+                    PaybillUI.showToast('Purchase invoice is locked.', 'warning');
+                    return;
+                }
+                const remarks = prompt('Enter mandatory audit reason for deleting this saved purchase item:');
+                if (!remarks) return;
+                const fd = new URLSearchParams({ purchaseItemId: row.purchaseItemId, remarks });
+                const res = await fetch('@Url.Action("DeleteItem")', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (!data.isSuccess) {
+                    PaybillUI.showToast(data.message || 'Failed to delete item.', 'danger');
+                    return;
+                }
+            }
+            purItems.splice(idx, 1);
+            recalcPurchase();
+        }
+
+        function recalcPurchase() {
+            const interState = isInterStateVendor();
+            document.getElementById('purGstBadge').innerText = interState ? 'Inter-State (IGST)' : 'Intra-State (CGST + SGST)';
+
+            const tbody = document.getElementById('purItemsBody');
+            let totalTaxable = 0, totalCgst = 0, totalSgst = 0, totalIgst = 0, totalDisc = 0;
+
+            if (purItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-5 text-muted">Select items above or load from a Purchase Order.</td></tr>`;
+            } else {
+                tbody.innerHTML = purItems.map((item, idx) => {
+                    const gross = item.quantity * item.purchasePrice;
+                    const disc = item.discountRs || 0;
+                    const taxable = Math.max(0, gross - disc);
+                    const taxAmt = (taxable * (item.gstPer || 0)) / 100;
+
+                    item.taxableAmount = Number(taxable.toFixed(2));
+                    if (interState) {
+                        item.cgstPer = 0; item.sgstPer = 0; item.igstPer = item.gstPer;
+                        item.cgstAmount = 0; item.sgstAmount = 0; item.igstAmount = Number(taxAmt.toFixed(2));
+                    } else {
+                        item.cgstPer = item.gstPer / 2; item.sgstPer = item.gstPer / 2; item.igstPer = 0;
+                        item.cgstAmount = Number((taxAmt / 2).toFixed(2));
+                        item.sgstAmount = Number((taxAmt / 2).toFixed(2));
+                        item.igstAmount = 0;
+                    }
+                    item.totalAmount = Number((taxable + taxAmt).toFixed(2));
+
+                    totalTaxable += item.taxableAmount;
+                    totalCgst += item.cgstAmount;
+                    totalSgst += item.sgstAmount;
+                    totalIgst += item.igstAmount;
+                    totalDisc += disc;
+
+                    return `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td>
+                                <div class="fw-semibold">${item.itemName}</div>
+                                <div class="small text-muted">${item.itemCode}</div>
+                            </td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-center" value="${item.quantity}" onchange="purItems[${idx}].quantity=parseFloat(this.value)||1;recalcPurchase();" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-center" value="${item.freeQuantity}" onchange="purItems[${idx}].freeQuantity=parseFloat(this.value)||0;" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="${item.purchasePrice}" onchange="purItems[${idx}].purchasePrice=parseFloat(this.value)||0;recalcPurchase();" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm text-end" value="${item.discountRs}" onchange="purItems[${idx}].discountRs=parseFloat(this.value)||0;recalcPurchase();" /></td>
+                            <td class="text-center">${item.gstPer}%</td>
+                            <td class="text-end">₹ ${taxAmt.toFixed(2)}</td>
+                            <td class="text-end fw-bold">₹ ${item.totalAmount.toFixed(2)}</td>
+                            <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removePurItem(${idx})"><i class="bi bi-x-lg"></i></button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            const rawGrand = totalTaxable + totalCgst + totalSgst + totalIgst;
+            const roundedGrand = Math.round(rawGrand);
+            const roundOff = Number((roundedGrand - rawGrand).toFixed(2));
+
+            document.getElementById('purCountBadge').innerText = purItems.length;
+            document.getElementById('lblPurTaxable').innerText = `₹ ${totalTaxable.toFixed(2)}`;
+            document.getElementById('lblPurTax').innerText = `₹ ${(totalCgst + totalSgst + totalIgst).toFixed(2)}`;
+            document.getElementById('lblPurDisc').innerText = `- ₹ ${totalDisc.toFixed(2)}`;
+            document.getElementById('lblPurRoundOff').innerText = `₹ ${roundOff.toFixed(2)}`;
+            document.getElementById('lblPurGrandTotal').innerText = `₹ ${roundedGrand.toFixed(2)}`;
+
+            if (purchaseId === 0) {
+                const mode = document.getElementById('PaymentMode').value;
+                document.getElementById('PaidAmount').value = mode === 'Credit' ? '0.00' : roundedGrand.toFixed(2);
+            }
+            updatePurBalance();
+        }
+
+        function onPurModeChanged() {
+            const mode = document.getElementById('PaymentMode').value;
+            const grand = parseFloat(document.getElementById('lblPurGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            document.getElementById('PaidAmount').value = mode === 'Credit' ? '0.00' : grand.toFixed(2);
+            updatePurBalance();
+        }
+
+        function updatePurBalance() {
+            const grand = parseFloat(document.getElementById('lblPurGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const paid = parseFloat(document.getElementById('PaidAmount').value || '0') || 0;
+            const bal = Math.max(0, grand - paid);
+            document.getElementById('lblPurBalance').innerText = `₹ ${bal.toFixed(2)}`;
+        }
+
+        async function savePurchase() {
+            const partyId = parseInt(document.getElementById('PartyId').value || '0');
+            if (partyId <= 0) {
+                PaybillUI.showToast('Please select a Supplier / Vendor.', 'warning');
+                return;
+            }
+            if (purItems.length === 0) {
+                PaybillUI.showToast('Please add at least one item.', 'warning');
+                return;
+            }
+
+            const grand = parseFloat(document.getElementById('lblPurGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const paid = parseFloat(document.getElementById('PaidAmount').value || '0') || 0;
+            const roundOff = parseFloat(document.getElementById('lblPurRoundOff').innerText.replace('₹', '').trim()) || 0;
+            const poIdVal = parseInt(document.getElementById('PurchaseOrderId').value || '0');
+
+            const payload = {
+                PurchaseId: purchaseId,
+                PurchaseOrderId: poIdVal > 0 ? poIdVal : null,
+                PartyId: partyId,
+                InvoiceNumber: document.getElementById('InvoiceNumber').value || 'PUR-' + Date.now().toString().slice(-4),
+                PurchaseDate: document.getElementById('PurchaseDate').value,
+                InvoiceDate: document.getElementById('InvoiceDate').value,
+                PaymentMode: document.getElementById('PaymentMode').value,
+                IsCashPurchase: document.getElementById('PaymentMode').value !== 'Credit',
+                TotalTaxableAmount: purItems.reduce((s, i) => s + i.taxableAmount, 0),
+                TotalCgst: purItems.reduce((s, i) => s + i.cgstAmount, 0),
+                TotalSgst: purItems.reduce((s, i) => s + i.sgstAmount, 0),
+                TotalIgst: purItems.reduce((s, i) => s + i.igstAmount, 0),
+                TotalDiscount: purItems.reduce((s, i) => s + (i.discountRs || 0), 0),
+                RoundOff: roundOff,
+                TotalInvoiceAmount: grand,
+                PaidAmount: paid,
+                BalanceAmount: Math.max(0, grand - paid),
+                Remarks: document.getElementById('Remarks').value,
+                PurchaseItems: purItems.map(i => ({
+                    PurchaseItemId: i.purchaseItemId,
+                    PurchaseId: purchaseId,
+                    ItemId: i.itemId,
+                    Quantity: i.quantity,
+                    FreeQuantity: i.freeQuantity,
+                    Mrp: i.mrp,
+                    PurchasePrice: i.purchasePrice,
+                    SalesPrice: i.salesPrice,
+                    TaxableAmount: i.taxableAmount,
+                    GstId: i.gstId,
+                    CgstPer: i.cgstPer,
+                    SgstPer: i.sgstPer,
+                    IgstPer: i.igstPer,
+                    CgstAmount: i.cgstAmount,
+                    SgstAmount: i.sgstAmount,
+                    IgstAmount: i.igstAmount,
+                    DiscountPer: i.discountPer,
+                    DiscountRs: i.discountRs,
+                    TotalAmount: i.totalAmount
+                }))
+            };
+
+            const res = await fetch('@Url.Action("SavePurchase")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.isSuccess) {
+                PaybillUI.showToast(data.message || 'Purchase saved!', 'success');
+                window.location.href = '@Url.Action("Index")';
+            } else {
+                PaybillUI.showToast(data.message || 'Failed to save purchase.', 'danger');
+            }
+        }
+    </script>
+}
+
