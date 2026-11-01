@@ -671,9 +671,74 @@ body.sidebar-collapsed .pb-main {
    ============================================================ */
 .pos-grid {
     display: grid;
-    grid-template-columns: 1fr 390px;
-    gap: 1.25rem;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 1rem;
     align-items: start;
+}
+
+/* Number inputs in POS items table */
+.pos-input-qty {
+    width: 100% !important;
+    min-width: 65px !important;
+    max-width: 80px !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+    font-size: 0.92rem !important;
+    padding: 0.28rem 0.3rem !important;
+    color: #153808 !important;
+    border-color: #c5e3bf !important;
+}
+
+.pos-input-rate {
+    width: 100% !important;
+    min-width: 78px !important;
+    max-width: 95px !important;
+    text-align: right !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    padding: 0.28rem 0.4rem !important;
+    color: #153808 !important;
+    border-color: #c5e3bf !important;
+}
+
+.pos-input-disc {
+    width: 100% !important;
+    min-width: 65px !important;
+    max-width: 80px !important;
+    text-align: right !important;
+    font-size: 0.88rem !important;
+    padding: 0.28rem 0.35rem !important;
+    border-color: #c5e3bf !important;
+}
+
+/* Hide native number spinners so numbers have 100% visible space */
+.pos-input-qty::-webkit-outer-spin-button,
+.pos-input-qty::-webkit-inner-spin-button,
+.pos-input-rate::-webkit-outer-spin-button,
+.pos-input-rate::-webkit-inner-spin-button,
+.pos-input-disc::-webkit-outer-spin-button,
+.pos-input-disc::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.pos-input-qty,
+.pos-input-rate,
+.pos-input-disc {
+    -moz-appearance: textfield;
+}
+
+.pos-input-qty:focus,
+.pos-input-rate:focus,
+.pos-input-disc:focus {
+    border-color: #226b08 !important;
+    box-shadow: 0 0 0 0.18rem rgba(34, 107, 8, 0.15) !important;
+}
+
+#invoiceItemsTable th,
+#invoiceItemsTable td,
+#purItemsTable th,
+#purItemsTable td {
+    padding: 0.55rem 0.45rem;
 }
 
 @media (max-width: 1199.98px) {

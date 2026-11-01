@@ -91,15 +91,15 @@
                 <table class="table pb-table align-middle mb-0" id="invoiceItemsTable">
                     <thead class="sticky-top">
                         <tr>
-                            <th style="width: 35px;">#</th>
+                            <th style="width: 32px;" class="text-center">#</th>
                             <th>Item / Service Description</th>
-                            <th style="width: 95px;" class="text-center">Qty</th>
-                            <th style="width: 110px;" class="text-end">Rate (₹)</th>
-                            <th style="width: 95px;" class="text-end">Disc (₹)</th>
-                            <th style="width: 85px;" class="text-center">GST %</th>
-                            <th style="width: 100px;" class="text-end">Tax (₹)</th>
-                            <th style="width: 120px;" class="text-end">Total (₹)</th>
-                            <th style="width: 45px;"></th>
+                            <th style="width: 78px;" class="text-center">Qty</th>
+                            <th style="width: 90px;" class="text-end">Rate (₹)</th>
+                            <th style="width: 75px;" class="text-end">Disc (₹)</th>
+                            <th style="width: 58px;" class="text-center">GST %</th>
+                            <th style="width: 82px;" class="text-end text-nowrap">Tax (₹)</th>
+                            <th style="width: 98px;" class="text-end text-nowrap">Total (₹)</th>
+                            <th style="width: 38px;"></th>
                         </tr>
                     </thead>
                     <tbody id="invoiceItemsBody">
@@ -741,25 +741,25 @@
 
                     return `
                         <tr>
-                            <td class="text-muted">${idx + 1}</td>
+                            <td class="text-muted text-center" style="width: 32px;">${idx + 1}</td>
                             <td>
-                                <div class="fw-semibold">${item.itemName}</div>
-                                <div class="small text-muted">${item.itemCode} ${item.hsnCode ? '| HSN: ' + item.hsnCode : ''}</div>
+                                <div class="fw-semibold text-truncate" style="max-width: 220px;" title="${item.itemName}">${item.itemName}</div>
+                                <div class="small text-muted">${item.itemCode} ${item.hsnCode ? '| HSN: ' + item.hsnCode : ''} ${item.measure ? '| ' + item.measure : ''}</div>
                             </td>
-                            <td>
-                                <input type="number" step="0.01" min="0.01" class="form-control form-control-sm text-center" value="${item.quantity}" onchange="updateLineQty(${idx}, this.value)" />
+                            <td class="text-center" style="width: 78px;">
+                                <input type="number" step="any" min="0.001" class="form-control form-control-sm pos-input-qty" value="${item.quantity}" onchange="updateLineQty(${idx}, this.value)" />
                             </td>
-                            <td>
-                                <input type="number" step="0.01" min="0" class="form-control form-control-sm text-end" value="${item.salesPrice}" onchange="updateLineRate(${idx}, this.value)" />
+                            <td class="text-end" style="width: 90px;">
+                                <input type="number" step="0.01" min="0" class="form-control form-control-sm pos-input-rate" value="${item.salesPrice}" onchange="updateLineRate(${idx}, this.value)" />
                             </td>
-                            <td>
-                                <input type="number" step="0.01" min="0" class="form-control form-control-sm text-end" value="${item.discountRs}" onchange="updateLineDiscount(${idx}, this.value)" />
+                            <td class="text-end" style="width: 75px;">
+                                <input type="number" step="0.01" min="0" class="form-control form-control-sm pos-input-disc" value="${item.discountRs}" onchange="updateLineDiscount(${idx}, this.value)" />
                             </td>
-                            <td class="text-center"><span class="badge bg-light text-dark border">${effGstPer}%</span></td>
-                            <td class="text-end">₹ ${(item.cgstAmount + item.sgstAmount + item.igstAmount).toFixed(2)}</td>
-                            <td class="text-end fw-bold">₹ ${item.totalAmount.toFixed(2)}</td>
-                            <td class="text-end">
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLineItem(${idx})"><i class="bi bi-x-lg"></i></button>
+                            <td class="text-center" style="width: 58px;"><span class="badge bg-light text-dark border">${effGstPer}%</span></td>
+                            <td class="text-end text-nowrap" style="width: 82px; font-size: 0.88rem;">₹ ${(item.cgstAmount + item.sgstAmount + item.igstAmount).toFixed(2)}</td>
+                            <td class="text-end text-nowrap fw-bold" style="width: 98px;">₹ ${item.totalAmount.toFixed(2)}</td>
+                            <td class="text-center" style="width: 38px;">
+                                <button type="button" class="btn btn-sm btn-outline-danger p-1" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" onclick="removeLineItem(${idx})" title="Remove"><i class="bi bi-x-lg"></i></button>
                             </td>
                         </tr>
                     `;
