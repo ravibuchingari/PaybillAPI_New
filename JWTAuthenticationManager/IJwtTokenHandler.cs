@@ -2,6 +2,6 @@
 {
     public interface IJwtTokenHandler
     {
-        Task<AuthenticationResponse> GenerateToken(AuthenticationResponse authenticationResponse, bool isTemporary = false);
+        Task<AuthRespon> GenerateToken(AuthResponse authenticationResponse, bool isTemporary = false);
     }
 }

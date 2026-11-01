@@ -1,4 +1,5 @@
 using Paybill.Areas.Paybill.Models;
+using Paybill.ViewModel;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;

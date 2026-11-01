@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Paybill.Auth;
 using Paybill.BackgoundServices;
 using Paybill.Data;
 using Paybill.Middlewares;

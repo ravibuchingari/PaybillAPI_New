@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Paybill.DTO;
 
@@ -16,4 +18,7 @@ public partial class ServiceRequestStatus
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedDate { get; set; }
+
+    [InverseProperty("ServiceRequestStatus")]
+    public virtual ICollection<JobCard> JobCards { get; set; } = new List<JobCard>();
 }

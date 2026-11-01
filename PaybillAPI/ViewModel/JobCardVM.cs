@@ -4,6 +4,7 @@ namespace Paybill.ViewModel
     {
         public int ServiceRequestId { get; set; }
         public int? SalesId { get; set; }
+        public string JobCardNumber { get; set; } = string.Empty;
         public string ServiceRequestDate { get; set; } = string.Empty;
         public int ServiceRequestStatusId { get; set; } = 1;
         public string ServiceRequestDescription { get; set; } = string.Empty;
@@ -23,13 +24,14 @@ namespace Paybill.ViewModel
     {
         public int JobCardSpareId { get; set; }
         public int ServiceRequestId { get; set; }
-        public ItemVM ItemModel { get; set; } = new ItemVM();
+        public ItemVM ItemModel { get; set; } = new();
         public double Quantity { get; set; } = 1.0;
         public double Mrp { get; set; }
         public double Rate { get; set; }
         public double Amount { get; set; }
         public double DiscountInRs { get; set; }
         public double TaxableAmount { get; set; }
+        public int GstId { get; set; }
         public float GstPer { get; set; }
         public float CgstPer { get; set; }
         public float SgstPer { get; set; }
@@ -39,6 +41,47 @@ namespace Paybill.ViewModel
         public double IgstRs { get; set; }
         public double GstAmount { get; set; }
         public double TotalAmount { get; set; }
+
+        public int SpareId
+        {
+            get => JobCardSpareId;
+            set => JobCardSpareId = value;
+        }
+        public ItemVM Item
+        {
+            get => ItemModel;
+            set => ItemModel = value ?? new ItemVM();
+        }
+        public int ItemId
+        {
+            get => ItemModel.ItemId;
+            set => ItemModel.ItemId = value;
+        }
+        public double SalesPrice
+        {
+            get => Rate;
+            set => Rate = value;
+        }
+        public double DiscountRs
+        {
+            get => DiscountInRs;
+            set => DiscountInRs = value;
+        }
+        public double CgstAmount
+        {
+            get => CgstRs;
+            set => CgstRs = value;
+        }
+        public double SgstAmount
+        {
+            get => SgstRs;
+            set => SgstRs = value;
+        }
+        public double IgstAmount
+        {
+            get => IgstRs;
+            set => IgstRs = value;
+        }
     }
 }
 

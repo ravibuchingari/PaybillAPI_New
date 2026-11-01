@@ -1,4 +1,5 @@
 ﻿using Paybill.Areas.Paybill.Models;
+using Paybill.ViewModel;
 
 namespace Paybill.Services
 {

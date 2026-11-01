@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Paybill.DTO;
 
@@ -45,6 +47,9 @@ public partial class ServiceType
     [ForeignKey("GstId")]
     [InverseProperty("ServiceTypes")]
     public virtual Gst? Gst { get; set; }
+
+    [InverseProperty("ServiceType")]
+    public virtual ICollection<JobCardItem> JobCardItems { get; set; } = new List<JobCardItem>();
 
     [InverseProperty("ServiceType")]
     public virtual ICollection<SalesItem> SalesItems { get; set; } = new List<SalesItem>();

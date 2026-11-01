@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Paybill.DTO;
 
@@ -52,10 +54,16 @@ public partial class Party
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     [InverseProperty("Party")]
+    public virtual ICollection<JobCard> JobCards { get; set; } = new List<JobCard>();
+
+    [InverseProperty("Party")]
     public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
 
     [InverseProperty("Party")]
     public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+
+    [InverseProperty("Party")]
+    public virtual ICollection<RewardTransaction> RewardTransactions { get; set; } = new List<RewardTransaction>();
 
     [InverseProperty("Party")]
     public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();

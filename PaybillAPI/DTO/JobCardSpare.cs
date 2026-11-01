@@ -1,9 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Paybill.DTO;
 
 [Table("job_card_spares")]
+[Index("ItemId", Name = "fk_job_card_spares_item_id_idx")]
+[Index("ServiceRequestId", Name = "fk_job_card_spares_req_id_idx")]
 public partial class JobCardSpare
 {
     [Key]
@@ -13,7 +18,7 @@ public partial class JobCardSpare
 
     public int ItemId { get; set; }
 
-    public double Quantity { get; set; } = 1.0;
+    public double Quantity { get; set; }
 
     public double Mrp { get; set; }
 
@@ -44,13 +49,13 @@ public partial class JobCardSpare
     public double TotalAmount { get; set; }
 
     [Column(TypeName = "datetime")]
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public DateTime CreatedDate { get; set; }
+
+    [ForeignKey("ItemId")]
+    [InverseProperty("JobCardSpares")]
+    public virtual Item Item { get; set; } = null!;
 
     [ForeignKey("ServiceRequestId")]
     [InverseProperty("JobCardSpares")]
     public virtual JobCard ServiceRequest { get; set; } = null!;
-
-    [ForeignKey("ItemId")]
-    public virtual Item Item { get; set; } = null!;
 }
-

@@ -1,6 +1,8 @@
 ﻿using AuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Paybill.Areas.Paybill.Models;
+using Paybill.Auth;
 using Paybill.Models;
 using Paybill.Repositories.Service;
 using Paybill.ViewModel;
@@ -11,7 +13,7 @@ namespace Paybill.Areas.WebApi.Controllers
     [Area("WebApi")]
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController(ISharedRepository sharedRepository, IJwtTokenHandler jwtTokenHandler, IHttpContextAccessor contextAccessor) : ControllerBase
+    public class HomeController(ISharedRepository sharedRepository, Auth.IJwtTokenHandler jwtTokenHandler, IHttpContextAccessor contextAccessor) : ControllerBase
     {
         [HttpGet]
         [Route("start")]
@@ -55,7 +57,7 @@ namespace Paybill.Areas.WebApi.Controllers
             string responseText = await sharedRepository.CreateAccountIfNotExists(client);
             if (responseText.Equals(AppConstants.RESPONSE_SUCCESS))
             {
-                AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
+                var authenticationResponse = await jwtTokenHandler.GenerateToken(new TokenParameter()
                 {
                     UserRowId = client.SecurityKey,
                     UserId = client.ClientId,
@@ -64,7 +66,7 @@ namespace Paybill.Areas.WebApi.Controllers
                 }, true);
 
                 if (authenticationResponse.IsSuccess)
-                    return Ok(new ResponseMessage(isSuccess: true, message: authenticationResponse.JwtToken, data: client.SecurityKey));
+                    return Ok(authenticationResponse);
                 else
                     return BadRequest(authenticationResponse.Message);
             }
@@ -80,12 +82,15 @@ namespace Paybill.Areas.WebApi.Controllers
                 return Unauthorized(AppConstants.UNAUTHORIZED_ACCESS);
             authRequest.Password = DataProtection.DecryptWithIV(authRequest.Password, AppConstants.PAYBILL_API_AES_KEY_AND_IV);
             AuthResponseVM authResponse = await sharedRepository.UserAuthentication(authRequest);
-            if (authResponse.IsSuccess)
+            if (authResponse.IsSuccess && authResponse.User != null)
             {
-                AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
+                AuthResponseVM authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthRequestVM()
                 {
                     UserRowId = authResponse.User.UserRowId.ToString()!,
-                    UserId = authResponse.User.UserId,
+                    ClientName = authResponse.User.Client?.ClientName ?? string.Empty,
+                    UserId = authResponse.User.UserId ?? string.Empty,
+                    UserName = authResponse.User.UserId ?? string.Empty,
+
                     UserRole = authResponse.User.IsAdmin ? "admin" : "user",
                     SecurityKey = authResponse.User.SecurityKey!
                 });
@@ -113,7 +118,7 @@ namespace Paybill.Areas.WebApi.Controllers
             AuthResponseVM authResponse = await sharedRepository.UserAuthenticationBiometric(biometricAuth, biometricAuthKey);
             if (authResponse.IsSuccess)
             {
-                AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
+                AuthResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthResponse()
                 {
                     UserRowId = authResponse.User.UserRowId.ToString()!,
                     UserId = authResponse.User.UserId,

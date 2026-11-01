@@ -8,13 +8,13 @@ namespace AuthenticationManager
 {
     public class JwtTokenHandler(IOptions<JwtTokenParameter> options) : IJwtTokenHandler
     {
-        public async Task<AuthenticationResponse> GenerateToken(AuthenticationResponse authenticationResponse, bool isTemporary = false)
+        public async Task<AuthResponse> GenerateToken(AuthenticationRe authenticationResponse, bool isTemporary = false)
         {
             if (string.IsNullOrEmpty(authenticationResponse.UserRowId) ||
                 string.IsNullOrEmpty(authenticationResponse.UserId) ||
                 string.IsNullOrEmpty(authenticationResponse.UserRole) ||
                 string.IsNullOrEmpty(authenticationResponse.SecurityKey))
-                return new AuthenticationResponse() { IsSuccess = false, Message = "User authentication failed." };
+                return new AuthResponse() { IsSuccess = false, Message = "User authentication failed." };
 
             var jwtTokenParameter = new JwtTokenParameter()
             {

@@ -1,5 +1,6 @@
 using Paybill.Areas.Paybill.Models;
 using Paybill.Helpers;
+using Paybill.ViewModel;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;

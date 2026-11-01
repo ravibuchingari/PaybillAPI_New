@@ -191,8 +191,8 @@ namespace Paybill.Repositories
             {
                 string q = searchQuery.Trim().ToLower();
                 query = query.Where(r =>
-                    (r.Party != null && r.Party.CustomerName.ToLower().Contains(q)) ||
-                    (r.Party != null && r.Party.Mobile != null && r.Party.Mobile.ToLower().Contains(q)) ||
+                    (r.Party != null && r.Party.PartyName.ToLower().Contains(q)) ||
+                    (r.Party != null && r.Party.PartyMobile != null && r.Party.PartyMobile.ToLower().Contains(q)) ||
                     (r.Sales != null && r.Sales.InvoiceNo.ToLower().Contains(q)));
             }
 
@@ -211,8 +211,8 @@ namespace Paybill.Repositories
                     Description = r.Description ?? string.Empty,
                     RefTransId = r.RefTransId ?? 0,
                     CreatedBy = r.CreatedBy ?? 0,
-                    PartyName = r.Party != null ? r.Party.CustomerName : string.Empty,
-                    PartyMobile = r.Party != null ? r.Party.Mobile ?? string.Empty : string.Empty,
+                    PartyName = r.Party != null ? r.Party.PartyName : string.Empty,
+                    PartyMobile = r.Party != null ? r.Party.PartyMobile ?? string.Empty : string.Empty,
                     InvoiceNo = r.Sales != null ? r.Sales.InvoiceNo : string.Empty
                 })
                 .ToListAsync();
@@ -358,8 +358,8 @@ namespace Paybill.Repositories
             {
                 string q = searchQuery.Trim().ToLower();
                 redeemed = redeemed.Where(r =>
-                    (r.Party != null && r.Party.CustomerName.ToLower().Contains(q)) ||
-                    (r.Party != null && r.Party.Mobile != null && r.Party.Mobile.ToLower().Contains(q)) ||
+                    (r.Party != null && r.Party.PartyName.ToLower().Contains(q)) ||
+                    (r.Party != null && r.Party.PartyMobile != null && r.Party.PartyMobile.ToLower().Contains(q)) ||
                     (r.Sales != null && r.Sales.InvoiceNo.ToLower().Contains(q)));
             }
 
@@ -377,8 +377,8 @@ namespace Paybill.Repositories
                 {
                     RewardTransId = r.RewardTransId,
                     PartyId = r.PartyId,
-                    PartyName = r.Party?.CustomerName ?? string.Empty,
-                    PartyMobile = r.Party?.Mobile ?? string.Empty,
+                    PartyName = r.Party?.PartyName ?? string.Empty,
+                    PartyMobile = r.Party?.PartyMobile ?? string.Empty,
                     SalesId = r.SalesId ?? 0,
                     InvoiceNo = r.Sales?.InvoiceNo ?? string.Empty,
                     TransactionDate = r.TransactionDate.ToString("yyyy-MM-dd HH:mm:ss"),

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Paybill.DTO;
 
 namespace Paybill.Data;
@@ -17,8 +19,6 @@ public partial class AppDBContext : DbContext
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Client> Clients { get; set; }
-
-    public virtual DbSet<Client1> Clients1 { get; set; }
 
     public virtual DbSet<CustomReceiptLine> CustomReceiptLines { get; set; }
 
@@ -76,6 +76,10 @@ public partial class AppDBContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySQL("Data Source=localhost;port=3306;Database=paybill_api;Uid=root;Pwd=India@123;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>(entity =>
@@ -94,13 +98,6 @@ public partial class AppDBContext : DbContext
             entity.Property(e => e.CountryMobileLength).HasDefaultValueSql("'10'");
             entity.Property(e => e.CountryName).HasDefaultValueSql("'India'");
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
-        });
-
-        modelBuilder.Entity<Client1>(entity =>
-        {
-            entity.HasKey(e => e.ClientId).HasName("PRIMARY");
-
-            entity.Property(e => e.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         modelBuilder.Entity<CustomReceiptLine>(entity =>
@@ -153,6 +150,26 @@ public partial class AppDBContext : DbContext
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.ServiceRequestStatusId).HasDefaultValueSql("'1'");
             entity.Property(e => e.UpdatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.JobCardCreatedByNavigations)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_job_cards_created_by");
+
+            entity.HasOne(d => d.Party).WithMany(p => p.JobCards)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_job_cards_party_id");
+
+            entity.HasOne(d => d.Sales).WithMany(p => p.JobCards)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_job_cards_sales_id");
+
+            entity.HasOne(d => d.ServiceRequestStatus).WithMany(p => p.JobCards)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_job_cards_status_id");
+
+            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.JobCardUpdatedByNavigations)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_job_cards_updated_by");
         });
 
         modelBuilder.Entity<JobCardItem>(entity =>
@@ -160,6 +177,12 @@ public partial class AppDBContext : DbContext
             entity.HasKey(e => e.ServiceRequestComplaintId).HasName("PRIMARY");
 
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.JobCardItems).HasConstraintName("fk_job_card_items_req_id");
+
+            entity.HasOne(d => d.ServiceType).WithMany(p => p.JobCardItems)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_job_card_items_stype_id");
         });
 
         modelBuilder.Entity<JobCardSpare>(entity =>
@@ -168,6 +191,12 @@ public partial class AppDBContext : DbContext
 
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.Quantity).HasDefaultValueSql("'1'");
+
+            entity.HasOne(d => d.Item).WithMany(p => p.JobCardSpares)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_job_card_spares_item_id");
+
+            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.JobCardSpares).HasConstraintName("fk_job_card_spares_req_id");
         });
 
         modelBuilder.Entity<MessageTemplate>(entity =>
@@ -195,6 +224,10 @@ public partial class AppDBContext : DbContext
         modelBuilder.Entity<OrderItem>(entity =>
         {
             entity.HasKey(e => e.OrderItemRowId).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Item).WithMany(p => p.OrderItems)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_order_items_item_id");
 
             entity.HasOne(d => d.OrderRow).WithMany(p => p.OrderItems)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -302,11 +335,14 @@ public partial class AppDBContext : DbContext
         {
             entity.HasKey(e => e.RewardTransId).HasName("PRIMARY");
 
-            entity.Property(e => e.CreatedBy).HasDefaultValueSql("'0'");
             entity.Property(e => e.Description).HasDefaultValueSql("''");
-            entity.Property(e => e.RefTransId).HasDefaultValueSql("'0'");
-            entity.Property(e => e.SalesId).HasDefaultValueSql("'0'");
             entity.Property(e => e.TransactionDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne(d => d.Party).WithMany(p => p.RewardTransactions).HasConstraintName("fk_reward_trans_party_id");
+
+            entity.HasOne(d => d.Sales).WithMany(p => p.RewardTransactions)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_reward_trans_sales_id");
         });
 
         modelBuilder.Entity<Sale>(entity =>
@@ -394,6 +430,7 @@ public partial class AppDBContext : DbContext
             entity.Property(e => e.IsSendSmsonInvoice).HasDefaultValueSql("'1'");
             entity.Property(e => e.IsSoundEnabled).HasDefaultValueSql("'1'");
             entity.Property(e => e.ItemCodeAllowNumberOnly).HasDefaultValueSql("'1'");
+            entity.Property(e => e.LocalLanguageCode).HasDefaultValueSql("'en'");
             entity.Property(e => e.MaxItemImageDimension).HasDefaultValueSql("'512'");
             entity.Property(e => e.PaymentGatewayApiKey).HasDefaultValueSql("''");
             entity.Property(e => e.PaymentGatewayApiSecret).HasDefaultValueSql("''");

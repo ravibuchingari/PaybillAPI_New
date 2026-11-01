@@ -1,9 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Paybill.DTO;
 
 [Table("reward_transactions")]
+[Index("TransactionDate", Name = "idx_reward_trans_date")]
+[Index("PartyId", Name = "idx_reward_trans_party_id")]
+[Index("SalesId", Name = "idx_reward_trans_sales_id")]
 public partial class RewardTransaction
 {
     [Key]
@@ -11,10 +17,10 @@ public partial class RewardTransaction
 
     public int PartyId { get; set; }
 
-    public int? SalesId { get; set; } = 0;
+    public int? SalesId { get; set; }
 
     [StringLength(20)]
-    public string TransactionType { get; set; } = string.Empty;
+    public string TransactionType { get; set; } = null!;
 
     public double PointsCredited { get; set; }
 
@@ -23,18 +29,20 @@ public partial class RewardTransaction
     public double MonetaryValue { get; set; }
 
     [Column(TypeName = "datetime")]
-    public DateTime TransactionDate { get; set; } = DateTime.Now;
+    public DateTime TransactionDate { get; set; }
 
     [StringLength(250)]
-    public string? Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
-    public int? RefTransId { get; set; } = 0;
+    public int? RefTransId { get; set; }
 
-    public int? CreatedBy { get; set; } = 0;
+    public int? CreatedBy { get; set; }
 
     [ForeignKey("PartyId")]
-    public virtual Customer? Party { get; set; }
+    [InverseProperty("RewardTransactions")]
+    public virtual Party Party { get; set; } = null!;
 
     [ForeignKey("SalesId")]
+    [InverseProperty("RewardTransactions")]
     public virtual Sale? Sales { get; set; }
 }

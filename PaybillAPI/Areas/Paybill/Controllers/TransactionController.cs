@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Paybill.Areas.Paybill.Models;
 using Paybill.Helpers;
 using Paybill.Services;
+using Paybill.ViewModel;
 
 namespace Paybill.Areas.Paybill.Controllers
 {

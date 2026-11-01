@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paybill.Areas.Paybill.Models;
 using Paybill.Services;
+using Paybill.ViewModel;
 
 namespace Paybill.Areas.Paybill.Controllers
 {

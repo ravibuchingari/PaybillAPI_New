@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Paybill.DTO;
 
@@ -71,6 +73,12 @@ public partial class User
 
     [InverseProperty("UpdatedByNavigation")]
     public virtual ICollection<Item> ItemUpdatedByNavigations { get; set; } = new List<Item>();
+
+    [InverseProperty("CreatedByNavigation")]
+    public virtual ICollection<JobCard> JobCardCreatedByNavigations { get; set; } = new List<JobCard>();
+
+    [InverseProperty("UpdatedByNavigation")]
+    public virtual ICollection<JobCard> JobCardUpdatedByNavigations { get; set; } = new List<JobCard>();
 
     [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Party> PartyCreatedByNavigations { get; set; } = new List<Party>();

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Paybill.DTO;
 
-[Table("client")]
+[Table("clients")]
 public partial class Client
 {
     [Key]
