@@ -259,6 +259,15 @@
                             </button>
                         </div>
                     </div>
+                    <div class="d-flex justify-content-between align-items-center px-1">
+                        <span class="text-muted" style="font-size: 0.78rem;"><i class="bi bi-printer me-1"></i>Print Format:</span>
+                        <select id="directPrintFormatSelect" class="form-select form-select-sm" style="width: 145px; font-size: 0.78rem; padding: 3px 8px;" onchange="savePreferredPrintFormat(this.value)">
+                            <option value="A4">A4 Tax Invoice</option>
+                            <option value="A4_NONGST">A4 Bill of Supply</option>
+                            <option value="POS80">80mm Thermal POS</option>
+                            <option value="POS58">58mm Thermal POS</option>
+                        </select>
+                    </div>
                     @if (!string.IsNullOrWhiteSpace(Model.Settings.UPIId))
                     {
                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="showUpiQrModal()">
@@ -402,6 +411,59 @@
     </div>
 }
 
+<!-- Invoice Saved & Direct Print Modal -->
+<div class="modal fade" id="invoiceSavedModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <span class="badge bg-success-subtle text-success p-3 rounded-circle" style="font-size: 2.2rem;">
+                        <i class="bi bi-printer-fill"></i>
+                    </span>
+                </div>
+                <h4 class="fw-bold text-success mb-1">Invoice Saved Successfully!</h4>
+                <p class="text-muted small mb-3">Direct print command has been sent to your printer.</p>
+
+                <div class="card bg-light border-0 p-3 mb-3 text-start">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted small">Invoice Number:</span>
+                        <strong id="savedModalInvNo" class="text-dark">#0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted small">Grand Total:</span>
+                        <strong id="savedModalAmount" class="text-success fs-6">₹ 0.00</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted small">Customer:</span>
+                        <span id="savedModalCustomer" class="fw-semibold text-secondary">Walk-in</span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-paybill py-2 fw-bold" onclick="window.location.href='@Url.Action("Create")'">
+                        <i class="bi bi-plus-circle me-1"></i>New Invoice / Next Customer
+                    </button>
+                    <div class="row g-2">
+                        <div class="col-6 d-grid">
+                            <button type="button" class="btn btn-outline-secondary btn-sm py-2" onclick="reprintSavedInvoice()">
+                                <i class="bi bi-printer me-1"></i>Print Again
+                            </button>
+                        </div>
+                        <div class="col-6 d-grid">
+                            <button type="button" class="btn btn-outline-primary btn-sm py-2" onclick="viewSavedInvoice()">
+                                <i class="bi bi-eye me-1"></i>View / Change
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm text-muted text-decoration-none mt-1" onclick="window.location.href='@Url.Action("Index")'">
+                        <i class="bi bi-list-ul me-1"></i>Go to Invoice List
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         const catalogItems = @Html.Raw(JsonSerializer.Serialize(Model.InitialItems));
@@ -448,6 +510,11 @@
             updateCreditRequirements();
             recalculateAll();
             setupBarcodeSearch();
+
+            const savedFmt = localStorage.getItem('paybill_direct_print_format');
+            if (savedFmt && document.getElementById('directPrintFormatSelect')) {
+                document.getElementById('directPrintFormatSelect').value = savedFmt;
+            }
         });
 
         function updateCreditRequirements() {
@@ -1045,8 +1112,10 @@
                 }))
             };
 
-            document.getElementById('btnSavePrint').disabled = true;
-            document.getElementById('btnSaveOnly').disabled = true;
+            const btnSavePrint = document.getElementById('btnSavePrint');
+            const btnSaveOnly = document.getElementById('btnSaveOnly');
+            if (btnSavePrint) btnSavePrint.disabled = true;
+            if (btnSaveOnly) btnSaveOnly.disabled = true;
 
             try {
                 const res = await fetch('@Url.Action("SaveInvoice")', {
@@ -1056,22 +1125,99 @@
                 });
                 const data = await res.json();
                 if (data.isSuccess) {
-                    PaybillUI.showToast(data.message || 'Sales invoice saved!', 'success');
-                    const finalId = data.salesId || salesId;
+                    PaybillUI.showToast(data.message || 'Sales invoice saved successfully!', 'success');
+                    const finalId = data.salesId || data.SalesId || (parseInt(data.data || data.Data || '0')) || salesId;
+
                     if (printAfter && finalId > 0) {
-                        window.open(`@Url.Action("Print")?id=${finalId}&format=A4`, '_blank');
+                        const salesTypeVal = document.getElementById('SalesType')?.value || 'GST';
+                        const selectedFormat = document.getElementById('directPrintFormatSelect')?.value || (salesTypeVal === 'Non-GST' ? 'A4_NONGST' : 'A4');
+
+                        // 1. Direct print without preview via hidden background iframe
+                        directPrintInvoice(finalId, selectedFormat);
+
+                        // 2. Populate and display post-save success modal on billing screen
+                        document.getElementById('savedModalInvNo').innerText = `#${finalId}`;
+                        document.getElementById('savedModalAmount').innerText = document.getElementById('lblGrandTotal')?.innerText || '₹ 0.00';
+
+                        const custSel = document.getElementById('PartyId');
+                        const custText = custSel?.options[custSel.selectedIndex]?.text || 'Walk-in / Cash Customer';
+                        document.getElementById('savedModalCustomer').innerText = custText.split('(')[0].trim();
+
+                        const savedModal = new bootstrap.Modal(document.getElementById('invoiceSavedModal'));
+                        savedModal.show();
+
+                        if (btnSavePrint) btnSavePrint.disabled = false;
+                        if (btnSaveOnly) btnSaveOnly.disabled = false;
+                    } else {
+                        window.location.href = '@Url.Action("Index")';
                     }
-                    window.location.href = '@Url.Action("Index")';
                 } else {
                     PaybillUI.showToast(data.message || 'Failed to save invoice.', 'danger');
-                    document.getElementById('btnSavePrint').disabled = false;
-                    document.getElementById('btnSaveOnly').disabled = false;
+                    if (btnSavePrint) btnSavePrint.disabled = false;
+                    if (btnSaveOnly) btnSaveOnly.disabled = false;
                 }
             } catch (err) {
                 PaybillUI.showToast('Network error saving invoice.', 'danger');
-                document.getElementById('btnSavePrint').disabled = false;
-                document.getElementById('btnSaveOnly').disabled = false;
+                if (btnSavePrint) btnSavePrint.disabled = false;
+                if (btnSaveOnly) btnSaveOnly.disabled = false;
             }
+        }
+
+        let lastSavedInvoiceId = 0;
+        let lastSavedInvoiceFormat = 'A4';
+
+        function directPrintInvoice(salesId, format) {
+            lastSavedInvoiceId = salesId;
+            lastSavedInvoiceFormat = format;
+
+            let iframe = document.getElementById('directPrintIframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'directPrintIframe';
+                iframe.name = 'directPrintIframe';
+                iframe.style.position = 'fixed';
+                iframe.style.right = '0';
+                iframe.style.bottom = '0';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                iframe.style.border = '0';
+                iframe.style.visibility = 'hidden';
+                document.body.appendChild(iframe);
+            }
+
+            const printUrl = `@Url.Action("Print")?id=${salesId}&format=${format}&autoprint=1`;
+
+            let hasPrinted = false;
+            iframe.onload = function () {
+                if (hasPrinted) return;
+                hasPrinted = true;
+                setTimeout(function () {
+                    try {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                    } catch (e) {
+                        console.warn('Direct iframe print error:', e);
+                    }
+                }, 250);
+            };
+
+            iframe.src = printUrl;
+        }
+
+        function reprintSavedInvoice() {
+            if (lastSavedInvoiceId > 0) {
+                directPrintInvoice(lastSavedInvoiceId, lastSavedInvoiceFormat);
+            }
+        }
+
+        function viewSavedInvoice() {
+            if (lastSavedInvoiceId > 0) {
+                window.open(`@Url.Action("Print")?id=${lastSavedInvoiceId}&format=${lastSavedInvoiceFormat}`, '_blank');
+            }
+        }
+
+        function savePreferredPrintFormat(fmt) {
+            localStorage.setItem('paybill_direct_print_format', fmt);
         }
     </script>
 }
