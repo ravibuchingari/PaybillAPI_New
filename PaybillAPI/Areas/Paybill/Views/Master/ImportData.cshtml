@@ -1,0 +1,160 @@
+@model ImportDataPageViewModel
+@{
+    ViewData["Title"] = "Import Data From Excel";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div class="d-flex align-items-center gap-2">
+        <a href="@Url.Action("Index", "Master")" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Master Hub
+        </a>
+        <span class="text-muted">/</span>
+        <span class="fw-semibold">Import Data (Excel Bulk Upload)</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Items", "Master")" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-boxes me-1"></i>View All Items (@Model.ExistingItemsCount)
+        </a>
+        <a href="@Url.Action("DownloadTemplate", "Master")" class="btn btn-sm btn-success">
+            <i class="bi bi-download me-1"></i>Download Template (paybill_template.xlsx)
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Excel Upload Card (Matches ImportDataActivity.kt) -->
+    <div class="col-lg-6">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-file-earmark-spreadsheet-fill text-success me-2"></i>Import Items from Excel (.xlsx)
+                </h6>
+            </div>
+            <div class="pb-card-body">
+                <form asp-action="ImportExcel" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Select Excel File (`.xlsx`) <span class="text-danger">*</span></label>
+                        <input type="file"
+                               name="excelFile"
+                               accept=".xlsx"
+                               class="form-control"
+                               required />
+                        <div class="form-text">
+                            Reads the first worksheet (`Sheet1`) and auto-detects column headers (`ITEM CODE`, `ITEM NAME`, `CATEGORY`, `MRP`, `SALES PRICE`, `PURCHASE PRICE`, `MEASURE`, `CLOSING QTY`, `MIN STOCK`, `HSN`, `SHELF`).
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fallback Category (if blank in Excel)</label>
+                            <select name="defaultCategoryId" class="form-select">
+                                @foreach (var c in Model.Categories)
+                                {
+                                    <option value="@c.CategoryId">@c.CategoryName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Default GST Slab</label>
+                            <select name="defaultGstId" class="form-select">
+                                <option value="">-- Tax Exempt (0%) --</option>
+                                @foreach (var g in Model.GstSlabs)
+                                {
+                                    float total = g.IgstPer > 0 ? g.IgstPer : (g.CgstPer + g.SgstPer);
+                                    <option value="@g.GstId">GST @total.ToString("0.##")%</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i>Upload &amp; Import Items Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Official Excel Template & Column Guide -->
+    <div class="col-lg-6">
+        <div class="pb-card h-100">
+            <div class="pb-card-header">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-info-circle-fill text-primary me-2"></i>Excel Template &amp; Column Format
+                </h6>
+            </div>
+            <div class="pb-card-body">
+                <p class="text-muted small">
+                    Download the official <strong>`paybill_template.xlsx`</strong> file to prepare your inventory catalog. New categories in the `CATEGORY` column are automatically created during import.
+                </p>
+
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Column Header</th>
+                                <th>Required</th>
+                                <th>Example Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold font-monospace">ITEM CODE</td>
+                                <td>Auto-generated if blank</td>
+                                <td>`ITM001`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">ITEM NAME</td>
+                                <td><span class="badge bg-danger">Required</span></td>
+                                <td>`Aashirvaad Whole Wheat Atta 5Kg`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">CATEGORY</td>
+                                <td>Optional (Auto-created)</td>
+                                <td>`Groceries`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">MRP</td>
+                                <td>Optional</td>
+                                <td>`285`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">SALES PRICE</td>
+                                <td><span class="badge bg-danger">Required</span></td>
+                                <td>`265`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">PURCHASE PRICE</td>
+                                <td>Optional</td>
+                                <td>`240`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">MEASURE</td>
+                                <td>Optional (Default `Piece`)</td>
+                                <td>`Pack`, `KG`, `Piece`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">CLOSING QTY</td>
+                                <td>Optional</td>
+                                <td>`50`</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HSN</td>
+                                <td>Optional</td>
+                                <td>`1101`</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <a href="@Url.Action("DownloadTemplate", "Master")" class="btn btn-outline-success w-100">
+                    <i class="bi bi-file-earmark-excel me-1"></i>Download Official `paybill_template.xlsx`
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+

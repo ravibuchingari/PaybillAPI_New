@@ -1,4 +1,4 @@
-﻿namespace Paybill.Auth
+namespace Paybill.Auth
 {
     public class JwtTokenParameter
     {
@@ -11,5 +11,14 @@
         public bool IsValidateLifetime { get; set; } = true;
         public double JWTTokenValidityInMinutes { get; set; }
         public int RefreshTokenValidityInMinutes { get; set; } = 20;
+    }
+
+    public class TokenParameter
+    {
+        public string UserRowId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string UserRole { get; set; } = string.Empty;
+        public string SecurityKey { get; set; } = string.Empty;
+        public string ClientName { get; set; } = string.Empty;
     }
 }

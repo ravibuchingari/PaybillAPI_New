@@ -1,0 +1,485 @@
+@model ItemMasterPageViewModel
+@{
+    bool isEdit = Model.Item.ItemId > 0;
+    ViewData["Title"] = isEdit ? $"Edit Item — {Model.Item.ItemName}" : "Item Master Registration";
+    var units = new[] { "Piece", "KG", "Litre", "Meter", "Box", "Pack", "NOS", "GM", "ML", "Dozen" };
+    int selectedCatId = Model.Item.CategoryModel?.CategoryId ?? Model.Categories.FirstOrDefault()?.CategoryId ?? 0;
+    int? selectedGstId = Model.Item.GstModel?.GstId;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div class="d-flex align-items-center gap-2">
+        <a href="@Url.Action("Index", "Master")" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Master Hub
+        </a>
+        <span class="text-muted">/</span>
+        <span class="fw-semibold">@(isEdit ? $"Edit Item #{Model.Item.ItemId}" : "New Item Registration")</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Items", "Master")" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-boxes me-1"></i>View All Items
+        </a>
+        <a href="@Url.Action("ImportData", "Master")" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Import Excel
+        </a>
+    </div>
+</div>
+
+<form asp-action="SaveItem" method="post" enctype="multipart/form-data" id="itemMasterForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="itemId" value="@Model.Item.ItemId" />
+    <input type="hidden" name="afterAction" id="afterActionInput" value="stay" />
+    <input type="hidden" name="removeExistingImage" id="removeExistingImageInput" value="false" />
+
+    <div class="row g-4">
+        <!-- Left & Center Columns: Primary Details, Pricing & Taxes, Stock & Location -->
+        <div class="col-lg-8">
+            <!-- Card 1: Primary Item Details (Matches ItemMasterScreen.kt Section 1) -->
+            <div class="pb-card mb-4">
+                <div class="pb-card-header">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-box-seam-fill text-primary me-2"></i>Item Primary Details</h6>
+                    <span class="badge @(isEdit ? "bg-warning text-dark" : "bg-primary")">@(isEdit ? "Edit Mode" : "New Registration")</span>
+                </div>
+                <div class="pb-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Item Code / Barcode <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text"
+                                       id="itemCodeInput"
+                                       name="itemCode"
+                                       value="@Model.Item.ItemCode"
+                                       class="form-control fw-bold text-uppercase"
+                                       maxlength="20"
+                                       placeholder="Scan or enter code"
+                                       oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ''); renderLiveBarcode();"
+                                       required />
+                                <button type="button" class="btn btn-outline-secondary" onclick="generateAutoCode()" title="Generate Auto Item Code">
+                                    <i class="bi bi-magic"></i> Auto
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Item Name <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   id="itemNameInput"
+                                   name="itemName"
+                                   value="@Model.Item.ItemName"
+                                   class="form-control"
+                                   maxlength="100"
+                                   placeholder="Enter full product / item name"
+                                   required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Alias / Short Name</label>
+                            <input type="text"
+                                   name="aliasName"
+                                   value="@Model.Item.AliasName"
+                                   class="form-control"
+                                   maxlength="100"
+                                   placeholder="Short search code or alias" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Local Language Name</label>
+                            <input type="text"
+                                   name="itemLocalName"
+                                   value="@Model.Item.ItemLocalName"
+                                   class="form-control"
+                                   maxlength="100"
+                                   placeholder="Regional language name for receipt printing" />
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select id="categorySelect" name="categoryId" class="form-select" required>
+                                    @foreach (var c in Model.Categories)
+                                    {
+                                        if (c.CategoryId == selectedCatId)
+                                        {
+                                            <option value="@c.CategoryId" selected>@c.CategoryName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@c.CategoryId">@c.CategoryName</option>
+                                        }
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#quickCategoryModal" title="Add New Category">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">GST Slab (%)</label>
+                            <div class="input-group">
+                                <select id="gstSelect" name="gstId" class="form-select">
+                                    <option value="">-- Tax Exempt (0%) --</option>
+                                    @foreach (var g in Model.GstSlabs)
+                                    {
+                                        float total = g.IgstPer > 0 ? g.IgstPer : (g.CgstPer + g.SgstPer);
+                                        if (selectedGstId.HasValue && selectedGstId.Value == g.GstId)
+                                        {
+                                            <option value="@g.GstId" selected>GST @total.ToString("0.##")% (@g.CgstPer.ToString("0.##")+@g.SgstPer.ToString("0.##")%)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@g.GstId">GST @total.ToString("0.##")% (@g.CgstPer.ToString("0.##")+@g.SgstPer.ToString("0.##")%)</option>
+                                        }
+                                    }
+                                </select>
+                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#quickGstModal" title="Add New GST Slab">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Unit of Measure</label>
+                            <select name="measure" class="form-select">
+                                @foreach (var u in units)
+                                {
+                                    if (string.Equals(Model.Item.Measure, u, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <option value="@u" selected>@u</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@u">@u</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Pricing & Taxes (Matches ItemMasterScreen.kt Section 2) -->
+            <div class="pb-card mb-4">
+                <div class="pb-card-header">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-currency-rupee text-success me-2"></i>Pricing &amp; Taxes</h6>
+                </div>
+                <div class="pb-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Sales Price (₹) <span class="text-danger">*</span></label>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0.01"
+                                   id="salesPriceInput"
+                                   name="salesPrice"
+                                   value="@(Model.Item.SalesPrice > 0 ? Model.Item.SalesPrice.ToString("0.##") : "")"
+                                   class="form-control fw-bold text-success"
+                                   placeholder="0.00"
+                                   required
+                                   oninput="syncMrpIfEmpty()" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">MRP (₹)</label>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   id="mrpInput"
+                                   name="mrp"
+                                   value="@(Model.Item.Mrp > 0 ? Model.Item.Mrp.ToString("0.##") : "")"
+                                   class="form-control"
+                                   placeholder="0.00" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Purchase Price (₹)</label>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   name="purchasePrice"
+                                   value="@(Model.Item.PurchasePrice > 0 ? Model.Item.PurchasePrice.ToString("0.##") : "0")"
+                                   class="form-control"
+                                   placeholder="0.00" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">HSN Code</label>
+                            <input type="text"
+                                   name="hsnCode"
+                                   value="@Model.Item.HSncode"
+                                   class="form-control"
+                                   maxlength="10"
+                                   placeholder="e.g., 1101" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Stock & Shelf Location (Matches ItemMasterScreen.kt Section 3) -->
+            <div class="pb-card">
+                <div class="pb-card-header">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-geo-alt-fill text-warning me-2"></i>Stock &amp; Location</h6>
+                </div>
+                <div class="pb-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Opening Stock</label>
+                            <input type="number"
+                                   step="0.01"
+                                   name="openingStock"
+                                   value="@Model.Item.OpeningStock"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Minimum Stock Alert</label>
+                            <input type="number"
+                                   step="0.01"
+                                   name="minimumStock"
+                                   value="@Model.Item.MinimumStock"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Shelf / Rack Location</label>
+                            <input type="text"
+                                   name="shelf"
+                                   value="@Model.Item.Shelf"
+                                   class="form-control"
+                                   maxlength="30"
+                                   placeholder="e.g., Rack A-2, Row 4" />
+                        </div>
+
+                        <div class="col-md-2 pt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="itemActiveSwitch" name="isActive" value="true" @(Model.Item.IsActive ? "checked" : "") />
+                                <label class="form-check-label fw-semibold" for="itemActiveSwitch">Active</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Item Photo Upload, Live Barcode Preview & Actions (Matches ItemMasterScreen.kt Section 4) -->
+        <div class="col-lg-4">
+            <!-- Item Image Card -->
+            <div class="pb-card mb-4">
+                <div class="pb-card-header">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-camera-fill text-info me-2"></i>Item Image</h6>
+                </div>
+                <div class="pb-card-body text-center">
+                    <div class="border rounded-3 p-3 mb-3 bg-light d-flex align-items-center justify-content-center position-relative" style="min-height: 190px;">
+                        <img id="itemImagePreview"
+                             src="@(Model.HasExistingImage ? Model.ExistingImageUrl : "")"
+                             alt="Item Preview"
+                             class="@(Model.HasExistingImage ? "" : "d-none") img-fluid rounded"
+                             style="max-height: 170px; object-fit: contain;" />
+                        <div id="itemImagePlaceholder" class="@(Model.HasExistingImage ? "d-none" : "") text-muted">
+                            <i class="bi bi-image fs-1 d-block mb-1"></i>
+                            <span class="small">No item photo selected</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <label class="btn btn-sm btn-outline-primary mb-0">
+                            <i class="bi bi-upload me-1"></i>Choose / Capture Photo
+                            <input type="file" name="itemImage" id="itemImageInput" accept="image/*" capture="environment" class="d-none" onchange="previewSelectedImage(this)" />
+                        </label>
+                        <button type="button" id="clearImageBtn" class="btn btn-sm btn-outline-danger @(Model.HasExistingImage ? "" : "d-none")" onclick="clearSelectedImage()">
+                            <i class="bi bi-trash me-1"></i>Remove Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Barcode Preview Card -->
+            <div class="pb-card mb-4">
+                <div class="pb-card-header">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-upc-scan me-2"></i>Barcode Preview</h6>
+                </div>
+                <div class="pb-card-body text-center">
+                    <svg id="liveBarcodeSvg" class="img-fluid"></svg>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pb-card">
+                <div class="pb-card-body d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg fw-semibold" onclick="document.getElementById('afterActionInput').value='stay'">
+                        <i class="bi bi-check2-circle me-1"></i>@(isEdit ? "Update Item" : "Save & Add Another")
+                    </button>
+                    <button type="submit" class="btn btn-outline-primary" onclick="document.getElementById('afterActionInput').value='list'">
+                        <i class="bi bi-list-ul me-1"></i>@(isEdit ? "Update & View All Items" : "Save & View All Items")
+                    </button>
+                    <a href="@Url.Action("ItemMaster", "Master", new { id = 0 })" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset / Clear Form
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Quick Add Category Modal -->
+<div class="modal fade" id="quickCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold">Quick Add Category</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label fw-semibold">Category Name</label>
+                <input type="text" id="quickCatName" class="form-control" maxlength="50" placeholder="Enter category name" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="saveQuickCategory()">Save Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add GST Modal -->
+<div class="modal fade" id="quickGstModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold">Quick Add GST Slab</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">Total GST (%)</label>
+                    <input type="number" step="0.01" id="quickIgst" class="form-control" placeholder="e.g., 18" oninput="const h = (parseFloat(this.value||0)/2).toFixed(2); document.getElementById('quickCgst').value=h; document.getElementById('quickSgst').value=h;" />
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">CGST (%)</label>
+                        <input type="number" step="0.01" id="quickCgst" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">SGST (%)</label>
+                        <input type="number" step="0.01" id="quickSgst" class="form-control form-control-sm" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveQuickGst()">Save GST</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function generateAutoCode() {
+            const rnd = Math.floor(100000 + Math.random() * 900000);
+            const inp = document.getElementById('itemCodeInput');
+            inp.value = 'ITM' + rnd;
+            renderLiveBarcode();
+        }
+
+        function syncMrpIfEmpty() {
+            const sp = document.getElementById('salesPriceInput').value;
+            const mrp = document.getElementById('mrpInput');
+            if (!mrp.value || parseFloat(mrp.value) === 0) {
+                mrp.value = sp;
+            }
+        }
+
+        function renderLiveBarcode() {
+            const code = (document.getElementById('itemCodeInput').value || 'ITM0001').trim();
+            if (typeof JsBarcode !== 'undefined' && code.length > 0) {
+                try {
+                    JsBarcode('#liveBarcodeSvg', code, {
+                        format: 'CODE128',
+                        height: 45,
+                        displayValue: true,
+                        fontSize: 13,
+                        margin: 6
+                    });
+                } catch (e) { }
+            }
+        }
+
+        function previewSelectedImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('itemImagePreview');
+                    img.src = e.target.result;
+                    img.classList.remove('d-none');
+                    document.getElementById('itemImagePlaceholder').classList.add('d-none');
+                    document.getElementById('clearImageBtn').classList.remove('d-none');
+                    document.getElementById('removeExistingImageInput').value = 'false';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearSelectedImage() {
+            document.getElementById('itemImageInput').value = '';
+            const img = document.getElementById('itemImagePreview');
+            img.src = '';
+            img.classList.add('d-none');
+            document.getElementById('itemImagePlaceholder').classList.remove('d-none');
+            document.getElementById('clearImageBtn').classList.add('d-none');
+            document.getElementById('removeExistingImageInput').value = 'true';
+        }
+
+        async function saveQuickCategory() {
+            const name = document.getElementById('quickCatName').value.trim();
+            if (!name) return;
+            const res = await fetch('@Url.Action("SaveCategoryJson", "Master")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ categoryName: name })
+            }).then(r => r.json());
+
+            if (res.isSuccess && res.categoryId > 0) {
+                const sel = document.getElementById('categorySelect');
+                const opt = new Option(res.categoryName, res.categoryId, true, true);
+                sel.add(opt);
+                document.getElementById('quickCatName').value = '';
+                bootstrap.Modal.getInstance(document.getElementById('quickCategoryModal')).hide();
+                PayBillUI.toast('Category added and selected.', 'success');
+            } else {
+                PayBillUI.toast(res.message || 'Failed to add category.', 'danger');
+            }
+        }
+
+        async function saveQuickGst() {
+            const igst = parseFloat(document.getElementById('quickIgst').value || 0);
+            const cgst = parseFloat(document.getElementById('quickCgst').value || (igst / 2));
+            const sgst = parseFloat(document.getElementById('quickSgst').value || (igst / 2));
+
+            const res = await fetch('@Url.Action("SaveGstJson", "Master")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ igstPer: igst, cgstPer: cgst, sgstPer: sgst, isActive: true })
+            }).then(r => r.json());
+
+            if (res.isSuccess && res.gstId > 0) {
+                const sel = document.getElementById('gstSelect');
+                const opt = new Option(res.displayName, res.gstId, true, true);
+                sel.add(opt);
+                bootstrap.Modal.getInstance(document.getElementById('quickGstModal')).hide();
+                PayBillUI.toast('GST slab added and selected.', 'success');
+            } else {
+                PayBillUI.toast(res.message || 'Failed to add GST slab.', 'danger');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!document.getElementById('itemCodeInput').value) {
+                generateAutoCode();
+            } else {
+                renderLiveBarcode();
+            }
+        });
+    </script>
+}
+

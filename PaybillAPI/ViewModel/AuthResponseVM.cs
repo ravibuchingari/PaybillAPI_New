@@ -1,5 +1,4 @@
 using Paybill.Models;
-using Paybill.Repositories.Service;
 
 namespace Paybill.ViewModel
 {
@@ -8,8 +7,8 @@ namespace Paybill.ViewModel
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
         public bool IsBiometricAuthentication { get; set; }
-        public UserVM User { get; set; } = null!;
-        public DashboardPref Pref { get; set; } = null!;
+        public UserVM User { get; set; } = new();
+        public DashboardPref Pref { get; set; } = new();
         public IEnumerable<MessageTemplateVM>? MessageTemplates { get; set; }
     }
 }

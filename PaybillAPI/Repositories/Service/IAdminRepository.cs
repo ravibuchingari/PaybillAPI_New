@@ -3,14 +3,6 @@ using Paybill.ViewModel;
 
 namespace Paybill.Repositories.Service
 {
-    public class MessageTemplateVM
-    {
-        public int MessageId { get; set; }
-        public string MessageType { get; set; } = "Sales Invoice Message";
-        public string MessageDescription { get; set; } = string.Empty;
-        public bool IsSelected { get; set; }
-    }
-
     public interface IAdminRepository
     {
         Task<ResponseMessage> DeleteMessage(int messageId);

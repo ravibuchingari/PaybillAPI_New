@@ -10,5 +10,16 @@ namespace Paybill.Models
         public string? PaymentMode { get; set; } = string.Empty;
         public string? UpiType { get; set; } = string.Empty;
         public string? Id { get; set; } = string.Empty;
+
+        public string? SalesType
+        {
+            get => TransactionType;
+            set => TransactionType = value;
+        }
+        public string? PurchaseType
+        {
+            get => TransactionType;
+            set => TransactionType = value;
+        }
     }
 }

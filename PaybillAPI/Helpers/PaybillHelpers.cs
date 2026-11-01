@@ -1,4 +1,4 @@
-using Paybill.Areas.Paybill.Models;
+using Paybill.Models;
 using Paybill.ViewModel;
 using System.Security.Cryptography;
 using System.Text;

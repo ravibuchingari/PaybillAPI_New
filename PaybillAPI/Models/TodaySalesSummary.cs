@@ -18,9 +18,8 @@ namespace Paybill.Models
 
     public class DashboardSalesSummaryResponse
     {
-        public TodaySalesSummary Today { get; set; } = new TodaySalesSummary();
-        public TodaySalesSummary Weekly { get; set; } = new TodaySalesSummary();
-        public TodaySalesSummary Monthly { get; set; } = new TodaySalesSummary();
+        public TodaySalesSummary Today { get; set; } = new();
+        public TodaySalesSummary Weekly { get; set; } = new();
+        public TodaySalesSummary Monthly { get; set; } = new();
     }
 }
-

@@ -1,8 +1,9 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Paybill.Areas.Paybill.Models;
+using Paybill.Models;
+using Paybill.ViewModel;
 using Paybill.Services;
 
 namespace Paybill.Areas.Paybill.Controllers

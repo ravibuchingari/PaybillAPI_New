@@ -11,6 +11,11 @@ namespace Paybill.Models
         public int SalesFrequency { get; set; }
         public double TotalQuantitySold { get; set; }
         public double TotalRevenue { get; set; }
+
+        public double TotalSoldQty => TotalQuantitySold;
+        public double TotalSalesAmount => TotalRevenue;
+        public double CurrentStock => ClosingStock;
+        public double StockTurnoverRatio => ClosingStock > 0 ? Math.Round(TotalQuantitySold / ClosingStock, 2) : TotalQuantitySold;
+        public string MovementCategory => SalesFrequency >= 5 ? "Fast Moving" : (SalesFrequency > 0 ? "Normal" : "Slow Moving");
     }
 }
-

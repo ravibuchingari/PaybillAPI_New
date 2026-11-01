@@ -3,181 +3,727 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign In - @Model.CompanyName | PayBill Cloud POS &amp; ERP</title>
+    <title>Sign In — @Model.CompanyName | PayBill Cloud POS &amp; ERP</title>
     <link rel="icon" type="image/png" href="~/images/logo.png" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <style>
+        :root {
+            --pb-green: #226b08;
+            --pb-green-hover: #2c840d;
+            --pb-green-soft: #eaf6e6;
+            --pb-green-border: #cde6c6;
+            --pb-text-primary: #182b19;
+            --pb-text-secondary: #526653;
+            --pb-text-muted: #768977;
+            --pb-surface: #ffffff;
+            --pb-bg-light: #f4f9f4;
+            --pb-border: #e2ede2;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            max-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f6fbf6 0%, #eaf4ea 50%, #f3f8fb 100%);
+            color: var(--pb-text-primary);
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #121512 0%, #174204 55%, #2c6e0a 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
+            position: relative;
         }
+
+        /* Soft pastel daylight background accents */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(at 10% 15%, rgba(74, 222, 128, 0.16) 0px, transparent 45%),
+                radial-gradient(at 90% 85%, rgba(56, 189, 248, 0.12) 0px, transparent 45%),
+                radial-gradient(at 50% 10%, rgba(163, 230, 53, 0.12) 0px, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Main Light Card Container fitted to viewport height */
         .login-shell {
-            max-width: 960px;
+            position: relative;
+            z-index: 1;
+            max-width: 1040px;
             width: 100%;
+            max-height: calc(100vh - 2rem);
             background: #ffffff;
-            border-radius: 20px;
+            border-radius: 24px;
+            border: 1px solid #dfecdf;
             overflow: hidden;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-            display: flex;
+            box-shadow:
+                0 20px 50px -15px rgba(34, 107, 8, 0.10),
+                0 8px 20px -8px rgba(24, 43, 25, 0.05);
+            display: grid;
+            grid-template-columns: 1.08fr 1fr;
+            animation: cardFadeIn 0.35s ease-out;
         }
+
+        @@keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Left Light Pastel Showcase Panel */
         .login-hero {
-            background: linear-gradient(160deg, #174204 0%, #0d2602 100%);
-            color: #fff;
-            padding: 3rem 2.5rem;
-            width: 46%;
+            background: linear-gradient(160deg, #eff9ec 0%, #e3f3df 55%, #eef7f2 100%);
+            border-right: 1px solid #d8ebd4;
+            padding: 2rem 2.25rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+            overflow: hidden;
         }
-        .login-form-pane {
-            padding: 3rem 2.75rem;
-            width: 54%;
+
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.32rem 0.75rem;
+            border-radius: 999px;
             background: #ffffff;
-            color: #1c251c;
+            border: 1px solid var(--pb-green-border);
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: var(--pb-green);
+            box-shadow: 0 2px 6px rgba(34, 107, 8, 0.06);
         }
-        .btn-paybill {
-            background-color: #174204;
-            border-color: #174204;
-            color: #fff;
-            font-weight: 600;
-            padding: 0.7rem 1.25rem;
-            border-radius: 10px;
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
         }
-        .btn-paybill:hover {
-            background-color: #2c6e0a;
-            border-color: #2c6e0a;
-            color: #fff;
-        }
-        .feature-pill {
+
+        .brand-logo-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid var(--pb-green-border);
+            padding: 5px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 16px rgba(34, 107, 8, 0.08);
+            flex-shrink: 0;
+        }
+
+        .brand-logo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .hero-company-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: #153808;
+            line-height: 1.2;
+            margin-bottom: 0.35rem;
+        }
+
+        .hero-company-sub {
+            color: #466347;
+            font-size: 0.84rem;
+            line-height: 1.45;
+            margin-bottom: 1.15rem;
+        }
+
+        /* Light White Bento Feature Cards */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.7rem;
+        }
+
+        .bento-item {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #d8ebd4;
+            border-radius: 14px;
+            padding: 0.8rem 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(34, 107, 8, 0.03);
+        }
+
+        .bento-item:hover {
+            background: #ffffff;
+            border-color: #9fd494;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(34, 107, 8, 0.07);
+        }
+
+        .bento-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--pb-green-soft);
+            color: var(--pb-green);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .bento-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #183319;
+            margin-bottom: 0.15rem;
+        }
+
+        .bento-desc {
+            font-size: 0.72rem;
+            color: #587059;
+            line-height: 1.35;
+            margin: 0;
+        }
+
+        .hero-footer {
+            margin-top: 1.25rem;
+            padding-top: 0.9rem;
+            border-top: 1px solid #cfe6cb;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #4a664b;
+        }
+
+        .trust-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            font-weight: 600;
+        }
+
+        .trust-badges span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Right Pure White Form Pane */
+        .login-form-pane {
+            padding: 2rem 2.5rem;
+            background: #ffffff;
+            color: var(--pb-text-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .top-utility-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .workspace-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.34rem 0.8rem;
+            border-radius: 999px;
+            background: var(--pb-green-soft);
+            color: var(--pb-green);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .form-heading {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: var(--pb-text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .form-subheading {
+            color: var(--pb-text-secondary);
+            font-size: 0.86rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Light Mode Input Field Group */
+        .pb-field-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--pb-text-secondary);
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pb-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1.5px solid #c8dcc8;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .pb-input-wrap:hover {
+            border-color: #9ec49e;
+        }
+
+        .pb-input-wrap:focus-within {
+            border-color: var(--pb-green);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(34, 107, 8, 0.12);
+        }
+
+        .pb-input-icon {
+            padding-left: 0.95rem;
+            padding-right: 0.6rem;
+            background-color: #ffffff;
+            color: var(--pb-text-muted);
+            font-size: 1.05rem;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .pb-input-wrap:focus-within .pb-input-icon {
+            color: var(--pb-green);
+        }
+
+        .pb-input {
+            width: 100%;
+            border: none !important;
+            background-color: #ffffff !important;
+            padding: 0.74rem 0.85rem 0.74rem 0;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--pb-text-primary) !important;
+            border-radius: 12px;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .pb-input:-webkit-autofill,
+        .pb-input:-webkit-autofill:hover,
+        .pb-input:-webkit-autofill:focus,
+        .pb-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+            -webkit-text-fill-color: var(--pb-text-primary) !important;
+            background-color: #ffffff !important;
+            border-radius: 12px;
+        }
+
+        .pb-input::placeholder {
+            color: #93a694;
+            font-weight: 400;
+        }
+
+        .pb-password-toggle {
+            border: none;
+            background-color: #ffffff;
+            color: var(--pb-text-muted);
+            padding: 0 0.95rem;
+            height: 100%;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .pb-password-toggle:hover {
+            color: var(--pb-green);
+        }
+
+        /* Primary Sign-In Button */
+        .btn-signin {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 0.78rem 1.25rem;
+            font-size: 0.94rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            color: #ffffff;
+            background: linear-gradient(135deg, #226b08 0%, #2f8a0f 100%);
+            box-shadow: 0 8px 18px -5px rgba(34, 107, 8, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-signin:hover {
+            background: linear-gradient(135deg, #1d5c07 0%, #27750c 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 22px -5px rgba(34, 107, 8, 0.42);
+            color: #ffffff;
+        }
+
+        .btn-signin:active {
+            transform: translateY(0);
+        }
+
+        /* Alerts */
+        .pb-alert {
+            border-radius: 12px;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            margin-bottom: 0.95rem;
+        }
+
+        .pb-alert-danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .pb-alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
+        }
+
+        /* Setup Callout Banner */
+        .setup-banner {
+            margin-top: 0.85rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            background: #f6fbf5;
+            border: 1px dashed #b9dfb3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 0.75rem;
-            padding: 0.6rem 0.85rem;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            margin-bottom: 0.65rem;
-            font-size: 0.85rem;
         }
-        .feature-pill i {
-            color: #81c784;
-            font-size: 1.1rem;
+
+        .caps-warning {
+            font-size: 0.72rem;
+            color: #d97706;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 0.25rem;
         }
-        @@media (max-width: 767.98px) {
-            .login-shell { flex-direction: column; }
-            .login-hero, .login-form-pane { width: 100%; padding: 2rem; }
+
+        .kbd-light {
+            background: #f3f7f3;
+            color: var(--pb-text-secondary);
+            border: 1px solid #d8e5d8;
+            border-radius: 6px;
+            padding: 0.12rem 0.4rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        /* Responsive Breakpoints */
+        @@media (max-width: 991.98px) {
+            .login-hero {
+                display: none;
+            }
+            .login-shell {
+                grid-template-columns: 1fr;
+                max-width: 460px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-shell">
+        <!-- Left Light Pastel Showcase Panel -->
         <div class="login-hero">
             <div>
-                <div class="d-flex align-items-center gap-3 mb-4">
-                    <img src="~/images/logo.png" alt="PayBill" style="width:52px;height:52px;border-radius:12px;background:#fff;padding:4px;" onerror="this.style.display='none'" />
-                    <div>
-                        <h4 class="mb-0 fw-bold">PayBill ERP</h4>
-                        <span class="badge" style="background:#81c784;color:#121512;">Web POS &amp; Business Suite</span>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="brand-logo-wrap">
+                            <img src="~/images/logo.png"
+                                 alt="PayBill"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                            <i class="bi bi-receipt-cutoff fs-4 text-success" style="display:none;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6 lh-sm" style="color: #153808;">PayBill Enterprise</div>
+                            <div class="small" style="color: #4f6d50; font-size: 0.78rem;">Cloud POS &amp; ERP Platform</div>
+                        </div>
+                    </div>
+                    <span class="brand-pill">
+                        <span class="status-dot"></span>
+                        ERP Ready
+                    </span>
+                </div>
+
+                <div>
+                    <h1 class="hero-company-title">@Model.CompanyName</h1>
+                    <p class="hero-company-sub">
+                        @Model.BusinessType — Unified web point-of-sale, inventory master control, service job cards, GST compliance, and real-time business analytics.
+                    </p>
+                </div>
+
+                <div class="bento-grid">
+                    <div class="bento-item">
+                        <div class="bento-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                        <div class="bento-title">High-Speed POS</div>
+                        <p class="bento-desc">Barcode scanning, split payments, dynamic UPI QR &amp; thermal/A4 receipts.</p>
+                    </div>
+
+                    <div class="bento-item">
+                        <div class="bento-icon"><i class="bi bi-bank2"></i></div>
+                        <div class="bento-title">GST &amp; Tax Engine</div>
+                        <p class="bento-desc">Automated CGST/SGST/IGST slabs, GSTR-1, GSTR-3B, HSN/SAC &amp; JSON export.</p>
+                    </div>
+
+                    <div class="bento-item">
+                        <div class="bento-icon"><i class="bi bi-tools"></i></div>
+                        <div class="bento-title">Service Job Cards</div>
+                        <p class="bento-desc">Track repairs, spare parts, technician status &amp; 1-click invoice conversion.</p>
+                    </div>
+
+                    <div class="bento-item">
+                        <div class="bento-icon"><i class="bi bi-gift-fill"></i></div>
+                        <div class="bento-title">Loyalty Rewards</div>
+                        <p class="bento-desc">Customer points earning, instant bill redemption &amp; automated ledger sync.</p>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-2">@Model.CompanyName</h3>
-                <p class="text-white-50 small mb-4">@Model.BusinessType — Manage billing, GST, inventory, job cards, parties, and analytics seamlessly from your browser.</p>
-
-                <div class="feature-pill">
-                    <i class="bi bi-receipt-cutoff"></i>
-                    <span>Fast POS Billing, Barcodes, UPI QR &amp; Thermal/A4 Print</span>
-                </div>
-                <div class="feature-pill">
-                    <i class="bi bi-tools"></i>
-                    <span>Service Job Cards &amp; One-Click Invoice Conversion</span>
-                </div>
-                <div class="feature-pill">
-                    <i class="bi bi-bank2"></i>
-                    <span>Indian GST Compliance (GSTR-1, 3B, 2A/2B, HSN/SAC &amp; JSON)</span>
-                </div>
-                <div class="feature-pill">
-                    <i class="bi bi-gift-fill"></i>
-                    <span>Customer Loyalty &amp; Reward Points Engine</span>
-                </div>
             </div>
-            <div class="small text-white-50 mt-3">
-                <i class="bi bi-shield-lock-fill text-success me-1"></i> AES-256 &amp; JWT Protected Multi-User Access
+
+            <div class="hero-footer">
+                <div class="trust-badges">
+                    <span><i class="bi bi-shield-check text-success"></i> AES-256 &amp; JWT Security</span>
+                    <span><i class="bi bi-cloud-check text-primary"></i> Android &amp; Web Synced</span>
+                </div>
+                <div id="liveLoginClock" class="fw-semibold"></div>
             </div>
         </div>
 
-        <div class="login-form-pane d-flex flex-column justify-content-center">
-            <div class="mb-4">
-                <h4 class="fw-bold mb-1">Welcome Back</h4>
-                <p class="text-muted small mb-0">Sign in with your PayBill User ID and Password</p>
-            </div>
-
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success py-2 small">
-                    <i class="bi bi-check-circle-fill me-1"></i> @TempData["SuccessMessage"]
-                </div>
-            }
-
-            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
-            {
-                <div class="alert alert-danger py-2 small">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i> @Model.ErrorMessage
-                </div>
-            }
-
-            <form asp-action="Login" asp-controller="Account" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="ClientUniqueId" />
-                <input type="hidden" asp-for="ClientId" />
-                <input type="hidden" asp-for="CompanyName" />
-                <input type="hidden" asp-for="BusinessType" />
-                <input type="hidden" asp-for="ReturnUrl" />
-
-                <div class="mb-3">
-                    <label asp-for="UserId" class="form-label fw-semibold small text-uppercase">User ID</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="bi bi-person-fill text-secondary"></i></span>
-                        <input asp-for="UserId" class="form-control" placeholder="Enter User ID (e.g., admin)" autofocus required />
-                    </div>
+        <!-- Right Pure White Sign-In Panel -->
+        <div class="login-form-pane">
+            <div>
+                <div class="top-utility-bar">
+                    <span class="workspace-badge">
+                        <i class="bi bi-shield-lock-fill"></i> Authorized Business Portal
+                    </span>
+                    <span class="small text-muted fw-medium" style="font-size: 0.78rem;">
+                        <i class="bi bi-check2-circle text-success me-1"></i>Secure Login
+                    </span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="Password" class="form-label fw-semibold small text-uppercase">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="bi bi-lock-fill text-secondary"></i></span>
-                        <input asp-for="Password" type="password" id="loginPasswordInput" class="form-control" placeholder="Enter your password" required />
-                        <button type="button" class="btn btn-outline-secondary" onclick="const p=document.getElementById('loginPasswordInput'); p.type = p.type==='password'?'text':'password';">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
-                </div>
+                <h2 class="form-heading">Welcome back</h2>
+                <p class="form-subheading">Sign in with your PayBill User ID and Password to continue.</p>
 
-                <button type="submit" class="btn btn-paybill w-100 mb-3">
-                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Dashboard
-                </button>
-
-                @if (!Model.IsConfigured)
+                @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="text-center mt-2">
-                        <a href="@Url.Action("Setup", "Account")" class="small text-decoration-none fw-semibold" style="color:#174204;">
-                            <i class="bi bi-magic me-1"></i> First-time setup? Register Business Account
-                        </a>
+                    <div class="pb-alert pb-alert-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>@TempData["SuccessMessage"]</div>
                     </div>
                 }
-            </form>
+
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
+                    <div class="pb-alert pb-alert-danger">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                        <div>@Model.ErrorMessage</div>
+                    </div>
+                }
+
+                <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ClientUniqueId" />
+                    <input type="hidden" asp-for="ClientId" />
+                    <input type="hidden" asp-for="CompanyName" />
+                    <input type="hidden" asp-for="BusinessType" />
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <div class="mb-3">
+                        <label asp-for="UserId" class="pb-field-label">
+                            <span>User ID</span>
+                            <span class="text-muted fw-normal" style="text-transform: none;">Admin / Staff ID</span>
+                        </label>
+                        <div class="pb-input-wrap">
+                            <span class="pb-input-icon"><i class="bi bi-person-badge"></i></span>
+                            <input asp-for="UserId"
+                                   class="pb-input"
+                                   placeholder="Enter your User ID (e.g., admin)"
+                                   autocomplete="username"
+                                   autofocus
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="pb-field-label">
+                            <span>Password</span>
+                            <span id="capsLockWarning" class="caps-warning">
+                                <i class="bi bi-capslock-fill"></i> Caps Lock is ON
+                            </span>
+                        </label>
+                        <div class="pb-input-wrap">
+                            <span class="pb-input-icon"><i class="bi bi-key"></i></span>
+                            <input asp-for="Password"
+                                   type="password"
+                                   id="loginPasswordInput"
+                                   class="pb-input"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password"
+                                   required />
+                            <button type="button"
+                                    class="pb-password-toggle"
+                                    onclick="togglePasswordVisibility()"
+                                    title="Show / Hide Password"
+                                    tabindex="-1">
+                                <i id="passwordEyeIcon" class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between mb-3 small">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberSessionCheck" checked />
+                            <label class="form-check-label text-secondary" for="rememberSessionCheck">
+                                Keep me signed in on this browser
+                            </label>
+                        </div>
+                        <span class="kbd-light">Enter ↵</span>
+                    </div>
+
+                    <button type="submit" class="btn-signin" id="signInSubmitBtn">
+                        <span id="signInBtnText">Sign In to Dashboard</span>
+                        <i id="signInBtnIcon" class="bi bi-arrow-right-circle-fill fs-5"></i>
+                    </button>
+
+                    @if (!Model.IsConfigured)
+                    {
+                        <div class="setup-banner">
+                            <div>
+                                <div class="fw-bold small text-dark">First-time installation?</div>
+                                <div class="text-secondary" style="font-size: 0.74rem;">Configure your business profile &amp; admin account.</div>
+                            </div>
+                            <a href="@Url.Action("Setup", "Account")" class="btn btn-sm btn-outline-success fw-semibold text-nowrap">
+                                <i class="bi bi-magic me-1"></i>Setup Account
+                            </a>
+                        </div>
+                    }
+                </form>
+            </div>
+
+            <div class="pt-3 mt-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2 small text-secondary" style="font-size: 0.76rem;">
+                <span>&copy; @DateTime.Now.Year <strong>@Model.CompanyName</strong></span>
+                <span class="d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-hdd-network text-success"></i> Unified Web &amp; API Server
+                </span>
+            </div>
         </div>
     </div>
+
+    <script>
+        localStorage.setItem('pb_theme', 'light');
+
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById('loginPasswordInput');
+            const eye = document.getElementById('passwordEyeIcon');
+            if (!pwd || !eye) return;
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                eye.className = 'bi bi-eye-slash';
+            } else {
+                pwd.type = 'password';
+                eye.className = 'bi bi-eye';
+            }
+        }
+
+        const pwdInput = document.getElementById('loginPasswordInput');
+        const capsWarn = document.getElementById('capsLockWarning');
+        if (pwdInput && capsWarn) {
+            ['keyup', 'keydown'].forEach(evt => {
+                pwdInput.addEventListener(evt, function (e) {
+                    if (e.getModifierState && e.getModifierState('CapsLock')) {
+                        capsWarn.style.display = 'inline-flex';
+                    } else {
+                        capsWarn.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function () {
+                const btn = document.getElementById('signInSubmitBtn');
+                const txt = document.getElementById('signInBtnText');
+                const ico = document.getElementById('signInBtnIcon');
+                if (btn && txt && ico) {
+                    btn.disabled = true;
+                    txt.textContent = 'Signing in...';
+                    ico.className = 'spinner-border spinner-border-sm';
+                }
+            });
+        }
+
+        function updateClock() {
+            const el = document.getElementById('liveLoginClock');
+            if (!el) return;
+            const now = new Date();
+            el.textContent = now.toLocaleDateString('en-IN', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            }) + ' • ' + now.toLocaleTimeString('en-IN', {
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+        updateClock();
+        setInterval(updateClock, 30000);
+    </script>
 </body>
 </html>
-

@@ -1,10 +1,11 @@
-﻿namespace Paybill.Models
+namespace Paybill.Models
 {
     public class PrintSalesItem
     {
-        public string ItemCode { get; set; } = null!;
-        public string ItemName { get; set; } = null!;
-        public string Measure { get; set; } = null!;
+        public string ItemCode { get; set; } = string.Empty;
+        public string ItemName { get; set; } = string.Empty;
+        public string Measure { get; set; } = string.Empty;
+        public string HsnCode { get; set; } = string.Empty;
         public double Quantity { get; set; }
         public double Mrp { get; set; }
         public double Rate { get; set; }
@@ -21,5 +22,11 @@
         public double GstAmount { get; set; }
         public double TotalAmount { get; set; }
         public double SavingAmount { get; set; }
+
+        public double SalesPrice => Rate;
+        public double DiscountRs => DiscountInRs;
+        public double CgstAmount => CgstRs;
+        public double SgstAmount => SgstRs;
+        public double IgstAmount => IgstRs;
     }
 }

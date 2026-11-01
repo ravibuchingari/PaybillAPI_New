@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Paybill.Areas.Paybill.Models;
+using Paybill.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,7 +15,7 @@ namespace Paybill.Auth
                 string.IsNullOrEmpty(param.UserId) ||
                 string.IsNullOrEmpty(param.UserRole) ||
                 string.IsNullOrEmpty(param.SecurityKey))
-                return new ResponseMessage() { IsSuccess = false, Message = "User authentication failed." };
+                return new ResponseMessage(false, "User authentication failed.");
 
             var jwtTokenParameter = new JwtTokenParameter()
             {
@@ -35,7 +35,7 @@ namespace Paybill.Auth
                 new(ClaimTypes.NameIdentifier, param.UserRowId.ToString()),
                 new(ClaimTypes.Name, param.UserRowId.ToString()),
                 new(ClaimTypes.Role, param.UserRole),
-                new(JwtRegisteredClaimNames.Iss, param.ClientName),
+                new(JwtRegisteredClaimNames.Iss, param.ClientName ?? string.Empty),
                 new("UserId", param.UserId),
                 new("SecurityKey", param.SecurityKey),
             ]);
@@ -55,7 +55,7 @@ namespace Paybill.Auth
             SecurityToken securityToken = securityTokenHandler.CreateToken(securityTokenDescriptor);
             string token = securityTokenHandler.WriteToken(securityToken);
 
-            return await Task.FromResult(new ResponseMessage() { IsSuccess = true, Message = token, Data = SecurityKey });
+            return await Task.FromResult(new ResponseMessage(true, token, param.SecurityKey));
         }
     }
 }

@@ -1,0 +1,173 @@
+@model MasterHubViewModel
+@{
+    ViewData["Title"] = "Master Setup & Registrations";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h5 class="fw-bold mb-1"><i class="bi bi-database-fill-gear text-primary me-2"></i>Master Data Registrations</h5>
+        <p class="text-muted small mb-0">Configure and manage all master records — Categories, GST Slabs, Items, Customers, Suppliers, Users, Service Types, and Excel Bulk Import.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("ItemMaster", "Master")" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>+ Add New Item
+        </a>
+        <a href="@Url.Action("PartyMaster", "Master")" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-person-plus me-1"></i>+ Register Party / Vendor
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- 1. Category Master -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("Categories", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-tags-fill"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-success">@Model.CategoriesCount Categories</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Category Master</h6>
+                <p class="text-muted small mb-3">Create, edit, search, and organize product categories with item counts.</p>
+                <div class="text-primary small fw-semibold">
+                    Open Category Master <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 2. GST Master -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("Gst", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-percent"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-success">@Model.GstSlabsCount Slabs</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">GST Master</h6>
+                <p class="text-muted small mb-3">Configure GST tax slabs with automatic CGST, SGST, and IGST split calculation.</p>
+                <div class="text-primary small fw-semibold">
+                    Open GST Master <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 3. Add New Item (Item Master) -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("ItemMaster", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-info">New / Edit</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Add New Item (Item Master)</h6>
+                <p class="text-muted small mb-3">Register items with barcode, HSN, MRP, sales/purchase price, shelf, and item photo.</p>
+                <div class="text-primary small fw-semibold">
+                    Open Item Registration <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 4. View All Items -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("Items", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-boxes"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-warning">@Model.ItemsCount Items</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">View All Items</h6>
+                <p class="text-muted small mb-3">Browse item catalog, view product images gallery, print QR/Barcodes, and reset stock.</p>
+                <div class="text-primary small fw-semibold">
+                    Browse All Items <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 5. Party / Vendor Registration -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("PartyMaster", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-secondary">@Model.CustomersCount Cust / @Model.VendorsCount Vend</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Party / Vendor Registration</h6>
+                <p class="text-muted small mb-3">Register Customers and Suppliers with GSTIN, shipping address, and Customer Loyalty Points.</p>
+                <div class="text-primary small fw-semibold">
+                    Open Party Registration <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 6. User Registration (Admin) -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("Users", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-danger">@Model.UsersCount Users</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">User Registration</h6>
+                <p class="text-muted small mb-3">Create and manage staff &amp; administrator login accounts, credentials, and active status.</p>
+                <div class="text-primary small fw-semibold">
+                    Open User Master <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 7. Service Types Master -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("ServiceTypes", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-info">@Model.ServiceTypesCount Services</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Service Types Master</h6>
+                <p class="text-muted small mb-3">Register service &amp; repair job charges, SAC codes, descriptions, and applicable GST slabs.</p>
+                <div class="text-primary small fw-semibold">
+                    Open Service Types <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- 8. Import Data From Excel -->
+    <div class="col-md-6 col-xl-3">
+        <a href="@Url.Action("ImportData", "Master")" class="text-decoration-none">
+            <div class="pb-card h-100 p-4 border-hover">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="pb-icon-box">
+                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                    </div>
+                    <span class="badge-soft badge-soft-success">.XLSX Import</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Import Data (Excel)</h6>
+                <p class="text-muted small mb-3">Bulk import items from `.xlsx` spreadsheets and download the official `paybill_template.xlsx`.</p>
+                <div class="text-primary small fw-semibold">
+                    Open Excel Import <i class="bi bi-arrow-right ms-1"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

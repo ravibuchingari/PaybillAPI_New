@@ -1,5 +1,5 @@
-using Paybill.Areas.Paybill.Models;
 using Paybill.Helpers;
+using Paybill.Models;
 using Paybill.ViewModel;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -531,7 +531,7 @@ namespace Paybill.Services
         public async Task<double> GetCustomerAvailablePointsAsync(int partyId)
         {
             var res = await GetAsync<ResponseMessage>($"api/party/party/{partyId}/rewards/available");
-            if (res != null && double.TryParse(res.Data ?? res.Message, out double pts))
+            if (res != null && double.TryParse(res.Data?.ToString() ?? res.Message, out double pts))
                 return pts;
             return 0.0;
         }
@@ -542,7 +542,7 @@ namespace Paybill.Services
         public async Task<string> GetCustomerEarliestExpiryDateAsync(int partyId)
         {
             var res = await GetAsync<ResponseMessage>($"api/party/party/{partyId}/rewards/expiry");
-            return res?.Data ?? res?.Message ?? string.Empty;
+            return res?.Data?.ToString() ?? res?.Message ?? string.Empty;
         }
 
         public async Task<List<RewardTransactionVM>> GetRewardsTransactionsAsync(
@@ -652,7 +652,7 @@ namespace Paybill.Services
         public async Task<string> GetNextJobCardNumberAsync()
         {
             var res = await GetAsync<ResponseMessage>("api/sales/jobcard/next-number");
-            return res?.Data ?? res?.Message ?? "1";
+            return res?.Data?.ToString() ?? res?.Message ?? "1";
         }
 
         public async Task<ResponseMessage> SaveJobCardAsync(JobCardVM jobCard)

@@ -1,9 +1,8 @@
-// PayBill Global UI & POS Helper Library
+// PayBill Global UI & POS Helper Library (Pure Light Mode)
 const PayBillUI = {
     init() {
-        // Theme initialization
-        const savedTheme = localStorage.getItem('pb_theme') || 'light';
-        this.setTheme(savedTheme);
+        // Always enforce clean Light Mode across the application
+        this.setTheme('light');
 
         // Sidebar collapse state
         if (localStorage.getItem('pb_sidebar_collapsed') === 'true' && window.innerWidth >= 992) {
@@ -23,18 +22,12 @@ const PayBillUI = {
     },
 
     toggleTheme() {
-        const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
-        const next = current === 'dark' ? 'light' : 'dark';
-        this.setTheme(next);
+        this.setTheme('light');
     },
 
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-bs-theme', theme);
-        localStorage.setItem('pb_theme', theme);
-        const icon = document.getElementById('pbThemeIcon');
-        if (icon) {
-            icon.className = theme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill';
-        }
+    setTheme() {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        localStorage.setItem('pb_theme', 'light');
     },
 
     toggleSidebar() {
@@ -57,11 +50,11 @@ const PayBillUI = {
                      'bi-info-circle-fill';
 
         const el = document.createElement('div');
-        el.className = `toast align-items-center ${bgClass} border-0 show mb-2 shadow`;
+        el.className = `toast align-items-center ${bgClass} border-0 show mb-2 shadow rounded-3`;
         el.setAttribute('role', 'alert');
         el.innerHTML = `
             <div class="d-flex">
-                <div class="toast-body d-flex align-items-center gap-2">
+                <div class="toast-body d-flex align-items-center gap-2 fw-medium">
                     <i class="bi ${icon}"></i>
                     <span>${this.escapeHtml(message)}</span>
                 </div>
@@ -152,5 +145,8 @@ const PayBillUI = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => PayBillUI.init());
+// Expose both casing aliases used across views
+window.PayBillUI = PayBillUI;
+window.PaybillUI = PayBillUI;
 
+document.addEventListener('DOMContentLoaded', () => PayBillUI.init());

@@ -1,4 +1,4 @@
-﻿using Paybill.Areas.Paybill.Models;
+using Paybill.Models;
 
 namespace Paybill.Auth
 {

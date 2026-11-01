@@ -29,8 +29,11 @@
         <a href="@Url.Action("BalanceSheet", "Report")" class="btn btn-outline-secondary">
             <i class="bi bi-journal-check me-1"></i>Balance Sheet Report
         </a>
+        <a href="@Url.Action("PartyMaster", "Master", new { isVendor = Model.IsVendor })" class="btn btn-outline-primary">
+            <i class="bi bi-person-vcard me-1"></i>Full @entitySingular Master
+        </a>
         <button type="button" class="btn btn-paybill" onclick="openPartyModal()">
-            <i class="bi bi-person-plus-fill me-1"></i>Add @entitySingular
+            <i class="bi bi-person-plus-fill me-1"></i>Quick Add @entitySingular
         </button>
     </div>
 </div>
@@ -148,7 +151,10 @@
                                         onclick="openQuickTxModal(@p.PartyId, '@Html.Raw(p.PartyName.Replace("'", "\\'"))', @closingBal)">
                                     <i class="bi bi-cash-coin"></i>
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary" title="Edit"
+                                <a href="@Url.Action("PartyMaster", "Master", new { id = p.PartyId, isVendor = Model.IsVendor })" class="btn btn-outline-info" title="Open Full Master & Rewards">
+                                    <i class="bi bi-person-vcard"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" title="Quick Edit"
                                         onclick='editParty(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(p)))'>
                                     <i class="bi bi-pencil"></i>
                                 </button>

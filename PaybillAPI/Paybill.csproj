@@ -7,9 +7,11 @@
     <RootNamespace>Paybill</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="wwwroot\log\**" />
+    <Content Remove="wwwroot\applog\**" />
+    <Content Remove="wwwroot\temp\**" />
     <Folder Include="Areas\WebApi\Controllers\" />
     <Folder Include="Areas\Paybill\Controllers\" />
-    <Folder Include="Areas\Paybill\Models\" />
     <Folder Include="Areas\Paybill\Views\" />
     <Folder Include="wwwroot\applog\" />
     <Folder Include="wwwroot\temp\" />
@@ -17,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" />
     <PackageReference Include="ClosedXML" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
@@ -26,9 +29,6 @@
     <PackageReference Include="MySql.EntityFrameworkCore" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Serilog.AspNetCore" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\JWTAuthenticationManager\AuthenticationManager.csproj" />
   </ItemGroup>
 </Project>
 

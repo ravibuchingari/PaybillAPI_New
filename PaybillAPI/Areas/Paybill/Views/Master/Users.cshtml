@@ -1,0 +1,234 @@
+@model UserMasterPageViewModel
+@{
+    ViewData["Title"] = "User Registration Master";
+    bool isEdit = Model.EditUser.UserRowId > 0;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div class="d-flex align-items-center gap-2">
+        <a href="@Url.Action("Index", "Master")" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Master Hub
+        </a>
+        <span class="text-muted">/</span>
+        <span class="fw-semibold">User Registration</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index", "Settings", new { tab = "security" })" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-key me-1"></i>Change My Password
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: User Registration Form (Matches UserRegistrationScreen.kt) -->
+    <div class="col-lg-5">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi @(isEdit ? "bi-person-gear text-warning" : "bi-person-plus-fill text-danger") me-2"></i>
+                    @(isEdit ? $"Update User Account ({Model.EditUser.UserId})" : "New User Registration")
+                </h6>
+            </div>
+            <div class="pb-card-body">
+                <form asp-action="SaveUser" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="UserRowId" value="@Model.EditUser.UserRowId" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   name="FirstName"
+                                   value="@Model.EditUser.FirstName"
+                                   class="form-control"
+                                   maxlength="30"
+                                   required
+                                   placeholder="First Name" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   name="LastName"
+                                   value="@Model.EditUser.LastName"
+                                   class="form-control"
+                                   maxlength="30"
+                                   required
+                                   placeholder="Last Name" />
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Address <span class="text-danger">*</span></label>
+                            <textarea name="Address"
+                                      class="form-control"
+                                      rows="2"
+                                      maxlength="250"
+                                      required
+                                      placeholder="Residential / Staff address">@Model.EditUser.Address</textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Mobile (10 digits) <span class="text-danger">*</span></label>
+                            <input type="tel"
+                                   name="Mobile"
+                                   value="@Model.EditUser.Mobile"
+                                   class="form-control"
+                                   maxlength="10"
+                                   pattern="[0-9]{10}"
+                                   required
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
+                                   placeholder="10-digit mobile" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Login User ID <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   name="UserId"
+                                   value="@Model.EditUser.UserId"
+                                   class="form-control fw-bold"
+                                   maxlength="20"
+                                   required
+                                   @(isEdit ? "readonly" : "")
+                                   placeholder="e.g., cashier1" />
+                        </div>
+
+                        @if (!isEdit)
+                        {
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                                <input type="password"
+                                       name="Password"
+                                       class="form-control"
+                                       maxlength="20"
+                                       required
+                                       placeholder="Login password" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password"
+                                       name="confirmPassword"
+                                       class="form-control"
+                                       maxlength="20"
+                                       required
+                                       placeholder="Re-enter password" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Reset Password <span class="text-muted small">(Leave blank to keep existing password)</span></label>
+                                <input type="password"
+                                       name="Password"
+                                       class="form-control"
+                                       maxlength="20"
+                                       placeholder="Enter new password only if resetting" />
+                            </div>
+                        }
+
+                        <div class="col-md-6 pt-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="userAdminSwitch" name="IsAdmin" value="true" @(Model.EditUser.IsAdmin ? "checked" : "") />
+                                <label class="form-check-label fw-semibold" for="userAdminSwitch">Administrator Role</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 pt-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="userActiveSwitch" name="IsActive" value="true" @(Model.EditUser.IsActive ? "checked" : "") />
+                                <label class="form-check-label fw-semibold" for="userActiveSwitch">Active Account</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="bi bi-check2-circle me-1"></i>@(isEdit ? "Update User" : "Save User")
+                        </button>
+                        <a href="@Url.Action("Users", "Master")" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Registered Users List -->
+    <div class="col-lg-7">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-people-fill text-danger me-2"></i>Registered Users (@Model.Users.Count)
+                </h6>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>User ID</th>
+                            <th>Mobile</th>
+                            <th class="text-center">Role</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end" style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Users.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">No users registered.</td>
+                            </tr>
+                        }
+                        @foreach (var u in Model.Users)
+                        {
+                            <tr class="@(Model.EditUser.UserRowId == u.UserRowId ? "table-primary" : "")">
+                                <td>
+                                    <div class="fw-bold">@u.FullName</div>
+                                    @if (!string.IsNullOrWhiteSpace(u.Address))
+                                    {
+                                        <div class="small text-muted text-truncate" style="max-width: 200px;">@u.Address</div>
+                                    }
+                                </td>
+                                <td><span class="badge bg-light text-dark border font-monospace">@u.UserId</span></td>
+                                <td>@u.Mobile</td>
+                                <td class="text-center">
+                                    <span class="badge @(u.IsAdmin ? "bg-danger" : "bg-info text-dark")">
+                                        @(u.IsAdmin ? "Admin" : "Staff")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @(u.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(u.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="@Url.Action("Users", "Master", new { editId = u.UserRowId })"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        @if (!u.IsAdmin)
+                                        {
+                                            <form asp-action="DeleteUser" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete user \'@u.FullName\'?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userRowId" value="@u.UserRowId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

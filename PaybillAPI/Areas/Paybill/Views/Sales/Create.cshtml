@@ -24,7 +24,7 @@
         <div class="d-flex gap-2">
             @if (Model.IsAdmin)
             {
-                <a href="@Url.Action("Index", "Settings", new { tab = "unlocks" })" class="btn btn-sm btn-dark">Manage Unlock Requests</a>
+                <a href="@Url.Action("Index", "Settings", new { tab = "unlocks" })" class="btn btn-sm btn-primary">Manage Unlock Requests</a>
             }
             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#reqUnlockModal">
                 <i class="bi bi-unlock me-1"></i>Request Unlock

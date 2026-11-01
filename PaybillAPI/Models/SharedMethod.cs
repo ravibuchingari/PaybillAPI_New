@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System.ComponentModel;
@@ -64,13 +64,14 @@ namespace Paybill.Models
 
             if (selectedPropertyDescriptor == null) return;
 
-
             foreach (PropertyDescriptor prop in selectedPropertyDescriptor)
             {
+                if (!prop.IsBrowsable) continue;
 
                 if (!prop.PropertyType.IsClass || prop.PropertyType == typeof(string))
                 {
-                    dataTable.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                    if (!dataTable.Columns.Contains(prop.Name))
+                        dataTable.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
                 }
                 else if (typeof(IEnumerable<>).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string))
                 {
@@ -102,12 +103,14 @@ namespace Paybill.Models
 
             if (selectedPropertyDescriptor == null) return;
 
-
             foreach (PropertyDescriptor prop in selectedPropertyDescriptor)
             {
+                if (!prop.IsBrowsable) continue;
+
                 if (!prop.PropertyType.IsClass || prop.PropertyType == typeof(string))
                 {
-                    row[prop.Name] = prop.GetValue(obj) ?? DBNull.Value;
+                    if (row.Table.Columns.Contains(prop.Name))
+                        row[prop.Name] = prop.GetValue(obj) ?? DBNull.Value;
                 }
                 else if (typeof(IEnumerable<>).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string))
                 {

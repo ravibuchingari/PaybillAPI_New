@@ -1,0 +1,202 @@
+@model ServiceTypeMasterViewModel
+@{
+    ViewData["Title"] = "Service Types Master Registration";
+    bool isEdit = Model.EditServiceType.ServiceTypeId > 0;
+    int? selectedGstId = Model.EditServiceType.GstModel?.GstId;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div class="d-flex align-items-center gap-2">
+        <a href="@Url.Action("Index", "Master")" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Master Hub
+        </a>
+        <span class="text-muted">/</span>
+        <span class="fw-semibold">Service Types Master</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Create", "JobCard")" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-tools me-1"></i>+ New Job Card
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Service Type Registration Form (Matches ServiceTypesScreen.kt) -->
+    <div class="col-lg-5">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi @(isEdit ? "bi-pencil-square text-warning" : "bi-tools text-info") me-2"></i>
+                    @(isEdit ? $"Update Service Type (#{Model.EditServiceType.ServiceTypeId})" : "New Service Type Registration")
+                </h6>
+            </div>
+            <div class="pb-card-body">
+                <form asp-action="SaveServiceType" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="serviceTypeId" value="@Model.EditServiceType.ServiceTypeId" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Service Name <span class="text-danger">*</span></label>
+                        <input type="text"
+                               name="serviceTypeName"
+                               value="@Model.EditServiceType.ServiceTypeName"
+                               class="form-control"
+                               maxlength="100"
+                               required
+                               placeholder="e.g., General Servicing, Screen Replacement, Inspection" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Service Description</label>
+                        <textarea name="serviceDescription"
+                                  class="form-control"
+                                  rows="2"
+                                  maxlength="500"
+                                  placeholder="Scope of work or standard checklist">@Model.EditServiceType.ServiceDescription</textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Service Charge (₹) <span class="text-danger">*</span></label>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0.01"
+                                   name="serviceCharge"
+                                   value="@(Model.EditServiceType.ServiceCharge > 0 ? Model.EditServiceType.ServiceCharge.ToString("0.##") : "")"
+                                   class="form-control fw-bold text-success"
+                                   required
+                                   placeholder="0.00" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">SAC Code</label>
+                            <input type="text"
+                                   name="sacCode"
+                                   value="@Model.EditServiceType.SacCode"
+                                   class="form-control font-monospace"
+                                   maxlength="6"
+                                   placeholder="e.g., 9987" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">GST Rate</label>
+                        <select name="gstId" class="form-select">
+                            <option value="">-- No GST (0%) --</option>
+                            @foreach (var g in Model.GstSlabs)
+                            {
+                                float total = g.IgstPer > 0 ? g.IgstPer : (g.CgstPer + g.SgstPer);
+                                if (selectedGstId.HasValue && selectedGstId.Value == g.GstId)
+                                {
+                                    <option value="@g.GstId" selected>GST @total.ToString("0.##")% (CGST @g.CgstPer.ToString("0.##")% + SGST @g.SgstPer.ToString("0.##")%)</option>
+                                }
+                                else
+                                {
+                                    <option value="@g.GstId">GST @total.ToString("0.##")% (CGST @g.CgstPer.ToString("0.##")% + SGST @g.SgstPer.ToString("0.##")%)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" id="serviceActiveSwitch" name="isActive" value="true" @(Model.EditServiceType.IsActive ? "checked" : "") />
+                        <label class="form-check-label fw-semibold" for="serviceActiveSwitch">Active Service</label>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="bi bi-check2-circle me-1"></i>@(isEdit ? "Update Service" : "Save Service")
+                        </button>
+                        <a href="@Url.Action("ServiceTypes", "Master")" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Registered Services List -->
+    <div class="col-lg-7">
+        <div class="pb-card">
+            <div class="pb-card-header">
+                <h6 class="fw-bold mb-0">
+                    <i class="bi bi-tools text-info me-2"></i>Registered Services (@Model.ServiceTypes.Count)
+                </h6>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table pb-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>SAC Code</th>
+                            <th class="text-end">Charge (₹)</th>
+                            <th class="text-center">GST</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end" style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.ServiceTypes.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-tools fs-2 d-block mb-2"></i>
+                                    No service types registered yet.
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var s in Model.ServiceTypes)
+                        {
+                            <tr class="@(Model.EditServiceType.ServiceTypeId == s.ServiceTypeId ? "table-info" : "")">
+                                <td>
+                                    <div class="fw-bold">@s.ServiceTypeName</div>
+                                    @if (!string.IsNullOrWhiteSpace(s.ServiceDescription))
+                                    {
+                                        <div class="small text-muted">@s.ServiceDescription</div>
+                                    }
+                                </td>
+                                <td><span class="font-monospace small">@(string.IsNullOrWhiteSpace(s.SacCode) ? "—" : s.SacCode)</span></td>
+                                <td class="text-end fw-bold text-success">₹@s.ServiceCharge.ToString("N2")</td>
+                                <td class="text-center">
+                                    @if (s.GstModel != null)
+                                    {
+                                        float gTotal = s.GstModel.IgstPer > 0 ? s.GstModel.IgstPer : (s.GstModel.CgstPer + s.GstModel.SgstPer);
+                                        <span class="badge bg-success bg-opacity-10 text-success">@gTotal.ToString("0.##")%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">0%</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @(s.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(s.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="@Url.Action("ServiceTypes", "Master", new { editId = s.ServiceTypeId })"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <form asp-action="DeleteServiceType" method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete service \'@s.ServiceTypeName\'?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@s.ServiceTypeId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

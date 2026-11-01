@@ -1,11 +1,11 @@
-﻿namespace Paybill.ViewModel
+namespace Paybill.ViewModel
 {
     public class AuthRequestVM
     {
-        public string ClientUniqueId { get; set; } = null!;
-        public string ClientId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        public string ClientUniqueId { get; set; } = string.Empty;
+        public string ClientId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
         public string? BiometricAuthKey { get; set; }
     }
 }
