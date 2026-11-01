@@ -9,7 +9,6 @@ using Paybill.Data;
 using Paybill.Middlewares;
 using Paybill.Repositories;
 using Paybill.Repositories.Service;
-using Paybill.Services;
 using Serilog;
 using System.Text;
 using System.Text.Json;
@@ -27,7 +26,6 @@ builder.Services.AddScoped<ISalesRepository, SalesRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
-builder.Services.AddScoped<IPaybillApiService, PaybillApiService>();
 
 // 2. Database Configuration (MySQL via EF Core)
 builder.Services.AddDbContext<AppDBContext>(options =>
@@ -36,23 +34,10 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 // 3. Background Service for Daily Activities
 builder.Services.AddHostedService<DailyBackgroundService>();
 
-// 4. JWT Settings & HttpContextAccessor
+// 4. JWT Settings, HttpContextAccessor & External HttpClient Factory
 builder.Services.Configure<JwtTokenParameter>(builder.Configuration.GetSection("JWTSettings"));
 builder.Services.AddHttpContextAccessor();
-
-// 5. Internal HttpClient for Paybill MVC -> WebApi Integration
-string apiBaseUrl = builder.Configuration["PaybillApi:BaseUrl"] ?? "http://localhost:5111/";
-if (!apiBaseUrl.EndsWith('/')) apiBaseUrl += "/";
-int timeoutSeconds = int.TryParse(builder.Configuration["PaybillApi:TimeoutSeconds"], out int t) ? t : 60;
-
-builder.Services.AddHttpClient("PaybillApi", client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-    client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-{
-    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-});
+builder.Services.AddHttpClient();
 
 // 6. Session & Cache Configuration
 builder.Services.AddDistributedMemoryCache();

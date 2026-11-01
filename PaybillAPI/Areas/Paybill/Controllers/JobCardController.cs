@@ -2,19 +2,23 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paybill.Models;
+using Paybill.Repositories.Service;
 using Paybill.ViewModel;
-using Paybill.Services;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class JobCardController(IPaybillApiService apiService) : Controller
+    public class JobCardController(
+        ISalesRepository salesRepository,
+        IPartyRepository partyRepository,
+        IItemRepository itemRepository,
+        ISharedRepository sharedRepository) : PaybillBaseController
     {
         [HttpGet]
         public async Task<IActionResult> Index(int? statusFilter = null)
         {
-            var jobCards = await apiService.GetActiveJobCardsAsync();
+            var jobCards = await salesRepository.GetActiveJobCards();
             if (statusFilter.HasValue && statusFilter.Value > 0)
             {
                 jobCards = jobCards.Where(j => j.JobCardStatusId == statusFilter.Value).ToList();
@@ -27,28 +31,31 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(int? id = null)
         {
-            var nextNoTask = apiService.GetNextJobCardNumberAsync();
-            var customersTask = apiService.GetActivePartiesAsync(isVendor: false, isAll: false);
-            var servicesTask = apiService.GetServiceTypesAsync(isAll: false);
-            var itemsTask = apiService.GetAllItemsOfflineAsync(isAllItems: false);
-            var gstTask = apiService.GetGstListAsync(isActiveOnly: true);
+            var nextNoRes = await salesRepository.GetNextJobCardNumber();
+            string nextNo = nextNoRes.Data?.ToString() ?? nextNoRes.Message ?? "1";
 
-            Task<JobCardVM?>? jobCardTask = id.HasValue && id.Value > 0
-                ? apiService.GetJobCardDetailsAsync(id.Value)
-                : null;
+            var customers = (await partyRepository.GetActiveParties(isVendor: false, isAll: false)).ToList();
+            var services = (await itemRepository.GetServiceTypes(isAll: false)).ToList();
+            var items = (await itemRepository.GetItemsForOffline(isAllItems: false, lastUpdatedTime: null)).ToList();
+            var gstSlabs = (await itemRepository.GetGsts(isActive: true)).ToList();
 
-            await Task.WhenAll(
-                nextNoTask,
-                customersTask,
-                servicesTask,
-                itemsTask,
-                gstTask,
-                jobCardTask ?? Task.FromResult<JobCardVM?>(null));
+            JobCardVM? existingJobCard = null;
+            if (id.HasValue && id.Value > 0)
+            {
+                try
+                {
+                    existingJobCard = await salesRepository.GetJobCardDetails(id.Value);
+                }
+                catch
+                {
+                    existingJobCard = null;
+                }
+            }
 
-            var jobCard = jobCardTask?.Result ?? new JobCardVM
+            var jobCard = existingJobCard ?? new JobCardVM
             {
                 RequestDate = DateTime.Today.ToString("yyyy-MM-dd"),
-                JobCardNumber = nextNoTask.Result,
+                JobCardNumber = nextNo,
                 JobCardStatusId = 1,
                 Status = "Pending"
             };
@@ -56,12 +63,12 @@ namespace Paybill.Areas.Paybill.Controllers
             var vm = new JobCardPageViewModel
             {
                 JobCard = jobCard,
-                NextJobCardNumber = nextNoTask.Result,
-                Customers = customersTask.Result,
-                ServiceTypes = servicesTask.Result,
-                Items = itemsTask.Result,
-                GstSlabs = gstTask.Result,
-                CompanyGstin = apiService.GetCurrentCompanyGstin()
+                NextJobCardNumber = nextNo,
+                Customers = customers,
+                ServiceTypes = services,
+                Items = items,
+                GstSlabs = gstSlabs,
+                CompanyGstin = CurrentCompanyGstin
             };
 
             return View(vm);
@@ -95,24 +102,38 @@ namespace Paybill.Areas.Paybill.Controllers
                 _ => "Pending"
             };
 
-            var res = await apiService.SaveJobCardAsync(model);
-            return Json(new
+            try
             {
-                isSuccess = res.IsSuccess,
-                message = res.Message,
-                jobCardId = res.Data
-            });
+                var res = await salesRepository.CreateJobCard(model, CurrentUserRowId);
+                return Json(new
+                {
+                    isSuccess = res.IsSuccess,
+                    message = res.Message,
+                    jobCardId = res.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int id, int statusId)
         {
-            var res = await apiService.UpdateJobCardStatusAsync(id, statusId);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Job card status updated.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to update job card status.";
+            try
+            {
+                var res = await salesRepository.UpdateJobCardStatus(id, statusId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Job card status updated.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to update job card status.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -120,26 +141,47 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteComplaint(int complaintId)
         {
-            var res = await apiService.DeleteJobCardItemAsync(complaintId);
-            return Json(new { isSuccess = res.IsSuccess, message = res.Message });
+            try
+            {
+                var res = await salesRepository.DeleteJobCardItem(complaintId);
+                return Json(new { isSuccess = res.IsSuccess, message = res.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteSpare(int spareId)
         {
-            var res = await apiService.DeleteJobCardSpareAsync(spareId);
-            return Json(new { isSuccess = res.IsSuccess, message = res.Message });
+            try
+            {
+                var res = await salesRepository.DeleteJobCardSpare(spareId);
+                return Json(new { isSuccess = res.IsSuccess, message = res.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteJobCard(int id)
         {
-            var res = await apiService.DeleteJobCardAsync(id);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Job card deleted.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Could not delete job card.";
+            try
+            {
+                var res = await salesRepository.DeleteJobCard(id);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Job card deleted.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Could not delete job card.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -148,18 +190,25 @@ namespace Paybill.Areas.Paybill.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerateInvoice(int id)
         {
-            var res = await apiService.GenerateJobCardInvoiceAsync(id);
-            if (res.IsSuccess)
+            try
             {
-                TempData["SuccessMessage"] = res.Message ?? "Sales invoice generated from Job Card!";
-                if (!string.IsNullOrWhiteSpace(res.Data) && int.TryParse(res.Data, out int salesId) && salesId > 0)
+                var res = await salesRepository.GenerateOrGetSalesInvoiceForJobCard(id, CurrentUserRowId);
+                if (res.IsSuccess)
                 {
-                    return RedirectToAction("Create", "Sales", new { id = salesId });
+                    TempData["SuccessMessage"] = res.Message ?? "Sales invoice generated from Job Card!";
+                    if (!string.IsNullOrWhiteSpace(res.Data) && int.TryParse(res.Data, out int salesId) && salesId > 0)
+                    {
+                        return RedirectToAction("Create", "Sales", new { id = salesId });
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to convert Job Card to Sales Invoice.";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = res.Message ?? "Failed to convert Job Card to Sales Invoice.";
+                TempData["ErrorMessage"] = ex.Message;
             }
 
             return RedirectToAction(nameof(Index));
@@ -168,14 +217,19 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Print(int id)
         {
-            var jobCardTask = apiService.GetJobCardDetailsAsync(id);
-            var headerTask = apiService.GetPrintHeaderAsync();
-            await Task.WhenAll(jobCardTask, headerTask);
+            JobCardVM? jobCard = null;
+            try
+            {
+                jobCard = await salesRepository.GetJobCardDetails(id);
+            }
+            catch
+            {
+                jobCard = null;
+            }
 
-            ViewBag.Header = headerTask.Result;
-            return View(jobCardTask.Result ?? new JobCardVM { ServiceRequestId = id });
+            var header = await sharedRepository.GetPrintHeader();
+            ViewBag.Header = header;
+            return View(jobCard ?? new JobCardVM { ServiceRequestId = id });
         }
     }
 }
-
-

@@ -1,17 +1,17 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paybill.Models;
+using Paybill.Repositories.Service;
 using Paybill.ViewModel;
-using Paybill.Services;
-using System.Security.Claims;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [AllowAnonymous]
-    public class AccountController(IPaybillApiService apiService) : Controller
+    public class AccountController(ISharedRepository sharedRepository) : PaybillBaseController
     {
         [HttpGet]
         public async Task<IActionResult> Login(string? returnUrl = null)
@@ -21,7 +21,7 @@ namespace Paybill.Areas.Paybill.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            var clientInfo = await apiService.GetClientInfoAsync();
+            var clientInfo = await sharedRepository.GetPrimaryClientInfo();
             var vm = new LoginViewModel
             {
                 ReturnUrl = returnUrl,
@@ -46,12 +46,18 @@ namespace Paybill.Areas.Paybill.Controllers
 
             if (string.IsNullOrWhiteSpace(model.ClientUniqueId) || string.IsNullOrWhiteSpace(model.ClientId))
             {
-                var clientInfo = await apiService.GetClientInfoAsync();
+                var clientInfo = await sharedRepository.GetPrimaryClientInfo();
                 model.ClientUniqueId = clientInfo?.ClientUniqueId ?? "WEB_DEFAULT_UNIQUE_ID";
                 model.ClientId = clientInfo?.ClientId ?? "WEB_DEFAULT_CLIENT_ID";
             }
 
-            var authRes = await apiService.AuthenticateAsync(new AuthRequestVM
+            if (!await sharedRepository.IsValidAccount(model.ClientUniqueId, model.ClientId))
+            {
+                model.ErrorMessage = AppConstants.UNAUTHORIZED_ACCESS;
+                return View(model);
+            }
+
+            var authRes = await sharedRepository.UserAuthentication(new AuthRequestVM
             {
                 ClientUniqueId = model.ClientUniqueId,
                 ClientId = model.ClientId,
@@ -59,7 +65,7 @@ namespace Paybill.Areas.Paybill.Controllers
                 Password = model.Password
             });
 
-            if (!authRes.IsSuccess || authRes.User == null || string.IsNullOrWhiteSpace(authRes.User.JwtToken))
+            if (!authRes.IsSuccess || authRes.User == null)
             {
                 model.ErrorMessage = !string.IsNullOrWhiteSpace(authRes.Message)
                     ? authRes.Message
@@ -78,7 +84,6 @@ namespace Paybill.Areas.Paybill.Controllers
                 new("UserId", authRes.User.UserId),
                 new("FullName", authRes.User.FullName),
                 new(ClaimTypes.Role, authRes.User.IsAdmin ? "admin" : "user"),
-                new("JwtToken", authRes.User.JwtToken),
                 new("SecurityKey", authRes.User.SecurityKey ?? string.Empty),
                 new("ClientUniqueId", authRes.User.Client?.ClientUniqueId ?? model.ClientUniqueId),
                 new("ClientId", authRes.User.Client?.ClientId ?? model.ClientId),
@@ -95,7 +100,7 @@ namespace Paybill.Areas.Paybill.Controllers
                 new AuthenticationProperties
                 {
                     IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(58)
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
                 });
 
             if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
@@ -127,8 +132,9 @@ namespace Paybill.Areas.Paybill.Controllers
 
             string uniqueId = Guid.NewGuid().ToString("N");
             string clientId = DateTime.Now.Ticks.ToString();
+            string securityKey = SharedMethod.GenerateUniqueID();
 
-            var accRes = await apiService.CreateAccountAsync(new ClientVM
+            var clientVm = new ClientVM
             {
                 ClientUniqueId = uniqueId,
                 ClientId = clientId,
@@ -141,19 +147,18 @@ namespace Paybill.Areas.Paybill.Controllers
                 SubscriptionAmount = 0,
                 SubscriptionEndDate = DateTime.Now.AddYears(5).ToString("yyyy-MM-dd"),
                 IsPremiumUser = true,
-                IsActivated = true
-            });
+                IsActivated = true,
+                SecurityKey = securityKey
+            };
 
-            if (!accRes.IsSuccess)
+            string accResponse = await sharedRepository.CreateAccountIfNotExists(clientVm);
+            if (!accResponse.Equals(AppConstants.RESPONSE_SUCCESS))
             {
-                model.ErrorMessage = accRes.Message;
+                model.ErrorMessage = accResponse;
                 return View(model);
             }
 
-            string tempJwt = accRes.Message;
-            string secKey = accRes.Data ?? string.Empty;
-
-            var userRes = await apiService.CreateInitialUserAsync(new UserVM
+            string userResponse = await sharedRepository.CreateUserIfNotExists(new UserVM
             {
                 UserId = model.AdminUserId.Trim(),
                 Password = model.AdminPassword,
@@ -163,12 +168,12 @@ namespace Paybill.Areas.Paybill.Controllers
                 Address = model.Address?.Trim() ?? string.Empty,
                 IsAdmin = true,
                 IsActive = true,
-                SecurityKey = secKey
-            }, tempJwt);
+                SecurityKey = clientVm.SecurityKey
+            });
 
-            if (!userRes.IsSuccess)
+            if (!userResponse.Equals(AppConstants.RESPONSE_SUCCESS))
             {
-                model.ErrorMessage = userRes.Message;
+                model.ErrorMessage = userResponse;
                 return View(model);
             }
 
@@ -191,5 +196,3 @@ namespace Paybill.Areas.Paybill.Controllers
         }
     }
 }
-
-

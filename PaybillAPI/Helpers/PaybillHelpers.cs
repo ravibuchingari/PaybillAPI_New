@@ -1,62 +1,9 @@
 using Paybill.Models;
 using Paybill.ViewModel;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
-using System.Web;
 
 namespace Paybill.Helpers
 {
-    public static class PaybillCrypto
-    {
-        public static readonly string[] API_AES_KEY_AND_IV = ["aptlADsyGEtotitNrGNGBeautyRaESpb", "rEPbyteH4377rfvi"];
-        public static readonly string[] PAYBILL_API_AES_KEY_AND_IV = ["PgUpwEBhCapsVkScrLKEySGNSkEYPgDn", "NumPrtScnLockvhI"];
-
-        public static string EncryptWithIV(string plainText, string[] keys)
-        {
-            if (string.IsNullOrEmpty(plainText))
-                return string.Empty;
-            byte[] bytesPlainText = Encoding.UTF8.GetBytes(plainText);
-            using Aes cipher = Aes.Create();
-            cipher.Key = Encoding.UTF8.GetBytes(keys[0]);
-            cipher.IV = Encoding.UTF8.GetBytes(keys[1]);
-            using ICryptoTransform cryptoTransform = cipher.CreateEncryptor();
-            byte[] bytesCipherText = cryptoTransform.TransformFinalBlock(bytesPlainText, 0, bytesPlainText.Length);
-            return Convert.ToBase64String(bytesCipherText);
-        }
-
-        public static string DecryptWithIV(string cipherText, string[] keys)
-        {
-            if (string.IsNullOrEmpty(cipherText))
-                return string.Empty;
-            byte[] bytesCipherText = Convert.FromBase64String(cipherText);
-            using Aes cipher = Aes.Create();
-            cipher.Key = Encoding.UTF8.GetBytes(keys[0]);
-            cipher.IV = Encoding.UTF8.GetBytes(keys[1]);
-            using ICryptoTransform cryptoTransform = cipher.CreateDecryptor();
-            byte[] bytesPlainText = cryptoTransform.TransformFinalBlock(bytesCipherText, 0, bytesCipherText.Length);
-            return Encoding.UTF8.GetString(bytesPlainText);
-        }
-
-        /// <summary>
-        /// Encrypts a plain password with PAYBILL_API_AES_KEY_AND_IV (matching Android StaticMethods.encryptData).
-        /// </summary>
-        public static string EncryptPassword(string plainPassword)
-            => EncryptWithIV(plainPassword, PAYBILL_API_AES_KEY_AND_IV);
-
-        /// <summary>
-        /// Encodes a route parameter (ID, date, password) matching Android StaticMethods.encryptBase64 and PaybillAPI DataProtection.UrlDecode.
-        /// </summary>
-        public static string EncodeRouteParam(string plainText)
-        {
-            string encrypted = EncryptWithIV(plainText, PAYBILL_API_AES_KEY_AND_IV);
-            string base64Wrapped = Convert.ToBase64String(Encoding.ASCII.GetBytes(encrypted));
-            return HttpUtility.UrlEncode(base64Wrapped, Encoding.UTF8);
-        }
-
-        public static string EncodeRouteParam(int id) => EncodeRouteParam(id.ToString());
-    }
-
     public static class GstHelper
     {
         public static readonly Dictionary<string, string> StateCodes = new()

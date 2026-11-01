@@ -2,14 +2,20 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paybill.Models;
+using Paybill.Repositories.Service;
 using Paybill.ViewModel;
-using Paybill.Services;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class DashboardController(IPaybillApiService apiService) : Controller
+    public class DashboardController(
+        ISalesRepository salesRepository,
+        ITransactionRepository transactionRepository,
+        IReportRepository reportRepository,
+        IItemRepository itemRepository,
+        IPurchaseRepository purchaseRepository,
+        ISharedRepository sharedRepository) : PaybillBaseController
     {
         public async Task<IActionResult> Index(string? fromDate = null, string? toDate = null)
         {
@@ -17,38 +23,29 @@ namespace Paybill.Areas.Paybill.Controllers
             DateTime monthStart = new(today.Year, today.Month, 1);
             DateTime yearStart = new(today.Year, 1, 1);
 
-            string chartFrom = !string.IsNullOrWhiteSpace(fromDate) ? fromDate : monthStart.ToString("yyyy-MM-dd");
-            string chartTo = !string.IsNullOrWhiteSpace(toDate) ? toDate : today.ToString("yyyy-MM-dd");
-            string recentFrom = today.AddDays(-30).ToString("yyyy-MM-dd");
-            string todayStr = today.ToString("yyyy-MM-dd");
+            DateTime chartFromDate = ParseDate(fromDate, monthStart);
+            DateTime chartToDate = ParseDate(toDate, today);
+            string chartFrom = chartFromDate.ToString("yyyy-MM-dd");
+            string chartTo = chartToDate.ToString("yyyy-MM-dd");
 
-            var salesSummaryTask = apiService.GetDashboardSalesSummaryAsync();
-            var balanceSheetTask = apiService.GetBalanceSheetAsync();
-            var valuationTask = apiService.GetInventoryValuationAsync();
-            var lowStockTask = apiService.GetMinStockItemsAsync();
-            var recentSalesTask = apiService.GetSalesInvoicesAsync(recentFrom, todayStr);
-            var recentPurchasesTask = apiService.GetPurchaseInvoicesAsync(monthStart.ToString("yyyy-MM-dd"), todayStr);
-            var jobCardsTask = apiService.GetActiveJobCardsAsync();
-            var todayPaymentsTask = apiService.GetTodayTransactionsAsync(true);
-            var todayReceiptsTask = apiService.GetTodayTransactionsAsync(false);
-            var dayChartTask = apiService.GetDayWiseSalesChartAsync(chartFrom, chartTo);
-            var monthChartTask = apiService.GetMonthWiseSalesChartAsync(yearStart.ToString("yyyy-MM-dd"), todayStr);
-            var itemChartTask = apiService.GetItemWiseSalesChartAsync(chartFrom, chartTo);
-            var paymentModeChartTask = apiService.GetPaymentModeChartAsync(chartFrom, chartTo);
+            // Sequential awaits on the scoped DbContext
+            var salesSummary = await salesRepository.GetDashboardSalesSummary();
+            var balances = (await transactionRepository.GetBalanceSheet()).ToList();
+            var valuations = (await reportRepository.GetInventoryValuation(string.Empty)).ToList();
+            var lowStockItems = (await itemRepository.GetMinStockItems()).ToList();
+            var recentSales = (await salesRepository.GetSalesInvoices(today.AddDays(-30), today)).ToList();
+            var recentPurchases = (await purchaseRepository.GetPurchaseInvoices(monthStart, today)).ToList();
+            var jobCards = await salesRepository.GetActiveJobCards();
+            var todayPayments = (await transactionRepository.GetTodayTransactions(true)).ToList();
+            var todayReceipts = (await transactionRepository.GetTodayTransactions(false)).ToList();
+            var dayChart = (await reportRepository.GetDayWiseSalesSummary(chartFromDate, chartToDate)).ToList();
+            var monthChart = (await reportRepository.GetMonthWiseSalesSummary(yearStart, today)).ToList();
+            var itemChart = (await reportRepository.GetItemWiseSalesSummary(chartFromDate, chartToDate)).ToList();
+            var paymentModeChart = (await reportRepository.GetSalesPaymentModeSummary(chartFromDate, chartToDate)).ToList();
 
-            Task<List<UnlockRequestVM>> unlockTask = apiService.IsAdminUser()
-                ? apiService.GetUnlockRequestsAsync()
-                : Task.FromResult(new List<UnlockRequestVM>());
-
-            await Task.WhenAll(
-                salesSummaryTask, balanceSheetTask, valuationTask, lowStockTask,
-                recentSalesTask, recentPurchasesTask, jobCardsTask,
-                todayPaymentsTask, todayReceiptsTask,
-                dayChartTask, monthChartTask, itemChartTask, paymentModeChartTask, unlockTask);
-
-            var balances = balanceSheetTask.Result;
-            var valuations = valuationTask.Result;
-            var recentPurchases = recentPurchasesTask.Result;
+            List<UnlockRequestVM> pendingUnlocks = IsAdminUser
+                ? await sharedRepository.GetUnlockRequests()
+                : [];
 
             // In PaybillAPI BalanceSheet: Balance = TotalReceiptAmount - TotalPaymentAmount
             // For Customer (!IsVendor): PaymentAmount = Sales (Debit), ReceiptAmount = Receipt (Credit). If Balance < 0, customer owes money.
@@ -56,10 +53,9 @@ namespace Paybill.Areas.Paybill.Controllers
                 .Where(b => b.PartyModel != null && !b.PartyModel.IsVendor && b.Balance < 0)
                 .Sum(b => Math.Abs(b.Balance));
 
-            // If overallPendingCreditAmount from sales summary is higher (includes any credit invoices), take max
-            if (salesSummaryTask.Result.Today.OverallPendingCreditAmount > customerReceivables)
+            if (salesSummary.Today.OverallPendingCreditAmount > customerReceivables)
             {
-                customerReceivables = salesSummaryTask.Result.Today.OverallPendingCreditAmount;
+                customerReceivables = salesSummary.Today.OverallPendingCreditAmount;
             }
 
             // For Supplier/Vendor (IsVendor): ReceiptAmount = Purchase, PaymentAmount = Payment Out. If Balance > 0, we owe vendor.
@@ -69,25 +65,25 @@ namespace Paybill.Areas.Paybill.Controllers
 
             var vm = new DashboardViewModel
             {
-                SalesSummary = salesSummaryTask.Result,
+                SalesSummary = salesSummary,
                 TotalCustomerReceivables = customerReceivables,
                 TotalVendorPayables = vendorPayables,
                 TotalInventoryPurchaseValue = valuations.Sum(v => v.PurchaseValue),
                 TotalInventorySalesValue = valuations.Sum(v => v.SalesValue),
                 TotalActiveItemsCount = valuations.Count,
-                TodayPaymentsOut = todayPaymentsTask.Result.Sum(t => t.PaymentAmount),
-                TodayReceiptsIn = todayReceiptsTask.Result.Sum(t => t.ReceiptAmount),
+                TodayPaymentsOut = todayPayments.Sum(t => t.PaymentAmount),
+                TodayReceiptsIn = todayReceipts.Sum(t => t.ReceiptAmount),
                 MonthlyPurchaseTotal = recentPurchases.Sum(p => p.Summary?.TotalInvoiceAmount ?? 0),
                 MonthlyPurchaseCount = recentPurchases.Count,
-                LowStockItems = lowStockTask.Result.Take(12).ToList(),
-                RecentSales = recentSalesTask.Result.OrderByDescending(s => s.SalesId).Take(8).ToList(),
-                RecentPurchases = recentPurchases.OrderByDescending(p => p.PurchaseId).Take(8).ToList(),
-                ActiveJobCards = jobCardsTask.Result.Take(8).ToList(),
-                PendingUnlockRequests = unlockTask.Result,
-                DayWiseSalesChart = dayChartTask.Result,
-                MonthWiseSalesChart = monthChartTask.Result,
-                ItemWiseSalesChart = itemChartTask.Result.Take(10).ToList(),
-                PaymentModeChart = paymentModeChartTask.Result
+                LowStockItems = [.. lowStockItems.Take(12)],
+                RecentSales = [.. recentSales.OrderByDescending(s => s.SalesId).Take(8)],
+                RecentPurchases = [.. recentPurchases.OrderByDescending(p => p.PurchaseId).Take(8)],
+                ActiveJobCards = [.. jobCards.Take(8)],
+                PendingUnlockRequests = pendingUnlocks,
+                DayWiseSalesChart = dayChart,
+                MonthWiseSalesChart = monthChart,
+                ItemWiseSalesChart = [.. itemChart.Take(10)],
+                PaymentModeChart = paymentModeChart
             };
 
             ViewBag.ChartFrom = chartFrom;
@@ -102,5 +98,3 @@ namespace Paybill.Areas.Paybill.Controllers
         }
     }
 }
-
-

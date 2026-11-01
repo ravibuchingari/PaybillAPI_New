@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Paybill.Models;
-using Paybill.ViewModel;
 using Paybill.Helpers;
-using Paybill.Services;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class TransactionController(IPaybillApiService apiService) : Controller
+    public class TransactionController(
+        ITransactionRepository transactionRepository,
+        IPartyRepository partyRepository,
+        ISharedRepository sharedRepository) : PaybillBaseController
     {
         [HttpGet]
         public async Task<IActionResult> Index(bool isPayment = false, string? fromDate = null, string? toDate = null)
@@ -22,20 +25,18 @@ namespace Paybill.Areas.Paybill.Controllers
                 ? DateTime.Today.ToString("yyyy-MM-dd")
                 : toDate;
 
-            var txTask = apiService.GetTransactionsAsync(start, end, isPayment ? 1 : 0);
-            var partiesTask = apiService.GetActivePartiesAsync(isVendor: isPayment, isAll: true);
-            var headerTask = apiService.GetPrintHeaderAsync();
-
-            await Task.WhenAll(txTask, partiesTask, headerTask);
+            var transactions = (await transactionRepository.GetTransactions(ParseDate(start), ParseDate(end), isPayment ? 1 : 0)).ToList();
+            var parties = (await partyRepository.GetActiveParties(isVendor: isPayment, isAll: true)).ToList();
+            var header = await sharedRepository.GetPrintHeader();
 
             var vm = new TransactionPageViewModel
             {
-                Transactions = txTask.Result,
-                Parties = partiesTask.Result,
+                Transactions = transactions,
+                Parties = parties,
                 IsPayment = isPayment,
                 FromDate = start,
                 ToDate = end,
-                Header = headerTask.Result
+                Header = header
             };
 
             return View(vm);
@@ -56,11 +57,18 @@ namespace Paybill.Areas.Paybill.Controllers
 
             model.TransactionType = model.IsPayment ? "Payment" : "Receipt";
 
-            var res = await apiService.InsertTransactionAsync(model);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? (model.IsPayment ? "Payment recorded successfully." : "Receipt recorded successfully.");
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to save transaction.";
+            try
+            {
+                var res = await transactionRepository.SaveTransaction(model, CurrentUserRowId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? (model.IsPayment ? "Payment recorded successfully." : "Receipt recorded successfully.");
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to save transaction.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index), new { isPayment = model.IsPayment });
         }
@@ -72,11 +80,18 @@ namespace Paybill.Areas.Paybill.Controllers
             if (string.IsNullOrWhiteSpace(remarks))
                 remarks = "Deleted by user";
 
-            var res = await apiService.DeleteTransactionAsync(id, remarks);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Transaction deleted.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to delete transaction.";
+            try
+            {
+                var res = await transactionRepository.DeleteTransaction(id, remarks, CurrentUserRowId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Transaction deleted.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to delete transaction.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index), new { isPayment, fromDate, toDate });
         }
@@ -87,11 +102,10 @@ namespace Paybill.Areas.Paybill.Controllers
             string start = string.IsNullOrWhiteSpace(fromDate) ? DateTime.Today.AddYears(-1).ToString("yyyy-MM-dd") : fromDate;
             string end = string.IsNullOrWhiteSpace(toDate) ? DateTime.Today.ToString("yyyy-MM-dd") : toDate;
 
-            var txTask = apiService.GetTransactionsAsync(start, end, isPayment ? 1 : 0);
-            var headerTask = apiService.GetPrintHeaderAsync();
-            await Task.WhenAll(txTask, headerTask);
+            var transactions = (await transactionRepository.GetTransactions(ParseDate(start), ParseDate(end), isPayment ? 1 : 0)).ToList();
+            var header = await sharedRepository.GetPrintHeader();
 
-            var tx = txTask.Result.FirstOrDefault(t => t.TransactionId == id) ?? new TransactionVM
+            var tx = transactions.FirstOrDefault(t => t.TransactionId == id) ?? new TransactionVM
             {
                 TransactionId = id,
                 IsPayment = isPayment,
@@ -99,12 +113,10 @@ namespace Paybill.Areas.Paybill.Controllers
             };
 
             double amount = isPayment ? tx.PaidAmount : tx.ReceivedAmount;
-            ViewBag.Header = headerTask.Result;
+            ViewBag.Header = header;
             ViewBag.AmountInWords = GstHelper.NumberToWords(amount);
 
             return View(tx);
         }
     }
 }
-
-

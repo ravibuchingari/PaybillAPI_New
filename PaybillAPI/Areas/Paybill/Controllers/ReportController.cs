@@ -1,17 +1,22 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Paybill.Models;
-using Paybill.ViewModel;
 using Paybill.Helpers;
-using Paybill.Services;
-using System.Text;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class ReportController(IPaybillApiService apiService) : Controller
+    public class ReportController(
+        IReportRepository reportRepository,
+        ITransactionRepository transactionRepository,
+        IItemRepository itemRepository,
+        IAdminRepository adminRepository,
+        IWebHostEnvironment hostEnvironment) : PaybillBaseController
     {
         private static (string Start, string End) GetDefaultDates(string? fromDate, string? toDate)
         {
@@ -34,6 +39,8 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> GstReturns(string? fromDate = null, string? toDate = null, string returnType = "GSTR-1")
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
+            DateTime fDate = ParseDate(start);
+            DateTime tDate = ParseDate(end);
 
             string? apiFilter = returnType switch
             {
@@ -41,43 +48,44 @@ namespace Paybill.Areas.Paybill.Controllers
                 _ => null
             };
 
-            var detailedTask = apiService.GetGSTReturnDetailedAsync(start, end, apiFilter);
-            var hsnTask = apiService.GetGSTHSNSummaryAsync(start, end);
-            var sacTask = apiService.GetGSTSACSummaryAsync(start, end);
-            var settingsTask = apiService.GetSettingsAsync();
+            List<GSTReturnDetailed> detailed = !string.IsNullOrWhiteSpace(apiFilter)
+                ? (await reportRepository.GetGSTRReturnByType(apiFilter, fDate, tDate)).ToList()
+                : (await reportRepository.GetGSTReturnDetailed(fDate, tDate)).ToList();
 
-            await Task.WhenAll(detailedTask, hsnTask, sacTask, settingsTask);
+            var hsnSummary = (await reportRepository.GetGSTHSNSummary(fDate, tDate)).ToList();
+            var sacSummary = (await reportRepository.GetGSTSACSummary(fDate, tDate)).ToList();
+            var settings = await adminRepository.GetSettings() ?? new SettingVM();
 
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
             ViewBag.ReturnType = returnType;
-            ViewBag.HsnSummary = hsnTask.Result;
-            ViewBag.SacSummary = sacTask.Result;
-            ViewBag.CompanyGstin = string.IsNullOrWhiteSpace(settingsTask.Result.ReceiptHeaderLine5)
-                ? apiService.GetCurrentCompanyGstin()
-                : settingsTask.Result.ReceiptHeaderLine5;
+            ViewBag.HsnSummary = hsnSummary;
+            ViewBag.SacSummary = sacSummary;
+            ViewBag.CompanyGstin = string.IsNullOrWhiteSpace(settings.ReceiptHeaderLine5)
+                ? CurrentCompanyGstin
+                : settings.ReceiptHeaderLine5;
 
-            return View(detailedTask.Result);
+            return View(detailed);
         }
 
         [HttpGet]
         public async Task<IActionResult> DownloadGstr1Json(string fromDate, string toDate)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var detailedTask = apiService.GetGSTReturnDetailedAsync(start, end, "Sales");
-            var hsnTask = apiService.GetGSTHSNSummaryAsync(start, end);
-            var settingsTask = apiService.GetSettingsAsync();
+            DateTime fDate = ParseDate(start);
+            DateTime tDate = ParseDate(end);
 
-            await Task.WhenAll(detailedTask, hsnTask, settingsTask);
+            var detailed = (await reportRepository.GetGSTRReturnByType("Sales", fDate, tDate)).ToList();
+            var hsnSummary = (await reportRepository.GetGSTHSNSummary(fDate, tDate)).ToList();
+            var settings = await adminRepository.GetSettings() ?? new SettingVM();
 
-            string gstin = string.IsNullOrWhiteSpace(settingsTask.Result.ReceiptHeaderLine5)
-                ? apiService.GetCurrentCompanyGstin()
-                : settingsTask.Result.ReceiptHeaderLine5;
+            string gstin = string.IsNullOrWhiteSpace(settings.ReceiptHeaderLine5)
+                ? CurrentCompanyGstin
+                : settings.ReceiptHeaderLine5;
 
-            DateTime dt = DateTime.TryParse(end, out var parsed) ? parsed : DateTime.Today;
-            string fp = dt.ToString("MMyyyy");
+            string fp = tDate.ToString("MMyyyy");
 
-            string json = GstHelper.GenerateGstr1Json(gstin, fp, detailedTask.Result, hsnTask.Result);
+            string json = GstHelper.GenerateGstr1Json(gstin, fp, detailed, hsnSummary);
             byte[] bytes = Encoding.UTF8.GetBytes(json);
             return File(bytes, "application/json", $"GSTR1_{gstin}_{fp}.json");
         }
@@ -86,7 +94,7 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> Daybook(string? fromDate = null, string? toDate = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var entries = await apiService.GetDaybookAsync(start, end);
+            var entries = (await reportRepository.GetDaybook(ParseDate(start), ParseDate(end))).ToList();
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
             return View(entries);
@@ -101,10 +109,11 @@ namespace Paybill.Areas.Paybill.Controllers
                 FromDate = start,
                 ToDate = end,
                 SalesType = salesType,
-                PaymentMode = paymentMode
+                PaymentMode = paymentMode,
+                UserRowId = CurrentUserRowId
             };
 
-            var sales = await apiService.GetSalesDetailsReportAsync(param);
+            var sales = await reportRepository.GetSalesDetails(param);
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
             ViewBag.SalesType = salesType;
@@ -116,20 +125,38 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> DownloadSalesDetailsExcel(string? fromDate = null, string? toDate = null, string? salesType = null, string? paymentMode = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var bytes = await apiService.DownloadSalesDetailsExcelAsync(new ReportParam
+            var param = new ReportParam
             {
                 FromDate = start,
                 ToDate = end,
                 SalesType = salesType,
-                PaymentMode = paymentMode
-            });
+                PaymentMode = paymentMode,
+                UserRowId = CurrentUserRowId
+            };
 
-            if (bytes == null || bytes.Length == 0)
+            var list = await reportRepository.GetSalesDetails(param);
+            if (list.Count == 0)
             {
                 TempData["ErrorMessage"] = "No sales data available to export.";
                 return RedirectToAction(nameof(SalesDetails), new { fromDate = start, toDate = end, salesType, paymentMode });
             }
 
+            string[] selectedProperties =
+            [
+                "InvoiceNo", "InvoiceDate", "PartyName", "SalesType", "PaymentMode", "UpiType",
+                "TotalAmount", "TotalDiscount", "TotalTaxableAmount", "TotalGSTAmount", "TotalInvoiceAmount",
+                "PartyModel", "Summary"
+            ];
+
+            string tempDir = Path.Combine(hostEnvironment.WebRootPath, AppConstants.TEMP_DIR);
+            Directory.CreateDirectory(tempDir);
+            string fileName = SharedMethod.GenerateExcel(
+                SharedMethod.ConvertToDataTable(list, selectedProperties),
+                tempDir,
+                $"Sales details from {start} to {end}",
+                "sales_details");
+
+            byte[] bytes = await System.IO.File.ReadAllBytesAsync(fileName);
             return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Sales_Details_{start}_to_{end}.xlsx");
         }
 
@@ -137,12 +164,13 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> SalesSummary(string? fromDate = null, string? toDate = null, string? salesType = null, string? paymentMode = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var list = await apiService.GetSalesSummaryReportAsync(new ReportParam
+            var list = await reportRepository.GetSalesSummary(new ReportParam
             {
                 FromDate = start,
                 ToDate = end,
                 SalesType = salesType,
-                PaymentMode = paymentMode
+                PaymentMode = paymentMode,
+                UserRowId = CurrentUserRowId
             });
 
             ViewBag.FromDate = start;
@@ -156,20 +184,32 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> DownloadSalesSummaryExcel(string? fromDate = null, string? toDate = null, string? salesType = null, string? paymentMode = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var bytes = await apiService.DownloadSalesSummaryExcelAsync(new ReportParam
+            var param = new ReportParam
             {
                 FromDate = start,
                 ToDate = end,
                 SalesType = salesType,
-                PaymentMode = paymentMode
-            });
+                PaymentMode = paymentMode,
+                UserRowId = CurrentUserRowId
+            };
 
-            if (bytes == null || bytes.Length == 0)
+            var list = await reportRepository.GetSalesSummary(param);
+            if (list.Count == 0)
             {
                 TempData["ErrorMessage"] = "No sales summary data available to export.";
                 return RedirectToAction(nameof(SalesSummary), new { fromDate = start, toDate = end, salesType, paymentMode });
             }
 
+            string[] selectedProperties = ["Month", "Credit", "Cash", "Card", "Upi", "TotalAmount"];
+            string tempDir = Path.Combine(hostEnvironment.WebRootPath, AppConstants.TEMP_DIR);
+            Directory.CreateDirectory(tempDir);
+            string fileName = SharedMethod.GenerateExcel(
+                SharedMethod.ConvertToDataTable(list, selectedProperties),
+                tempDir,
+                $"Sales summary from {start} to {end}",
+                "sales_summary");
+
+            byte[] bytes = await System.IO.File.ReadAllBytesAsync(fileName);
             return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Sales_Summary_{start}_to_{end}.xlsx");
         }
 
@@ -177,12 +217,13 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> PurchaseReport(string? fromDate = null, string? toDate = null, string? purchaseType = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var list = await apiService.GetPurchaseDetailsReportAsync(new ReportParam
+            var list = (await reportRepository.GetPurchaseDetails(new ReportParam
             {
                 FromDate = start,
                 ToDate = end,
-                PurchaseType = purchaseType
-            });
+                PurchaseType = purchaseType,
+                UserRowId = CurrentUserRowId
+            })).ToList();
 
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
@@ -193,7 +234,7 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> BalanceSheet(string filter = "all")
         {
-            var list = await apiService.GetBalanceSheetAsync();
+            var list = (await transactionRepository.GetBalanceSheet()).ToList();
             ViewBag.Filter = filter;
             return View(list);
         }
@@ -201,20 +242,19 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> InventoryValuation(string? filter = null)
         {
-            var valuationTask = apiService.GetInventoryValuationAsync(filter);
-            var categoriesTask = apiService.GetCategoriesWithItemCountAsync();
-            await Task.WhenAll(valuationTask, categoriesTask);
+            var valuation = (await reportRepository.GetInventoryValuation(filter ?? string.Empty)).ToList();
+            var categories = (await itemRepository.GetCategoriesWithItemCount()).ToList();
 
             ViewBag.Filter = filter;
-            ViewBag.CategoryCounts = categoriesTask.Result;
-            return View(valuationTask.Result);
+            ViewBag.CategoryCounts = categories;
+            return View(valuation);
         }
 
         [HttpGet]
         public async Task<IActionResult> AgedInventory(int ageDays = 30)
         {
             if (ageDays <= 0) ageDays = 30;
-            var items = await apiService.GetAgedInventoryAsync(ageDays);
+            var items = (await reportRepository.GetAgedInventory(ageDays)).ToList();
             ViewBag.AgeDays = ageDays;
             return View(items);
         }
@@ -223,7 +263,13 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> ProductMovement(string? fromDate = null, string? toDate = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var list = await apiService.GetProductMovementAnalysisAsync(start, end);
+            var list = (await reportRepository.GetProductMovementAnalysis(new ReportParam
+            {
+                FromDate = start,
+                ToDate = end,
+                UserRowId = CurrentUserRowId
+            })).ToList();
+
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
             return View(list);
@@ -232,7 +278,7 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> OrderReadiness()
         {
-            var items = await apiService.GetMinStockItemsAsync();
+            var items = (await itemRepository.GetMinStockItems()).ToList();
             return View(items);
         }
 
@@ -240,18 +286,17 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> AuditDeletedItems(string? fromDate = null, string? toDate = null)
         {
             var (start, end) = GetDefaultDates(fromDate, toDate);
-            var delSalesTask = apiService.GetDeletedSalesItemsAsync(start, end);
-            var delPurchasesTask = apiService.GetDeletedPurchaseItemsAsync(start, end);
+            DateTime fDate = ParseDate(start);
+            DateTime tDate = ParseDate(end);
 
-            await Task.WhenAll(delSalesTask, delPurchasesTask);
+            var delSales = (await reportRepository.GetDeletedSalesItems(fDate, tDate)).ToList();
+            var delPurchases = (await reportRepository.GetDeletedPurchaseItems(fDate, tDate)).ToList();
 
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
-            ViewBag.DeletedSalesItems = delSalesTask.Result;
-            ViewBag.DeletedPurchaseItems = delPurchasesTask.Result;
+            ViewBag.DeletedSalesItems = delSales;
+            ViewBag.DeletedPurchaseItems = delPurchases;
             return View();
         }
     }
 }
-
-

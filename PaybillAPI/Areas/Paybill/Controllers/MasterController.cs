@@ -4,14 +4,20 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paybill.Models;
-using Paybill.Services;
+using Paybill.Repositories.Service;
 using Paybill.ViewModel;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class MasterController(IPaybillApiService apiService, IWebHostEnvironment env, IHttpClientFactory httpClientFactory) : Controller
+    public class MasterController(
+        IItemRepository itemRepository,
+        IPartyRepository partyRepository,
+        IAdminRepository adminRepository,
+        ISharedRepository sharedRepository,
+        IWebHostEnvironment env,
+        IHttpClientFactory httpClientFactory) : PaybillBaseController
     {
         // ============================================================
         // 0. MASTER SETUP HUB (MasterRegistrationScreen.kt)
@@ -19,32 +25,29 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var categoriesTask = apiService.GetCategoriesWithItemCountAsync();
-            var gstTask = apiService.GetGstListAsync(false);
-            var itemsTask = apiService.GetItemsAsync(0, null);
-            var minStockTask = apiService.GetMinStockItemsAsync();
-            var customersTask = apiService.GetPartiesAsync(false);
-            var vendorsTask = apiService.GetPartiesAsync(true);
-            var usersTask = apiService.GetUsersAsync();
-            var servicesTask = apiService.GetServiceTypesAsync(true);
-
-            await Task.WhenAll(categoriesTask, gstTask, itemsTask, minStockTask, customersTask, vendorsTask, usersTask, servicesTask);
-
-            var categories = categoriesTask.Result;
+            var categories = (await itemRepository.GetCategoriesWithItemCount()).ToList();
             if (categories.Count == 0)
-                categories = await apiService.GetCategoriesAsync();
+                categories = (await itemRepository.GetCategories()).ToList();
+
+            var gstSlabs = (await itemRepository.GetGsts(false)).ToList();
+            var items = (await itemRepository.GetItems(0, string.Empty)).ToList();
+            var minStockItems = (await itemRepository.GetMinStockItems()).ToList();
+            var customers = (await partyRepository.GetParties(false)).ToList();
+            var vendors = (await partyRepository.GetParties(true)).ToList();
+            var users = (await adminRepository.GetUsers()).ToList();
+            var serviceTypes = (await itemRepository.GetServiceTypes(true)).ToList();
 
             var vm = new MasterHubViewModel
             {
                 CategoriesCount = categories.Count,
-                GstSlabsCount = gstTask.Result.Count,
-                ItemsCount = itemsTask.Result.Count,
-                LowStockCount = minStockTask.Result.Count,
-                CustomersCount = customersTask.Result.Count,
-                VendorsCount = vendorsTask.Result.Count,
-                UsersCount = usersTask.Result.Count,
-                ServiceTypesCount = servicesTask.Result.Count,
-                IsAdmin = apiService.IsAdminUser()
+                GstSlabsCount = gstSlabs.Count,
+                ItemsCount = items.Count,
+                LowStockCount = minStockItems.Count,
+                CustomersCount = customers.Count,
+                VendorsCount = vendors.Count,
+                UsersCount = users.Count,
+                ServiceTypesCount = serviceTypes.Count,
+                IsAdmin = IsAdminUser
             };
 
             return View(vm);
@@ -56,9 +59,9 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Categories(int? editId = null, string? q = null)
         {
-            var categories = await apiService.GetCategoriesWithItemCountAsync();
+            var categories = (await itemRepository.GetCategoriesWithItemCount()).ToList();
             if (categories.Count == 0)
-                categories = await apiService.GetCategoriesAsync();
+                categories = (await itemRepository.GetCategories()).ToList();
 
             if (!string.IsNullOrWhiteSpace(q))
             {
@@ -71,9 +74,22 @@ namespace Paybill.Areas.Paybill.Controllers
             var editCat = new CategoryVM();
             if (editId.HasValue && editId.Value > 0)
             {
-                editCat = categories.FirstOrDefault(c => c.CategoryId == editId.Value)
-                    ?? await apiService.GetCategoryDetailsAsync(editId.Value)
-                    ?? new CategoryVM();
+                var found = categories.FirstOrDefault(c => c.CategoryId == editId.Value);
+                if (found != null)
+                {
+                    editCat = found;
+                }
+                else
+                {
+                    try
+                    {
+                        editCat = await itemRepository.GetCategoryDetails(editId.Value);
+                    }
+                    catch
+                    {
+                        editCat = new CategoryVM();
+                    }
+                }
             }
 
             var vm = new CategoryMasterViewModel
@@ -95,16 +111,23 @@ namespace Paybill.Areas.Paybill.Controllers
                 return RedirectToAction(nameof(Categories));
             }
 
-            var res = await apiService.UpsertCategoryAsync(new CategoryVM
+            try
             {
-                CategoryId = categoryId,
-                CategoryName = categoryName.Trim()
-            });
+                var res = await itemRepository.UpsertCategory(new CategoryVM
+                {
+                    CategoryId = categoryId,
+                    CategoryName = categoryName.Trim()
+                }, CurrentUserRowId);
 
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? (categoryId == 0 ? "Category registered successfully." : "Category updated successfully.");
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to save category.";
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? (categoryId == 0 ? "Category registered successfully." : "Category updated successfully.");
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to save category.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Categories));
         }
@@ -115,29 +138,43 @@ namespace Paybill.Areas.Paybill.Controllers
             if (string.IsNullOrWhiteSpace(model.CategoryName))
                 return Json(new { isSuccess = false, message = "Category name is required." });
 
-            var res = await apiService.CreateCategoryIfNotExistsAsync(model.CategoryName.Trim());
-            int catId = 0;
-            if (!string.IsNullOrWhiteSpace(res.Message))
-                int.TryParse(res.Message, out catId);
-
-            return Json(new
+            try
             {
-                isSuccess = res.IsSuccess,
-                categoryId = catId,
-                categoryName = model.CategoryName.Trim(),
-                message = res.IsSuccess ? "Category added." : res.Message
-            });
+                var res = await itemRepository.CreateCategoryIfNotExists(model.CategoryName.Trim(), CurrentUserRowId);
+                int catId = 0;
+                if (!string.IsNullOrWhiteSpace(res.Message))
+                    int.TryParse(res.Message, out catId);
+
+                return Json(new
+                {
+                    isSuccess = res.IsSuccess,
+                    categoryId = catId,
+                    categoryName = model.CategoryName.Trim(),
+                    message = res.IsSuccess ? "Category added." : res.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var res = await apiService.DeleteCategoryAsync(id);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Category deleted.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Unable to delete category (items may be linked to this category).";
+            try
+            {
+                var res = await itemRepository.DeleteCategory(id);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Category deleted.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Unable to delete category (items may be linked to this category).";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Unable to delete category: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(Categories));
         }
@@ -148,7 +185,7 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Gst(int? editId = null, string? q = null)
         {
-            var gstList = await apiService.GetGstListAsync(false);
+            var gstList = (await itemRepository.GetGsts(false)).ToList();
             if (!string.IsNullOrWhiteSpace(q))
             {
                 string filter = q.Trim();
@@ -162,9 +199,22 @@ namespace Paybill.Areas.Paybill.Controllers
             var editGst = new GstVM { IsActive = true };
             if (editId.HasValue && editId.Value > 0)
             {
-                editGst = gstList.FirstOrDefault(g => g.GstId == editId.Value)
-                    ?? await apiService.GetGstDetailsAsync(editId.Value)
-                    ?? new GstVM { IsActive = true };
+                var found = gstList.FirstOrDefault(g => g.GstId == editId.Value);
+                if (found != null)
+                {
+                    editGst = found;
+                }
+                else
+                {
+                    try
+                    {
+                        editGst = await itemRepository.GetGstDetails(editId.Value);
+                    }
+                    catch
+                    {
+                        editGst = new GstVM { IsActive = true };
+                    }
+                }
             }
 
             var vm = new GstMasterViewModel
@@ -181,19 +231,26 @@ namespace Paybill.Areas.Paybill.Controllers
         public async Task<IActionResult> SaveGst(int gstId, float cgstPer, float sgstPer, float igstPer, bool isActive = true)
         {
             float totalIgst = igstPer > 0 ? igstPer : (cgstPer + sgstPer);
-            var res = await apiService.UpsertGstAsync(new GstVM
+            try
             {
-                GstId = gstId,
-                CgstPer = cgstPer,
-                SgstPer = sgstPer,
-                IgstPer = totalIgst,
-                IsActive = isActive
-            });
+                var res = await itemRepository.UpsertGst(new GstVM
+                {
+                    GstId = gstId,
+                    CgstPer = cgstPer,
+                    SgstPer = sgstPer,
+                    IgstPer = totalIgst,
+                    IsActive = isActive
+                }, CurrentUserRowId);
 
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? (gstId == 0 ? "GST slab registered successfully." : "GST slab updated successfully.");
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to save GST slab.";
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? (gstId == 0 ? "GST slab registered successfully." : "GST slab updated successfully.");
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to save GST slab.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Gst));
         }
@@ -205,29 +262,43 @@ namespace Paybill.Areas.Paybill.Controllers
             model.IgstPer = totalIgst;
             model.IsActive = true;
 
-            var res = await apiService.CreateGstIfNotExistsAsync(model);
-            int gstId = 0;
-            if (!string.IsNullOrWhiteSpace(res.Message))
-                int.TryParse(res.Message, out gstId);
-
-            return Json(new
+            try
             {
-                isSuccess = res.IsSuccess,
-                gstId,
-                displayName = $"GST {totalIgst:0.##}% (CGST {model.CgstPer:0.##}% + SGST {model.SgstPer:0.##}%)",
-                message = res.IsSuccess ? "GST slab added." : res.Message
-            });
+                var res = await itemRepository.CreateGstIfNotExists(model, CurrentUserRowId);
+                int gstId = 0;
+                if (!string.IsNullOrWhiteSpace(res.Message))
+                    int.TryParse(res.Message, out gstId);
+
+                return Json(new
+                {
+                    isSuccess = res.IsSuccess,
+                    gstId,
+                    displayName = $"GST {totalIgst:0.##}% (CGST {model.CgstPer:0.##}% + SGST {model.SgstPer:0.##}%)",
+                    message = res.IsSuccess ? "GST slab added." : res.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteGst(int id)
         {
-            var res = await apiService.DeleteGstAsync(id);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "GST slab deleted.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Unable to delete GST slab (items may be linked to this GST rate).";
+            try
+            {
+                var res = await itemRepository.DeleteGST(id);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "GST slab deleted.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Unable to delete GST slab (items may be linked to this GST rate).";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Unable to delete GST slab: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(Gst));
         }
@@ -238,26 +309,33 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> ItemMaster(int id = 0)
         {
-            var categoriesTask = apiService.GetCategoriesAsync();
-            var gstTask = apiService.GetGstListAsync(false);
-            var settingsTask = apiService.GetSettingsAsync();
-            Task<ItemVM?>? itemTask = id > 0 ? apiService.GetItemDetailsAsync(id) : null;
+            var categories = (await itemRepository.GetCategories()).ToList();
+            var gstSlabs = (await itemRepository.GetGsts(false)).ToList();
+            var settings = await adminRepository.GetSettings() ?? new SettingVM();
 
-            if (itemTask != null)
-                await Task.WhenAll(categoriesTask, gstTask, settingsTask, itemTask);
-            else
-                await Task.WhenAll(categoriesTask, gstTask, settingsTask);
+            ItemVM? existingItem = null;
+            if (id > 0)
+            {
+                try
+                {
+                    existingItem = await itemRepository.GetItemDetails(id);
+                }
+                catch
+                {
+                    existingItem = null;
+                }
+            }
 
-            var item = itemTask?.Result ?? new ItemVM
+            var item = existingItem ?? new ItemVM
             {
                 ItemId = 0,
                 IsActive = true,
                 Measure = "Piece"
             };
 
-            string localLang = string.IsNullOrWhiteSpace(settingsTask.Result.LocalLanguageCode)
+            string localLang = string.IsNullOrWhiteSpace(settings.LocalLanguageCode)
                 ? "te"
-                : settingsTask.Result.LocalLanguageCode.Trim().ToLowerInvariant();
+                : settings.LocalLanguageCode.Trim().ToLowerInvariant();
 
             bool hasImage = false;
             string imageUrl = string.Empty;
@@ -275,8 +353,8 @@ namespace Paybill.Areas.Paybill.Controllers
             var vm = new ItemMasterPageViewModel
             {
                 Item = item,
-                Categories = categoriesTask.Result,
-                GstSlabs = gstTask.Result,
+                Categories = categories,
+                GstSlabs = gstSlabs,
                 HasExistingImage = hasImage,
                 ExistingImageUrl = imageUrl,
                 LocalLanguageCode = localLang
@@ -294,7 +372,7 @@ namespace Paybill.Areas.Paybill.Controllers
             string lang = targetLang?.Trim().ToLowerInvariant() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(lang))
             {
-                var settings = await apiService.GetSettingsAsync();
+                var settings = await adminRepository.GetSettings() ?? new SettingVM();
                 lang = string.IsNullOrWhiteSpace(settings.LocalLanguageCode)
                     ? "te"
                     : settings.LocalLanguageCode.Trim().ToLowerInvariant();
@@ -309,7 +387,7 @@ namespace Paybill.Areas.Paybill.Controllers
                 client.Timeout = TimeSpan.FromSeconds(5);
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
 
-                // 1. Primary: Google Translate API
+                // External Google Translate API call
                 string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl={Uri.EscapeDataString(lang)}&dt=t&q={Uri.EscapeDataString(text.Trim())}";
                 var response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
@@ -383,11 +461,11 @@ namespace Paybill.Areas.Paybill.Controllers
 
             if (categoryId <= 0)
             {
-                var cats = await apiService.GetCategoriesAsync();
+                var cats = (await itemRepository.GetCategories()).ToList();
                 categoryId = cats.FirstOrDefault()?.CategoryId ?? 0;
                 if (categoryId == 0)
                 {
-                    var defaultCat = await apiService.CreateCategoryIfNotExistsAsync("General");
+                    var defaultCat = await itemRepository.CreateCategoryIfNotExists("General", CurrentUserRowId);
                     int.TryParse(defaultCat.Message, out categoryId);
                 }
             }
@@ -416,7 +494,17 @@ namespace Paybill.Areas.Paybill.Controllers
                 GstModel = gstId.HasValue && gstId.Value > 0 ? new GstVM { GstId = gstId.Value } : null
             };
 
-            var res = await apiService.UpsertItemAsync(model);
+            ResponseMessage res;
+            try
+            {
+                res = await itemRepository.UpsertItem(model, CurrentUserRowId);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction(nameof(ItemMaster), new { id = itemId });
+            }
+
             if (!res.IsSuccess)
             {
                 TempData["ErrorMessage"] = res.Message ?? "Failed to save item.";
@@ -453,7 +541,6 @@ namespace Paybill.Areas.Paybill.Controllers
             if (string.Equals(afterAction, "list", StringComparison.OrdinalIgnoreCase))
                 return RedirectToAction(nameof(Items));
 
-            // If creating new item, clear form for next item entry (matching ItemMasterActivity.kt clearData())
             return RedirectToAction(nameof(ItemMaster), new { id = itemId > 0 ? savedItemId : 0 });
         }
 
@@ -463,23 +550,20 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Items(int categoryId = 0, string? filter = null)
         {
-            var itemsTask = apiService.GetItemsAsync(categoryId, filter);
-            var categoriesTask = apiService.GetCategoriesWithItemCountAsync();
-            var gstTask = apiService.GetGstListAsync(false);
-            var minStockTask = apiService.GetMinStockItemsAsync();
-
-            await Task.WhenAll(itemsTask, categoriesTask, gstTask, minStockTask);
-
-            var categories = categoriesTask.Result;
+            var items = (await itemRepository.GetItems(categoryId, filter ?? string.Empty)).ToList();
+            var categories = (await itemRepository.GetCategoriesWithItemCount()).ToList();
             if (categories.Count == 0)
-                categories = await apiService.GetCategoriesAsync();
+                categories = (await itemRepository.GetCategories()).ToList();
+
+            var gstSlabs = (await itemRepository.GetGsts(false)).ToList();
+            var minStockItems = (await itemRepository.GetMinStockItems()).ToList();
 
             var vm = new InventoryPageViewModel
             {
-                Items = itemsTask.Result,
+                Items = items,
                 Categories = categories,
-                GstSlabs = gstTask.Result,
-                MinStockItems = minStockTask.Result,
+                GstSlabs = gstSlabs,
+                MinStockItems = minStockItems,
                 SelectedCategoryId = categoryId,
                 SearchFilter = filter
             };
@@ -491,17 +575,24 @@ namespace Paybill.Areas.Paybill.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var res = await apiService.DeleteItemAsync(id);
-            if (res.IsSuccess)
+            try
             {
-                string imgPath = Path.Combine(env.WebRootPath, "images", "items", $"{id}.png");
-                if (System.IO.File.Exists(imgPath))
-                    System.IO.File.Delete(imgPath);
-                TempData["SuccessMessage"] = res.Message ?? "Item deleted successfully.";
+                var res = await itemRepository.DeleteItem(id);
+                if (res.IsSuccess)
+                {
+                    string imgPath = Path.Combine(env.WebRootPath, "images", "items", $"{id}.png");
+                    if (System.IO.File.Exists(imgPath))
+                        System.IO.File.Delete(imgPath);
+                    TempData["SuccessMessage"] = res.Message ?? "Item deleted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = res.Message ?? "Unable to delete item (linked to invoices).";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = res.Message ?? "Unable to delete item (linked to invoices).";
+                TempData["ErrorMessage"] = $"Unable to delete item: {ex.Message}";
             }
             return RedirectToAction(nameof(Items));
         }
@@ -510,11 +601,18 @@ namespace Paybill.Areas.Paybill.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetStock()
         {
-            var res = await apiService.ResetStockAsync();
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = "Closing stock recalculated from all purchases and sales.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to recalculate stock.";
+            try
+            {
+                var res = await itemRepository.ResetStock();
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = "Closing stock recalculated from all purchases and sales.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to recalculate stock.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
             return RedirectToAction(nameof(Items));
         }
 
@@ -524,36 +622,38 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> PartyMaster(int id = 0, bool isVendor = false)
         {
-            var settingsTask = apiService.GetSettingsAsync();
-            var customersTask = apiService.GetPartiesAsync(false);
-            var vendorsTask = apiService.GetPartiesAsync(true);
-            Task<PartyVM?>? partyTask = id > 0 ? apiService.GetPartyDetailsAsync(id) : null;
+            var settings = await adminRepository.GetSettings() ?? new SettingVM();
+            var customers = (await partyRepository.GetParties(false)).ToList();
+            var vendors = (await partyRepository.GetParties(true)).ToList();
 
-            if (partyTask != null)
-                await Task.WhenAll(settingsTask, customersTask, vendorsTask, partyTask);
-            else
-                await Task.WhenAll(settingsTask, customersTask, vendorsTask);
+            PartyVM? existingParty = null;
+            if (id > 0)
+            {
+                try
+                {
+                    existingParty = await partyRepository.GetPartyDetails(id);
+                }
+                catch
+                {
+                    existingParty = null;
+                }
+            }
 
-            var party = partyTask?.Result ?? new PartyVM
+            var party = existingParty ?? new PartyVM
             {
                 PartyId = 0,
                 IsVendor = isVendor,
                 IsActive = true
             };
 
-            var settings = settingsTask.Result;
             RewardCustomerSummaryVM? rewardsSummary = null;
             List<RewardTransactionVM> rewardTransactions = [];
             double availablePts = 0;
 
             if (party.PartyId > 0 && !party.IsVendor)
             {
-                var summaryTask = apiService.GetCustomerRewardsSummaryAsync(party.PartyId);
-                var txTask = apiService.GetRewardsTransactionsAsync(partyId: party.PartyId);
-                await Task.WhenAll(summaryTask, txTask);
-
-                rewardsSummary = summaryTask.Result;
-                rewardTransactions = txTask.Result;
+                rewardsSummary = await partyRepository.GetCustomerRewardsSummary(party.PartyId);
+                rewardTransactions = await partyRepository.GetRewardsTransactions(party.PartyId, null, null, null, null, null);
                 availablePts = rewardsSummary?.AvailablePoints ?? 0;
             }
 
@@ -565,8 +665,8 @@ namespace Paybill.Areas.Paybill.Controllers
                 AvailableRewardPoints = availablePts,
                 RewardPointMonetaryValue = availablePts * (settings.RewardPointValue > 0 ? settings.RewardPointValue : 1.0),
                 RewardTransactions = rewardTransactions,
-                TotalCustomersCount = customersTask.Result.Count,
-                TotalVendorsCount = vendorsTask.Result.Count
+                TotalCustomersCount = customers.Count,
+                TotalVendorsCount = vendors.Count
             };
 
             return View(vm);
@@ -596,7 +696,17 @@ namespace Paybill.Areas.Paybill.Controllers
             model.PartyGstNo = model.PartyGstNo?.Trim().ToUpperInvariant() ?? string.Empty;
             model.PartyRemarks = model.PartyRemarks?.Trim() ?? string.Empty;
 
-            var res = await apiService.UpsertPartyAsync(model);
+            ResponseMessage res;
+            try
+            {
+                res = await partyRepository.UpsertParty(model, CurrentUserRowId);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction(nameof(PartyMaster), new { id = model.PartyId, isVendor = model.IsVendor });
+            }
+
             if (!res.IsSuccess)
             {
                 TempData["ErrorMessage"] = res.Message ?? "Failed to save party.";
@@ -625,15 +735,25 @@ namespace Paybill.Areas.Paybill.Controllers
                 return RedirectToAction(nameof(PartyMaster), new { id = partyId, isVendor = false });
             }
 
-            var res = await apiService.SaveManualRewardAdjustmentAsync(
-                partyId,
-                points,
-                string.IsNullOrWhiteSpace(reason) ? "Manual Adjustment from Party Master" : reason.Trim());
+            try
+            {
+                var res = await partyRepository.SaveManualRewardAdjustment(new RewardAdjustmentRequestVM
+                {
+                    PartyId = partyId,
+                    Points = points,
+                    Reason = string.IsNullOrWhiteSpace(reason) ? "Manual Adjustment from Party Master" : reason.Trim(),
+                    UserRowId = CurrentUserRowId
+                }, CurrentUserRowId);
 
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Customer reward points adjusted successfully.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to adjust customer reward points.";
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Customer reward points adjusted successfully.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to adjust customer reward points.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(PartyMaster), new { id = partyId, isVendor = false });
         }
@@ -644,7 +764,7 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> Users(int? editId = null)
         {
-            var users = await apiService.GetUsersAsync();
+            var users = (await adminRepository.GetUsers()).ToList();
             var editUser = new UserVM { IsActive = true };
 
             if (editId.HasValue && editId.Value > 0)
@@ -656,7 +776,7 @@ namespace Paybill.Areas.Paybill.Controllers
             {
                 EditUser = editUser,
                 Users = users,
-                IsAdmin = apiService.IsAdminUser()
+                IsAdmin = IsAdminUser
             };
 
             return View(vm);
@@ -704,11 +824,18 @@ namespace Paybill.Areas.Paybill.Controllers
             model.Mobile = model.Mobile.Trim();
             model.UserId = model.UserId.Trim();
 
-            var res = await apiService.UpsertUserAsync(model);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? (model.UserRowId == 0 ? "User registered successfully." : "User updated successfully.");
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to save user.";
+            try
+            {
+                var res = await sharedRepository.UpsertUser(model, CurrentUserRowId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? (model.UserRowId == 0 ? "User registered successfully." : "User updated successfully.");
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to save user.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Users));
         }
@@ -717,11 +844,18 @@ namespace Paybill.Areas.Paybill.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUser(int userRowId)
         {
-            var res = await apiService.DeleteUserAsync(userRowId);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "User deleted successfully.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Unable to delete user.";
+            try
+            {
+                var res = await adminRepository.DeleteUser(userRowId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "User deleted successfully.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Unable to delete user.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Unable to delete user: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(Users));
         }
@@ -732,26 +866,36 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> ServiceTypes(int? editId = null)
         {
-            var servicesTask = apiService.GetServiceTypesAsync(true);
-            var gstTask = apiService.GetGstListAsync(false);
+            var services = (await itemRepository.GetServiceTypes(true)).ToList();
+            var gstSlabs = (await itemRepository.GetGsts(false)).ToList();
 
-            await Task.WhenAll(servicesTask, gstTask);
-
-            var services = servicesTask.Result;
             var editService = new ServiceTypeVM { IsActive = true };
 
             if (editId.HasValue && editId.Value > 0)
             {
-                editService = services.FirstOrDefault(s => s.ServiceTypeId == editId.Value)
-                    ?? await apiService.GetServiceTypeDetailsAsync(editId.Value)
-                    ?? new ServiceTypeVM { IsActive = true };
+                var found = services.FirstOrDefault(s => s.ServiceTypeId == editId.Value);
+                if (found != null)
+                {
+                    editService = found;
+                }
+                else
+                {
+                    try
+                    {
+                        editService = await itemRepository.GetServiceTypeDetails(editId.Value);
+                    }
+                    catch
+                    {
+                        editService = new ServiceTypeVM { IsActive = true };
+                    }
+                }
             }
 
             var vm = new ServiceTypeMasterViewModel
             {
                 EditServiceType = editService,
                 ServiceTypes = services,
-                GstSlabs = gstTask.Result
+                GstSlabs = gstSlabs
             };
 
             return View(vm);
@@ -791,11 +935,18 @@ namespace Paybill.Areas.Paybill.Controllers
                 GstModel = gstId.HasValue && gstId.Value > 0 ? new GstVM { GstId = gstId.Value } : null
             };
 
-            var res = await apiService.UpsertServiceTypeAsync(model);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? (serviceTypeId == 0 ? "Service type registered successfully." : "Service type updated successfully.");
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to save service type.";
+            try
+            {
+                var res = await itemRepository.UpsertServiceType(model, CurrentUserRowId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? (serviceTypeId == 0 ? "Service type registered successfully." : "Service type updated successfully.");
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to save service type.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(ServiceTypes));
         }
@@ -804,11 +955,18 @@ namespace Paybill.Areas.Paybill.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteServiceType(int id)
         {
-            var res = await apiService.DeleteServiceTypeAsync(id);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Service type deleted.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Unable to delete service type.";
+            try
+            {
+                var res = await itemRepository.DeleteServiceType(id);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Service type deleted.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Unable to delete service type.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Unable to delete service type: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(ServiceTypes));
         }
@@ -819,18 +977,16 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpGet]
         public async Task<IActionResult> ImportData()
         {
-            var itemsTask = apiService.GetItemsAsync(0, null);
-            var categoriesTask = apiService.GetCategoriesAsync();
-            var gstTask = apiService.GetGstListAsync(false);
-
-            await Task.WhenAll(itemsTask, categoriesTask, gstTask);
+            var items = (await itemRepository.GetItems(0, string.Empty)).ToList();
+            var categories = (await itemRepository.GetCategories()).ToList();
+            var gstSlabs = (await itemRepository.GetGsts(false)).ToList();
 
             var vm = new ImportDataPageViewModel
             {
-                ExistingItemsCount = itemsTask.Result.Count,
-                ExistingCategoriesCount = categoriesTask.Result.Count,
-                Categories = categoriesTask.Result,
-                GstSlabs = gstTask.Result
+                ExistingItemsCount = items.Count,
+                ExistingCategoriesCount = categories.Count,
+                Categories = categories,
+                GstSlabs = gstSlabs
             };
 
             return View(vm);
@@ -848,8 +1004,8 @@ namespace Paybill.Areas.Paybill.Controllers
 
             try
             {
-                var categories = await apiService.GetCategoriesAsync();
-                var gsts = await apiService.GetGstListAsync(false);
+                var categories = (await itemRepository.GetCategories()).ToList();
+                var gsts = (await itemRepository.GetGsts(false)).ToList();
 
                 int fallbackCatId = defaultCategoryId.HasValue && defaultCategoryId.Value > 0
                     ? defaultCategoryId.Value
@@ -857,7 +1013,7 @@ namespace Paybill.Areas.Paybill.Controllers
 
                 if (fallbackCatId == 0)
                 {
-                    var createdDefault = await apiService.CreateCategoryIfNotExistsAsync("General");
+                    var createdDefault = await itemRepository.CreateCategoryIfNotExists("General", CurrentUserRowId);
                     int.TryParse(createdDefault.Message, out fallbackCatId);
                 }
 
@@ -877,7 +1033,6 @@ namespace Paybill.Areas.Paybill.Controllers
                     var allRows = usedRange.RowsUsed().ToList();
                     if (allRows.Count > 1)
                     {
-                        // Auto-detect column indices from header row (matching Android ImportDataActivity.kt)
                         var headerRow = allRows[0];
                         int itemCodeCol = -1;
                         int itemNameCol = -1;
@@ -921,7 +1076,6 @@ namespace Paybill.Areas.Paybill.Controllers
                                 shelfCol = c;
                         }
 
-                        // Fallback to positional columns if headers didn't match standard names
                         if (itemNameCol == -1)
                         {
                             itemCodeCol = 1;
@@ -960,7 +1114,7 @@ namespace Paybill.Areas.Paybill.Controllers
                                     }
                                     else
                                     {
-                                        var createdCat = await apiService.CreateCategoryIfNotExistsAsync(catName);
+                                        var createdCat = await itemRepository.CreateCategoryIfNotExists(catName, CurrentUserRowId);
                                         if (int.TryParse(createdCat.Message, out int newCatId) && newCatId > 0)
                                         {
                                             catId = newCatId;
@@ -1009,7 +1163,7 @@ namespace Paybill.Areas.Paybill.Controllers
                     return RedirectToAction(nameof(ImportData));
                 }
 
-                var res = await apiService.UploadItemsBulkAsync(itemsToUpload);
+                var res = await itemRepository.UploadItems(itemsToUpload, CurrentUserRowId);
                 if (res.IsSuccess)
                     TempData["SuccessMessage"] = $"Successfully imported {itemsToUpload.Count} items from Excel.";
                 else
@@ -1053,7 +1207,6 @@ namespace Paybill.Areas.Paybill.Controllers
                 cell.Style.Font.FontColor = XLColor.FromHtml("#153808");
             }
 
-            // Sample rows matching Android paybill_template.xlsx
             ws.Cell(2, 1).Value = "ITM001";
             ws.Cell(2, 2).Value = "Aashirvaad Whole Wheat Atta 5Kg";
             ws.Cell(2, 3).Value = "Groceries";

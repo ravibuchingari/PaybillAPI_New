@@ -2,30 +2,31 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paybill.Models;
+using Paybill.Repositories.Service;
 using Paybill.ViewModel;
-using Paybill.Services;
 
 namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class PartyController(IPaybillApiService apiService) : Controller
+    public class PartyController(
+        IPartyRepository partyRepository,
+        ITransactionRepository transactionRepository,
+        ISharedRepository sharedRepository) : PaybillBaseController
     {
         [HttpGet]
         public async Task<IActionResult> Index(bool isVendor = false)
         {
-            var partiesTask = apiService.GetPartiesAsync(isVendor);
-            var balanceTask = apiService.GetBalanceSheetAsync();
+            var parties = (await partyRepository.GetParties(isVendor)).ToList();
+            var balances = (await transactionRepository.GetBalanceSheet()).ToList();
 
-            await Task.WhenAll(partiesTask, balanceTask);
-
-            var balanceMap = balanceTask.Result
+            var balanceMap = balances
                 .GroupBy(b => b.PartyId)
                 .ToDictionary(g => g.Key, g => g.First());
 
             var vm = new PartyPageViewModel
             {
-                Parties = partiesTask.Result,
+                Parties = parties,
                 BalanceMap = balanceMap,
                 IsVendor = isVendor
             };
@@ -37,11 +38,18 @@ namespace Paybill.Areas.Paybill.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveParty(PartyVM model)
         {
-            var res = await apiService.UpsertPartyAsync(model);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? (model.IsVendor ? "Supplier saved successfully." : "Customer saved successfully.");
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Failed to save party details.";
+            try
+            {
+                var res = await partyRepository.UpsertParty(model, CurrentUserRowId);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? (model.IsVendor ? "Supplier saved successfully." : "Customer saved successfully.");
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Failed to save party details.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index), new { isVendor = model.IsVendor });
         }
@@ -49,36 +57,57 @@ namespace Paybill.Areas.Paybill.Controllers
         [HttpPost]
         public async Task<IActionResult> SavePartyJson([FromBody] PartyVM model)
         {
-            var res = await apiService.UpsertPartyAsync(model);
-            int partyId = 0;
-            if (!string.IsNullOrWhiteSpace(res.Data))
-                int.TryParse(res.Data, out partyId);
-
-            return Json(new
+            try
             {
-                isSuccess = res.IsSuccess,
-                message = res.Message,
-                partyId,
-                party = model
-            });
+                var res = await partyRepository.UpsertParty(model, CurrentUserRowId);
+                int partyId = 0;
+                if (!string.IsNullOrWhiteSpace(res.Data))
+                    int.TryParse(res.Data, out partyId);
+
+                return Json(new
+                {
+                    isSuccess = res.IsSuccess,
+                    message = res.Message,
+                    partyId,
+                    party = model
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetPartyDetailsJson(int id)
         {
-            var party = await apiService.GetPartyDetailsAsync(id);
-            return Json(party);
+            try
+            {
+                var party = await partyRepository.GetPartyDetails(id);
+                return Json(party);
+            }
+            catch
+            {
+                return Json(null);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteParty(int id, bool isVendor)
         {
-            var res = await apiService.DeletePartyAsync(id, isVendor);
-            if (res.IsSuccess)
-                TempData["SuccessMessage"] = res.Message ?? "Party deleted successfully.";
-            else
-                TempData["ErrorMessage"] = res.Message ?? "Unable to delete party (may have linked invoices/transactions).";
+            try
+            {
+                var res = await partyRepository.DeleteParty(id, isVendor);
+                if (res.IsSuccess)
+                    TempData["SuccessMessage"] = res.Message ?? "Party deleted successfully.";
+                else
+                    TempData["ErrorMessage"] = res.Message ?? "Unable to delete party (may have linked invoices/transactions).";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Unable to delete party: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(Index), new { isVendor });
         }
@@ -93,20 +122,32 @@ namespace Paybill.Areas.Paybill.Controllers
                 ? DateTime.Today.ToString("yyyy-MM-dd")
                 : toDate;
 
-            var partyTask = apiService.GetPartyDetailsAsync(id);
-            var ledgerTask = apiService.GetPartyLedgerAsync(id, start, end);
-            var headerTask = apiService.GetPrintHeaderAsync();
+            PartyVM? party = null;
+            try
+            {
+                party = await partyRepository.GetPartyDetails(id);
+            }
+            catch
+            {
+                party = null;
+            }
 
-            await Task.WhenAll(partyTask, ledgerTask, headerTask);
+            var ledger = (await transactionRepository.GetPartyLedger(new ReportParam
+            {
+                Id = id.ToString(),
+                FromDate = start,
+                ToDate = end,
+                UserRowId = CurrentUserRowId
+            })).ToList();
 
-            ViewBag.Party = partyTask.Result ?? new PartyVM { PartyId = id, PartyName = "Party Ledger" };
+            var printHeader = await sharedRepository.GetPrintHeader();
+
+            ViewBag.Party = party ?? new PartyVM { PartyId = id, PartyName = "Party Ledger" };
             ViewBag.FromDate = start;
             ViewBag.ToDate = end;
-            ViewBag.PrintHeader = headerTask.Result;
+            ViewBag.PrintHeader = printHeader;
 
-            return View(ledgerTask.Result);
+            return View(ledger);
         }
     }
 }
-
-
