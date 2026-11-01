@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
 
 namespace PaybillAPI.Middlewares
@@ -14,8 +14,16 @@ namespace PaybillAPI.Middlewares
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"error during executing {context}", context.Request.Path.Value);
-                await HandleExceptionAsync(context, ex);
+                logger.LogError(ex, "Error during executing {Path}", context.Request.Path.Value);
+                if (context.Request.Path.StartsWithSegments("/api") ||
+                    context.Request.Headers.Accept.ToString().Contains("application/json", StringComparison.OrdinalIgnoreCase))
+                {
+                    await HandleExceptionAsync(context, ex);
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 

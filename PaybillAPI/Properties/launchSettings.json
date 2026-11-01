@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -13,11 +13,21 @@
     }
   },
   "profiles": {
+    "Paybill": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "Paybill/Account/Login",
+      "applicationUrl": "http://localhost:5111",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "Paybill/Account/Login",
       "applicationUrl": "http://localhost:5111",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -26,7 +36,7 @@
     "paybillapi": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "api/home/start",
+      "launchUrl": "Paybill/Account/Login",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
@@ -35,7 +45,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/home/start",
+      "launchUrl": "Paybill/Account/Login",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

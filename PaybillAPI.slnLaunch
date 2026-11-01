@@ -1,0 +1,12 @@
+[
+  {
+    "Name": "Paybill (Unified Web + API)",
+    "Projects": [
+      {
+        "Path": "PaybillAPI\\Paybill.csproj",
+        "Action": "Start",
+        "DebugTarget": "Paybill"
+      }
+    ]
+  }
+]

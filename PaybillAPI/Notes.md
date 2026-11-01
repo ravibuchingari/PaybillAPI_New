@@ -1,0 +1,1 @@
+﻿scaffold-dbcontext "Data Source=localhost;port=3306;Database=paybill_api;Uid=root;Pwd=India@123;" MySql.EntityFrameworkCore -outputdir DTO -ContextDir Data -Context AppDBContext -dataannotations -force
