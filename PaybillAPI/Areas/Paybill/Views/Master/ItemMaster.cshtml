@@ -69,6 +69,7 @@
                                    class="form-control"
                                    maxlength="100"
                                    placeholder="Enter full product / item name"
+                                   oninput="onItemNameTyping(this.value)"
                                    required />
                         </div>
 
@@ -83,13 +84,28 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Local Language Name</label>
-                            <input type="text"
-                                   name="itemLocalName"
-                                   value="@Model.Item.ItemLocalName"
-                                   class="form-control"
-                                   maxlength="100"
-                                   placeholder="Regional language name for receipt printing" />
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label fw-semibold mb-1">Local Language Name</label>
+                                <span class="badge-soft badge-soft-success" style="font-size: 0.68rem; padding: 0.15rem 0.5rem;">
+                                    <i class="bi bi-translate me-1"></i>Lang: @Model.LocalLanguageCode.ToUpperInvariant()
+                                </span>
+                            </div>
+                            <div class="input-group">
+                                <input type="text"
+                                       id="itemLocalNameInput"
+                                       name="itemLocalName"
+                                       value="@Model.Item.ItemLocalName"
+                                       class="form-control"
+                                       maxlength="100"
+                                       placeholder="Auto-translated into local language (@Model.LocalLanguageCode)" />
+                                <button type="button"
+                                        class="btn btn-outline-primary"
+                                        id="btnTranslateLocal"
+                                        onclick="translateItemNameNow()"
+                                        title="Translate Item Name into Local Language (@Model.LocalLanguageCode)">
+                                    <i id="translateIcon" class="bi bi-translate"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="col-md-5">
@@ -375,6 +391,69 @@
 
 @section Scripts {
     <script>
+        const targetLocalLang = '@Model.LocalLanguageCode';
+        let translateDebounceTimer = null;
+        let lastTranslateAbortController = null;
+
+        function onItemNameTyping(text) {
+            clearTimeout(translateDebounceTimer);
+            const trimmed = (text || '').trim();
+            const localInput = document.getElementById('itemLocalNameInput');
+            if (!trimmed) {
+                if (localInput) localInput.value = '';
+                return;
+            }
+            translateDebounceTimer = setTimeout(() => {
+                fetchLocalTranslation(trimmed);
+            }, 350);
+        }
+
+        function translateItemNameNow() {
+            const nameInput = document.getElementById('itemNameInput');
+            if (nameInput && nameInput.value.trim()) {
+                fetchLocalTranslation(nameInput.value.trim());
+            }
+        }
+
+        async function fetchLocalTranslation(text) {
+            const localInput = document.getElementById('itemLocalNameInput');
+            const icon = document.getElementById('translateIcon');
+            if (!localInput) return;
+
+            if (!targetLocalLang || targetLocalLang === 'en' || targetLocalLang === 'eng') {
+                localInput.value = text;
+                return;
+            }
+
+            if (lastTranslateAbortController) {
+                lastTranslateAbortController.abort();
+            }
+            lastTranslateAbortController = new AbortController();
+
+            if (icon) icon.className = 'spinner-border spinner-border-sm text-primary';
+
+            try {
+                const url = `@Url.Action("TranslateToLocalLanguage", "Master")?text=${encodeURIComponent(text)}&targetLang=${encodeURIComponent(targetLocalLang)}`;
+                const res = await fetch(url, { signal: lastTranslateAbortController.signal }).then(r => r.json());
+                if (res && res.translatedText) {
+                    localInput.value = res.translatedText;
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    // Fallback to direct client-side Google Translate call if needed
+                    try {
+                        const gUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${encodeURIComponent(targetLocalLang)}&dt=t&q=${encodeURIComponent(text)}`;
+                        const gData = await fetch(gUrl).then(r => r.json());
+                        if (Array.isArray(gData) && Array.isArray(gData[0])) {
+                            localInput.value = gData[0].map(s => s[0]).join('');
+                        }
+                    } catch (_) { }
+                }
+            } finally {
+                if (icon) icon.className = 'bi bi-translate';
+            }
+        }
+
         function generateAutoCode() {
             const rnd = Math.floor(100000 + Math.random() * 900000);
             const inp = document.getElementById('itemCodeInput');

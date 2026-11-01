@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ namespace Paybill.Areas.Paybill.Controllers
 {
     [Area("Paybill")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class MasterController(IPaybillApiService apiService, IWebHostEnvironment env) : Controller
+    public class MasterController(IPaybillApiService apiService, IWebHostEnvironment env, IHttpClientFactory httpClientFactory) : Controller
     {
         // ============================================================
         // 0. MASTER SETUP HUB (MasterRegistrationScreen.kt)
@@ -239,12 +240,13 @@ namespace Paybill.Areas.Paybill.Controllers
         {
             var categoriesTask = apiService.GetCategoriesAsync();
             var gstTask = apiService.GetGstListAsync(false);
+            var settingsTask = apiService.GetSettingsAsync();
             Task<ItemVM?>? itemTask = id > 0 ? apiService.GetItemDetailsAsync(id) : null;
 
             if (itemTask != null)
-                await Task.WhenAll(categoriesTask, gstTask, itemTask);
+                await Task.WhenAll(categoriesTask, gstTask, settingsTask, itemTask);
             else
-                await Task.WhenAll(categoriesTask, gstTask);
+                await Task.WhenAll(categoriesTask, gstTask, settingsTask);
 
             var item = itemTask?.Result ?? new ItemVM
             {
@@ -252,6 +254,10 @@ namespace Paybill.Areas.Paybill.Controllers
                 IsActive = true,
                 Measure = "Piece"
             };
+
+            string localLang = string.IsNullOrWhiteSpace(settingsTask.Result.LocalLanguageCode)
+                ? "te"
+                : settingsTask.Result.LocalLanguageCode.Trim().ToLowerInvariant();
 
             bool hasImage = false;
             string imageUrl = string.Empty;
@@ -272,10 +278,72 @@ namespace Paybill.Areas.Paybill.Controllers
                 Categories = categoriesTask.Result,
                 GstSlabs = gstTask.Result,
                 HasExistingImage = hasImage,
-                ExistingImageUrl = imageUrl
+                ExistingImageUrl = imageUrl,
+                LocalLanguageCode = localLang
             };
 
             return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TranslateToLocalLanguage(string? text, string? targetLang = null)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return Json(new { isSuccess = true, translatedText = string.Empty, lang = targetLang ?? "te" });
+
+            string lang = targetLang?.Trim().ToLowerInvariant() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(lang))
+            {
+                var settings = await apiService.GetSettingsAsync();
+                lang = string.IsNullOrWhiteSpace(settings.LocalLanguageCode)
+                    ? "te"
+                    : settings.LocalLanguageCode.Trim().ToLowerInvariant();
+            }
+
+            if (lang == "en" || lang == "eng")
+                return Json(new { isSuccess = true, translatedText = text.Trim(), lang });
+
+            try
+            {
+                var client = httpClientFactory.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(5);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                // 1. Primary: Google Translate API
+                string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl={Uri.EscapeDataString(lang)}&dt=t&q={Uri.EscapeDataString(text.Trim())}";
+                var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(json);
+                    if (doc.RootElement.ValueKind == JsonValueKind.Array && doc.RootElement.GetArrayLength() > 0)
+                    {
+                        var sentences = doc.RootElement[0];
+                        if (sentences.ValueKind == JsonValueKind.Array)
+                        {
+                            var sb = new System.Text.StringBuilder();
+                            foreach (var seg in sentences.EnumerateArray())
+                            {
+                                if (seg.ValueKind == JsonValueKind.Array && seg.GetArrayLength() > 0 && seg[0].ValueKind == JsonValueKind.String)
+                                {
+                                    sb.Append(seg[0].GetString());
+                                }
+                            }
+                            string translated = sb.ToString().Trim();
+                            if (!string.IsNullOrWhiteSpace(translated))
+                            {
+                                return Json(new { isSuccess = true, translatedText = translated, lang });
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore and fall back
+            }
+
+            return Json(new { isSuccess = false, translatedText = text.Trim(), lang });
         }
 
         [HttpPost]

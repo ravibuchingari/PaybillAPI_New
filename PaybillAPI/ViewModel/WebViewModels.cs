@@ -203,6 +203,7 @@ namespace Paybill.ViewModel
         public List<GstVM> GstSlabs { get; set; } = [];
         public bool HasExistingImage { get; set; }
         public string ExistingImageUrl { get; set; } = string.Empty;
+        public string LocalLanguageCode { get; set; } = "te";
     }
 
     public class PartyMasterPageViewModel
