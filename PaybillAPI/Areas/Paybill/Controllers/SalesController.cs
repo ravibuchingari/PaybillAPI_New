@@ -93,10 +93,27 @@ namespace Paybill.Areas.Paybill.Controllers
                 return Json(new { isSuccess = false, message = "Please add at least one item or service to the invoice." });
             }
 
+            bool isCredit = string.Equals(model.PaymentMode, "Credit", StringComparison.OrdinalIgnoreCase)
+                         || string.Equals(model.SalesType, "Credit", StringComparison.OrdinalIgnoreCase)
+                         || !model.IsCashSales;
+
+            int selectedPartyId = model.PartyId ?? (model.PartyModel != null ? model.PartyModel.PartyId : 0);
+            if (isCredit && selectedPartyId <= 0)
+            {
+                return Json(new { isSuccess = false, message = "Customer selection is mandatory for Credit invoices. Please select a registered customer." });
+            }
+
+            if (selectedPartyId > 0)
+            {
+                model.PartyId = selectedPartyId;
+                model.PartyModel ??= new PartyVM { PartyId = selectedPartyId };
+                model.PartyModel.PartyId = selectedPartyId;
+            }
+
             if (string.IsNullOrWhiteSpace(model.SalesDate))
                 model.SalesDate = DateTime.Today.ToString("yyyy-MM-dd");
 
-            model.IsCashSales = !string.Equals(model.PaymentMode, "Credit", StringComparison.OrdinalIgnoreCase);
+            model.IsCashSales = !isCredit;
 
             try
             {

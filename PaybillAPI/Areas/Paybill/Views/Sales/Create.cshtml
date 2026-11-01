@@ -128,7 +128,10 @@
                 <!-- Customer Selection -->
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <label class="form-label mb-0">Customer</label>
+                        <label class="form-label mb-0 fw-semibold">
+                            Customer
+                            <span id="customerRequiredBadge" class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1 d-none" style="font-size: 0.72rem;">* Mandatory for Credit</span>
+                        </label>
                         <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="openQuickCustomerModal()">
                             <i class="bi bi-person-plus me-1"></i>New Customer
                         </button>
@@ -145,6 +148,9 @@
                             </option>
                         }
                     </select>
+                    <div id="customerValidationFeedback" class="text-danger small mt-1 d-none">
+                        <i class="bi bi-exclamation-circle me-1"></i>Customer selection is mandatory for Credit invoices.
+                    </div>
                     <div id="customerGstinInfo" class="small text-muted mt-1 d-none"></div>
                 </div>
 
@@ -439,9 +445,34 @@
                 }));
             }
             onCustomerChanged();
+            updateCreditRequirements();
             recalculateAll();
             setupBarcodeSearch();
         });
+
+        function updateCreditRequirements() {
+            const mode = document.getElementById('PaymentMode')?.value;
+            const isCredit = mode === 'Credit' || document.getElementById('SalesType')?.value === 'Credit';
+            const reqBadge = document.getElementById('customerRequiredBadge');
+            const partySel = document.getElementById('PartyId');
+            const partyId = parseInt(partySel?.value || '0');
+            const feedback = document.getElementById('customerValidationFeedback');
+
+            if (isCredit) {
+                if (reqBadge) reqBadge.classList.remove('d-none');
+                if (partyId <= 0) {
+                    partySel?.classList.add('is-invalid');
+                    if (feedback) feedback.classList.remove('d-none');
+                } else {
+                    partySel?.classList.remove('is-invalid');
+                    if (feedback) feedback.classList.add('d-none');
+                }
+            } else {
+                if (reqBadge) reqBadge.classList.add('d-none');
+                partySel?.classList.remove('is-invalid');
+                if (feedback) feedback.classList.add('d-none');
+            }
+        }
 
         function isInterStateSupply() {
             const sel = document.getElementById('PartyId');
@@ -459,6 +490,8 @@
             const opt = sel.options[sel.selectedIndex];
             const gstin = (opt?.getAttribute('data-gstin') || '').trim();
             const infoEl = document.getElementById('customerGstinInfo');
+
+            updateCreditRequirements();
 
             if (gstin) {
                 infoEl.classList.remove('d-none');
@@ -821,10 +854,15 @@
         function onPaymentModeChanged() {
             const mode = document.getElementById('PaymentMode').value;
             const grandTotal = parseFloat(document.getElementById('lblGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const partySel = document.getElementById('PartyId');
+            const partyId = parseInt(partySel?.value || '0');
+
+            updateCreditRequirements();
+
             if (mode === 'Credit') {
-                const partyId = parseInt(document.getElementById('PartyId').value || '0');
                 if (partyId === 0) {
-                    PaybillUI.showToast('Please select a registered customer for Credit invoices.', 'warning');
+                    PaybillUI.showToast('Customer selection is mandatory for Credit invoices. Please select a registered customer.', 'warning');
+                    partySel?.focus();
                 }
                 document.getElementById('ReceivedAmount').value = '0.00';
             } else {
@@ -942,10 +980,15 @@
                 PaybillUI.showToast('Please add at least one item to the invoice.', 'warning');
                 return;
             }
-            const partyId = parseInt(document.getElementById('PartyId').value || '0');
-            const paymentMode = document.getElementById('PaymentMode').value;
-            if (paymentMode === 'Credit' && partyId === 0) {
-                PaybillUI.showToast('Please select a Customer for Credit sales.', 'warning');
+            const partySel = document.getElementById('PartyId');
+            const partyId = parseInt(partySel?.value || '0');
+            const paymentMode = document.getElementById('PaymentMode')?.value;
+            const isCredit = paymentMode === 'Credit' || document.getElementById('SalesType')?.value === 'Credit';
+
+            if (isCredit && partyId <= 0) {
+                updateCreditRequirements();
+                partySel?.focus();
+                PaybillUI.showToast('Customer selection is mandatory for Credit invoices. Please select a registered customer.', 'danger');
                 return;
             }
 
