@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("purchase_items_deleted")]
 [Index("DeletedBy", Name = "fk_deleted_purchase_item_deleted_ny_idx")]

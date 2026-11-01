@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using PaybillAPI.Data;
-using PaybillAPI.DTO;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.ViewModel;
+using Paybill.Data;
+using Paybill.DTO;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 using System.Text;
 
-namespace PaybillAPI.Repositories
+namespace Paybill.Repositories
 {
     public class SharedRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), ISharedRepository
     {
@@ -18,7 +18,6 @@ namespace PaybillAPI.Repositories
                 var isConnected = await dbContext.Database.CanConnectAsync();
                 if (isConnected)
                 {
-                    await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
                     return new StringBuilder().Append("<html><head><title>Player Server</title></head>")
                                                 .Append("<body style='background-color: black;'><div><img style='position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);' src='")
                                                 .Append(logoUrl)
@@ -576,15 +575,6 @@ namespace PaybillAPI.Repositories
 
         public async Task<ClientVM?> GetPrimaryClientInfo()
         {
-            try
-            {
-                await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
-            }
-            catch
-            {
-                // Ignore schema migration warnings if DB is read-only or already migrated
-            }
-
             var client = await dbContext.Clients.AsNoTracking().FirstOrDefaultAsync();
             var setting = await dbContext.Settings.AsNoTracking().FirstOrDefaultAsync();
             bool hasUsers = await dbContext.Users.AsNoTracking().AnyAsync();

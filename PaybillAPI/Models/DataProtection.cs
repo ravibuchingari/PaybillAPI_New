@@ -2,7 +2,7 @@
 using System.Text;
 using System.Web;
 
-namespace PaybillAPI.Models
+namespace Paybill.Models
 {
     public class DataProtection
     {

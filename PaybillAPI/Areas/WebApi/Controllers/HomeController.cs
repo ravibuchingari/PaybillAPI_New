@@ -1,9 +1,9 @@
 ﻿using AuthenticationManager;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.ViewModel;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 using System.Net;
 
 namespace Paybill.Areas.WebApi.Controllers
@@ -53,7 +53,7 @@ namespace Paybill.Areas.WebApi.Controllers
         {
             client.SecurityKey = SharedMethod.GenerateUniqueID();
             string responseText = await sharedRepository.CreateAccountIfNotExists(client);
-            if(responseText.Equals(AppConstants.RESPONSE_SUCCESS))
+            if (responseText.Equals(AppConstants.RESPONSE_SUCCESS))
             {
                 AuthenticationResponse authenticationResponse = await jwtTokenHandler.GenerateToken(new AuthenticationResponse()
                 {

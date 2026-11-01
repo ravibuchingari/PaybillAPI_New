@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("order_status")]
 [Index("OrderStatusDesc", Name = "OrderStatusDesc_UNIQUE", IsUnique = true)]

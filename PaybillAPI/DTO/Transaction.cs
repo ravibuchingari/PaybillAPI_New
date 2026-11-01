@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("transactions")]
 [Index("CreatedBy", Name = "fk_transaction_created_by_idx")]

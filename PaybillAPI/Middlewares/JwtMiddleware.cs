@@ -1,4 +1,4 @@
-﻿namespace PaybillAPI.Middlewares
+﻿namespace Paybill.Middlewares
 {
     public class JwtMiddleware(RequestDelegate next)
     {

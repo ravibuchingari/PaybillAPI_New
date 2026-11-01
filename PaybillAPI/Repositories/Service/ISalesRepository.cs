@@ -1,7 +1,7 @@
-using PaybillAPI.Models;
-using PaybillAPI.ViewModel;
+using Paybill.Models;
+using Paybill.ViewModel;
 
-namespace PaybillAPI.Repositories.Service
+namespace Paybill.Repositories.Service
 {
     public interface ISalesRepository
     {

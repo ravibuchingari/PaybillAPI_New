@@ -1,4 +1,4 @@
-﻿namespace PaybillAPI.ViewModel
+﻿namespace Paybill.ViewModel
 {
     public class ServiceTypeVM
     {

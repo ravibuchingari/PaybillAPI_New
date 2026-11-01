@@ -1,9 +1,9 @@
+using Paybill.Areas.Paybill.Models;
+using Paybill.Helpers;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Paybill.Helpers;
-using Paybill.Areas.Paybill.Models;
 
 namespace Paybill.Services
 {

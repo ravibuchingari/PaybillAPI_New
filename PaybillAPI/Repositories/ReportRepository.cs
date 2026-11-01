@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using PaybillAPI.Data;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.ViewModel;
+using Paybill.Data;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 using System.Data;
 
-namespace PaybillAPI.Repositories
+namespace Paybill.Repositories
 {
     public class ReportRepository(AppDBContext dbContext) : IReportRepository
     {

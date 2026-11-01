@@ -1,7 +1,8 @@
+using Paybill.DTO;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("job_card_items")]
 public partial class JobCardItem

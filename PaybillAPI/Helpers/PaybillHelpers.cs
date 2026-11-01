@@ -1,8 +1,8 @@
+using Paybill.Areas.Paybill.Models;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Web;
-using Paybill.Areas.Paybill.Models;
 
 namespace Paybill.Helpers
 {

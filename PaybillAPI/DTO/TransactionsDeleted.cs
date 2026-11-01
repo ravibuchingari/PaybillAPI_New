@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("transactions_deleted")]
 public partial class TransactionsDeleted

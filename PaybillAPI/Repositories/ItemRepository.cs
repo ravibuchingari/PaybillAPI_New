@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using PaybillAPI.Data;
-using PaybillAPI.DTO;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.ViewModel;
+using Paybill.Data;
+using Paybill.DTO;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 
-namespace PaybillAPI.Repositories
+namespace Paybill.Repositories
 {
     public class ItemRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), IItemRepository
     {
@@ -288,31 +288,31 @@ namespace PaybillAPI.Repositories
                                                      col.ItemName.ToLower().Contains(filterLower) ||
                                                      (col.AliasName != null && col.AliasName.ToLower().Contains(filterLower)) ||
                                                      col.Category.CategoryName.ToLower().Contains(filterLower))).Select(row => new ItemVM()
-                                                    {
-                                                        ItemId = row.ItemId,
-                                                        ItemCode = row.ItemCode,
-                                                        ItemName = row.ItemName,
-                                                        ItemLocalName = row.ItemLocalName,
-                                                        AliasName = row.AliasName,
-                                                        Mrp = row.Mrp,
-                                                        SalesPrice = row.SalesPrice,
-                                                        PurchasePrice = row.PurchasePrice,
-                                                        HSncode = row.Hsncode,
-                                                        Measure = row.Measure,
-                                                        OpeningStock = row.OpeningStock,
-                                                        MinimumStock = row.MinimumStock,
-                                                        ClosingStock = row.OpeningStock + row.ClosingStock,
-                                                        Shelf = row.Shelf,
-                                                        IsActive = row.IsActive == 1,
-                                                        CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                                                        GstModel = row.Gst != null ? new GstVM()
-                                                        {
-                                                            GstId = row.Gst.GstId,
-                                                            SgstPer = row.Gst.SgstPer,
-                                                            CgstPer = row.Gst.CgstPer,
-                                                            IgstPer = row.Gst.IgstPer
-                                                        } : null
-                                                    }).OrderBy(ord => ord.ItemName).ToListAsync();
+                                                     {
+                                                         ItemId = row.ItemId,
+                                                         ItemCode = row.ItemCode,
+                                                         ItemName = row.ItemName,
+                                                         ItemLocalName = row.ItemLocalName,
+                                                         AliasName = row.AliasName,
+                                                         Mrp = row.Mrp,
+                                                         SalesPrice = row.SalesPrice,
+                                                         PurchasePrice = row.PurchasePrice,
+                                                         HSncode = row.Hsncode,
+                                                         Measure = row.Measure,
+                                                         OpeningStock = row.OpeningStock,
+                                                         MinimumStock = row.MinimumStock,
+                                                         ClosingStock = row.OpeningStock + row.ClosingStock,
+                                                         Shelf = row.Shelf,
+                                                         IsActive = row.IsActive == 1,
+                                                         CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                                                         GstModel = row.Gst != null ? new GstVM()
+                                                         {
+                                                             GstId = row.Gst.GstId,
+                                                             SgstPer = row.Gst.SgstPer,
+                                                             CgstPer = row.Gst.CgstPer,
+                                                             IgstPer = row.Gst.IgstPer
+                                                         } : null
+                                                     }).OrderBy(ord => ord.ItemName).ToListAsync();
             }
         }
 
@@ -467,31 +467,31 @@ namespace PaybillAPI.Repositories
                     (col.ItemCode.ToLower().Contains(filterLower) ||
                      col.ItemName.ToLower().Contains(filterLower) ||
                      (col.AliasName != null && col.AliasName.ToLower().Contains(filterLower)))).Select(row => new ItemVM()
-                {
-                    ItemId = row.ItemId,
-                    ItemCode = row.ItemCode,
-                    ItemName = row.ItemName,
-                    ItemLocalName = row.ItemLocalName,
-                    AliasName = row.AliasName,
-                    Mrp = row.Mrp,
-                    SalesPrice = row.SalesPrice,
-                    PurchasePrice = row.PurchasePrice,
-                    HSncode = row.Hsncode,
-                    Measure = row.Measure,
-                    OpeningStock = row.OpeningStock,
-                    MinimumStock = row.MinimumStock,
-                    ClosingStock = row.OpeningStock + row.ClosingStock,
-                    Shelf = row.Shelf,
-                    IsActive = row.IsActive == 1,
-                    CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
-                    GstModel = row.Gst != null ? new GstVM()
-                    {
-                        GstId = row.Gst.GstId,
-                        SgstPer = row.Gst.SgstPer,
-                        CgstPer = row.Gst.CgstPer,
-                        IgstPer = row.Gst.IgstPer
-                    } : null
-                }).OrderBy(ord => ord.ItemName).ToListAsync();
+                     {
+                         ItemId = row.ItemId,
+                         ItemCode = row.ItemCode,
+                         ItemName = row.ItemName,
+                         ItemLocalName = row.ItemLocalName,
+                         AliasName = row.AliasName,
+                         Mrp = row.Mrp,
+                         SalesPrice = row.SalesPrice,
+                         PurchasePrice = row.PurchasePrice,
+                         HSncode = row.Hsncode,
+                         Measure = row.Measure,
+                         OpeningStock = row.OpeningStock,
+                         MinimumStock = row.MinimumStock,
+                         ClosingStock = row.OpeningStock + row.ClosingStock,
+                         Shelf = row.Shelf,
+                         IsActive = row.IsActive == 1,
+                         CategoryModel = new CategoryVM() { CategoryId = row.CategoryId, CategoryName = row.Category.CategoryName },
+                         GstModel = row.Gst != null ? new GstVM()
+                         {
+                             GstId = row.Gst.GstId,
+                             SgstPer = row.Gst.SgstPer,
+                             CgstPer = row.Gst.CgstPer,
+                             IgstPer = row.Gst.IgstPer
+                         } : null
+                     }).OrderBy(ord => ord.ItemName).ToListAsync();
             }
         }
 

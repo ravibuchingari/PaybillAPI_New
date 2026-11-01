@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("purchase_order_items")]
 [Index("ItemId", Name = "fk_purchase_order_items_item_id_idx")]

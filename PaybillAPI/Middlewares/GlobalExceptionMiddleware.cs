@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace PaybillAPI.Middlewares
+namespace Paybill.Middlewares
 {
     public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
     {

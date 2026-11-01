@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 using System.ComponentModel;
 using System.Data;
 
-namespace PaybillAPI.Models
+namespace Paybill.Models
 {
     public class SharedMethod
     {

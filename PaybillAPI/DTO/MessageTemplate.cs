@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("message_templates")]
 public partial class MessageTemplate
@@ -9,11 +9,11 @@ public partial class MessageTemplate
     [Key]
     public int MessageId { get; set; }
 
-    [StringLength(50)]
-    public string MessageType { get; set; } = "Sales Invoice Message";
-
     [StringLength(500)]
     public string MessageDescription { get; set; } = null!;
+
+    [StringLength(50)]
+    public string MessageType { get; set; } = null!;
 
     public sbyte IsSelected { get; set; }
 

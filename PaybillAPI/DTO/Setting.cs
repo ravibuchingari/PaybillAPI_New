@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("settings")]
 [Index("BalanceMessageId", Name = "fk_settings_balance_message_id_idx")]
@@ -102,6 +102,8 @@ public partial class Setting
     [Column("IsSendSMSOnInvoice")]
     public sbyte IsSendSmsonInvoice { get; set; }
 
+    public sbyte IsSendWhatsAppMessageOnInvoiceisSendWhatsAppMessageOnInvoice { get; set; }
+
     public sbyte IsShareInvoiceOnInvoice { get; set; }
 
     public int? SalesMessageId { get; set; }
@@ -142,7 +144,7 @@ public partial class Setting
     public sbyte IsCurrencyDecimalNotRequired { get; set; }
 
     [StringLength(2)]
-    public string LocalLanguageCode { get; set; } = "te";
+    public string LocalLanguageCode { get; set; } = null!;
 
     [StringLength(500)]
     public string? BankDetails { get; set; }
@@ -153,63 +155,63 @@ public partial class Setting
 
     public sbyte IsShareInvoice3C { get; set; }
 
-    public sbyte IsSalesInvoiceDateEnabled { get; set; } = 1;
+    public sbyte IsSalesInvoiceDateEnabled { get; set; }
 
-    public sbyte IsAutoBackupWhatsAppEnabled { get; set; } = 1;
+    public sbyte IsAutoBackupWhatsAppEnabled { get; set; }
 
     public sbyte IsAutoBackupEmailEnabled { get; set; }
 
     [StringLength(50)]
-    public string PaymentGatewayName { get; set; } = "None";
+    public string PaymentGatewayName { get; set; } = null!;
 
     [StringLength(150)]
-    public string PaymentGatewayMerchantId { get; set; } = string.Empty;
+    public string PaymentGatewayMerchantId { get; set; } = null!;
 
     [StringLength(250)]
-    public string PaymentGatewayApiKey { get; set; } = string.Empty;
+    public string PaymentGatewayApiKey { get; set; } = null!;
 
     [StringLength(250)]
-    public string PaymentGatewayApiSecret { get; set; } = string.Empty;
+    public string PaymentGatewayApiSecret { get; set; } = null!;
 
-    public int MaxItemImageDimension { get; set; } = 512;
+    public int MaxItemImageDimension { get; set; }
 
     public sbyte IsRewardsEnabled { get; set; }
 
     [StringLength(30)]
-    public string RewardEarningMethod { get; set; } = "FIXED_POINTS";
+    public string RewardEarningMethod { get; set; } = null!;
 
-    public double RewardEarningPurchaseAmount { get; set; } = 100.0;
+    public double RewardEarningPurchaseAmount { get; set; }
 
-    public double RewardEarningPoints { get; set; } = 1.0;
+    public double RewardEarningPoints { get; set; }
 
-    public double RewardEarningPercentage { get; set; } = 2.0;
+    public double RewardEarningPercentage { get; set; }
 
-    public double RewardPointValue { get; set; } = 1.0;
+    public double RewardPointValue { get; set; }
 
-    public double RewardMinPurchaseForEarning { get; set; } = 100.0;
+    public double RewardMinPurchaseForEarning { get; set; }
 
     public double RewardMinPointsForRedemption { get; set; }
 
     public double RewardMinInvoiceForRedemption { get; set; }
 
-    public double RewardMaxRedemptionPercentage { get; set; } = 20.0;
+    public double RewardMaxRedemptionPercentage { get; set; }
 
-    public sbyte RewardAllowPartialRedemption { get; set; } = 1;
+    public sbyte RewardAllowPartialRedemption { get; set; }
 
     public sbyte RewardAllowSameInvoiceRedemption { get; set; }
 
     public sbyte RewardIsExpiryEnabled { get; set; }
 
-    public int RewardExpiryDays { get; set; } = 365;
+    public int RewardExpiryDays { get; set; }
 
     [StringLength(30)]
-    public string RewardEligibleAmountType { get; set; } = "TOTAL_WITH_TAX";
+    public string RewardEligibleAmountType { get; set; } = null!;
 
     [StringLength(20)]
-    public string RewardStartDate { get; set; } = string.Empty;
+    public string RewardStartDate { get; set; } = null!;
 
     [StringLength(20)]
-    public string RewardEndDate { get; set; } = string.Empty;
+    public string RewardEndDate { get; set; } = null!;
 
     [ForeignKey("BalanceMessageId")]
     [InverseProperty("SettingBalanceMessages")]

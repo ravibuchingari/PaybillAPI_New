@@ -1,4 +1,4 @@
-namespace PaybillAPI.Models
+namespace Paybill.Models
 {
     public class PrintHeader
     {

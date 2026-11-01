@@ -1,6 +1,4 @@
-﻿using Serilog.Core;
-
-namespace PaybillAPI.Service
+﻿namespace Paybill.BackgoundServices
 {
     public class DailyBackgroundService(ILogger<DailyBackgroundService> logger, IWebHostEnvironment webHostEnvironment) : BackgroundService
     {

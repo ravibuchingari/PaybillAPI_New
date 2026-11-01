@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
+using Paybill.Models;
+using Paybill.Repositories.Service;
 
 namespace Paybill.Areas.WebApi.Controllers
 {

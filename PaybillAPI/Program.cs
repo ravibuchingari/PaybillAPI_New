@@ -1,18 +1,18 @@
-using System.Text;
-using System.Text.Json;
 using AuthenticationManager;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Paybill.BackgoundServices;
+using Paybill.Data;
+using Paybill.Middlewares;
+using Paybill.Repositories;
+using Paybill.Repositories.Service;
 using Paybill.Services;
-using PaybillAPI.Data;
-using PaybillAPI.Middlewares;
-using PaybillAPI.Repositories;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.Service;
 using Serilog;
+using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -160,21 +160,21 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // 11. Automatic Database Schema Verification on Startup
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-        if (await dbContext.Database.CanConnectAsync())
-        {
-            await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
-        }
-    }
-    catch (Exception ex)
-    {
-        Log.Warning(ex, "Could not run automatic schema migration on startup.");
-    }
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    try
+//    {
+//        var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+//        if (await dbContext.Database.CanConnectAsync())
+//        {
+//            await DatabaseSchemaMigrator.EnsureSchemaUpToDateAsync(dbContext);
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        Log.Warning(ex, "Could not run automatic schema migration on startup.");
+//    }
+//}
 
 // 12. HTTP Request Pipeline
 if (app.Environment.IsDevelopment())

@@ -1,7 +1,7 @@
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
+using Paybill.Models;
+using Paybill.Repositories.Service;
 
-namespace PaybillAPI.ViewModel
+namespace Paybill.ViewModel
 {
     public class AuthResponseVM
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PaybillAPI.Data;
-using PaybillAPI.Models;
+using Paybill.Data;
+using Paybill.Models;
 
-namespace PaybillAPI.Repositories
+namespace Paybill.Repositories
 {
     public class RootRepository(AppDBContext? dbContext)
     {

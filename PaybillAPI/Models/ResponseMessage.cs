@@ -1,4 +1,4 @@
-﻿namespace PaybillAPI.Models
+﻿namespace Paybill.Models
 {
     public class ResponseMessage(bool isSuccess, string message = "", object? data = null)
     {

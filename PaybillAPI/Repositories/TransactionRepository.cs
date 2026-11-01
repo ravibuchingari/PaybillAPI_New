@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using PaybillAPI.Data;
-using PaybillAPI.DTO;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
-using PaybillAPI.ViewModel;
+using Paybill.Data;
+using Paybill.DTO;
+using Paybill.Models;
+using Paybill.Repositories.Service;
+using Paybill.ViewModel;
 
-namespace PaybillAPI.Repositories
+namespace Paybill.Repositories
 {
     public class TransactionRepository(AppDBContext dbContext) : RootRepository(dbContext ?? null), ITransactionRepository
     {

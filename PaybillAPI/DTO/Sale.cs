@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("sales")]
 [Index("InvoiceNo", Name = "InvoiceNo_UNIQUE", IsUnique = true)]
@@ -53,7 +53,7 @@ public partial class Sale
     [StringLength(10)]
     public string? EndUserMobile { get; set; }
 
-    public int? ServiceRequestId { get; set; } = 0;
+    public int? ServiceRequestId { get; set; }
 
     public double RewardPointsEarned { get; set; }
 

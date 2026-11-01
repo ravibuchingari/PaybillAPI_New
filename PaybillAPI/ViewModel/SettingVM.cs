@@ -1,6 +1,6 @@
-using PaybillAPI.Models;
+using Paybill.Models;
 
-namespace PaybillAPI.ViewModel
+namespace Paybill.ViewModel
 {
     public class SettingVM
     {

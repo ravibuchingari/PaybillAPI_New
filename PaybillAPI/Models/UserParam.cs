@@ -1,6 +1,6 @@
-using PaybillAPI.ViewModel;
+using Paybill.ViewModel;
 
-namespace PaybillAPI.Models
+namespace Paybill.Models
 {
     public class UserParam
     {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PaybillAPI.DTO;
+namespace Paybill.DTO;
 
 [Table("reward_transactions")]
 public partial class RewardTransaction
@@ -33,7 +33,7 @@ public partial class RewardTransaction
     public int? CreatedBy { get; set; } = 0;
 
     [ForeignKey("PartyId")]
-    public virtual Party? Party { get; set; }
+    public virtual Customer? Party { get; set; }
 
     [ForeignKey("SalesId")]
     public virtual Sale? Sales { get; set; }

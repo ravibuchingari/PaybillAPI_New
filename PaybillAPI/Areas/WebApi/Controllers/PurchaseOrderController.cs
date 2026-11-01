@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PaybillAPI.Models;
-using PaybillAPI.Repositories.Service;
+using Paybill.Models;
+using Paybill.Repositories.Service;
 
 namespace Paybill.Areas.WebApi.Controllers
 {
