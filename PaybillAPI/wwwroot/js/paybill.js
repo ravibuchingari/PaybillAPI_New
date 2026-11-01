@@ -142,6 +142,10 @@ const PayBillUI = {
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;');
+    },
+
+    showToast(message, type = 'success') {
+        return this.toast(message, type);
     }
 };
 
