@@ -249,13 +249,13 @@
                 <div class="d-grid gap-2">
                     <div class="row g-2">
                         <div class="col-6 d-grid">
-                            <button type="button" class="btn btn-paybill py-2" id="btnSavePrint" onclick="saveInvoice(true)">
-                                <i class="bi bi-printer-fill me-1"></i>Save & Print
+                            <button type="button" class="btn btn-paybill py-2" id="btnSavePrint" onclick="saveInvoice(true)" title="Shortcut: F8 or Ctrl+S" accesskey="s">
+                                <i class="bi bi-printer-fill me-1"></i>Save & Print <span class="badge bg-white bg-opacity-25 ms-1 fw-normal" style="font-size: 0.7rem;">F8</span>
                             </button>
                         </div>
                         <div class="col-6 d-grid">
-                            <button type="button" class="btn btn-outline-paybill py-2" id="btnSaveOnly" onclick="saveInvoice(false)">
-                                <i class="bi bi-check2-circle me-1"></i>Save Only
+                            <button type="button" class="btn btn-outline-paybill py-2" id="btnSaveOnly" onclick="saveInvoice(false)" title="Shortcut: F9">
+                                <i class="bi bi-check2-circle me-1"></i>Save Only <span class="badge bg-secondary bg-opacity-25 ms-1 fw-normal" style="font-size: 0.7rem;">F9</span>
                             </button>
                         </div>
                     </div>
@@ -440,7 +440,7 @@
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-paybill py-2 fw-bold" onclick="window.location.href='@Url.Action("Create")'">
+                    <button type="button" id="buttonNewInvoice" class="btn btn-paybill py-2 fw-bold" onclick="window.location.href='@Url.Action("Create")'">
                         <i class="bi bi-plus-circle me-1"></i>New Invoice / Next Customer
                     </button>
                     <div class="row g-2">
@@ -662,10 +662,51 @@
             });
 
             document.addEventListener('keydown', (e) => {
+                // F2: Focus Barcode / Item Search
                 if (e.key === 'F2') {
                     e.preventDefault();
                     input.focus();
                     input.select();
+                    return;
+                }
+
+                // F8, Ctrl+S, or Ctrl+Enter: Trigger Save & Print (btnSavePrint)
+                const isSaveAndPrint = (e.key === 'F8') ||
+                                       ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S') && !e.altKey) ||
+                                       ((e.ctrlKey || e.metaKey) && e.key === 'Enter');
+
+                if (isSaveAndPrint) {
+                    const savedModal = document.getElementById('invoiceSavedModal');
+                    if (savedModal && savedModal.classList.contains('show')) {
+                        e.preventDefault();
+                        window.location.href = '@Url.Action("Create")';
+                        return;
+                    }
+
+                    const otherModal = document.querySelector('.modal.show');
+                    if (otherModal && otherModal.id !== 'invoiceSavedModal') {
+                        return;
+                    }
+
+                    e.preventDefault();
+                    const btnSavePrint = document.getElementById('btnSavePrint');
+                    if (btnSavePrint && !btnSavePrint.disabled) {
+                        btnSavePrint.click();
+                    }
+                    return;
+                }
+
+                // F9: Save Only (btnSaveOnly)
+                if (e.key === 'F9') {
+                    const activeModal = document.querySelector('.modal.show');
+                    if (activeModal) return;
+
+                    e.preventDefault();
+                    const btnSaveOnly = document.getElementById('btnSaveOnly');
+                    if (btnSaveOnly && !btnSaveOnly.disabled) {
+                        btnSaveOnly.click();
+                    }
+                    return;
                 }
             });
         }
