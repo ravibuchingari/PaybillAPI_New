@@ -1,0 +1,244 @@
+@model Paybill.ViewModel.SalesPrintViewModel
+@{
+    var inv = Model.Invoice;
+    var raw = Model.RawInvoice;
+    var hdr = Model.Header;
+    bool isNonGst = string.Equals(inv.SalesType, "Non-GST", StringComparison.OrdinalIgnoreCase);
+    string invoiceNo = !string.IsNullOrWhiteSpace(inv.InvoiceNo) ? inv.InvoiceNo : (raw?.InvoiceNumber ?? inv.SalesId.ToString());
+    string upiUri = !string.IsNullOrWhiteSpace(Model.Settings.UPIId)
+        ? $"upi://pay?pa={Model.Settings.UPIId}&pn={Uri.EscapeDataString(hdr.HeaderLine1)}&am={inv.TotalInvoiceAmount:F2}&cu=INR"
+        : "";
+    bool isInterState = inv.TotalIgst > 0;
+}
+
+<div class="invoice-a4" style="width: 100%; max-width: 210mm; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11.5px; line-height: 1.4; color: #1e293b; background: #fff; padding: 10px;">
+    <!-- Top Green Stripe -->
+    <div style="height: 4px; background: linear-gradient(90deg, #174204, #2e7d32, #4caf50); border-radius: 2px; margin-bottom: 12px;"></div>
+
+    <!-- Header Section -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+        <tr>
+            <td style="vertical-align: top; width: 60%;">
+                <h1 style="color: #174204; font-size: 20px; font-weight: 800; margin: 0 0 4px 0; text-transform: uppercase;">@hdr.HeaderLine1</h1>
+                @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine2)) { <div style="font-size: 11px; color: #475569;">@hdr.HeaderLine2</div> }
+                @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine3)) { <div style="font-size: 11px; color: #475569;">@hdr.HeaderLine3</div> }
+                @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine4)) { <div style="font-size: 11px; color: #475569;">Ph: @hdr.HeaderLine4</div> }
+                @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5) && !isNonGst)
+                {
+                    <div style="margin-top: 4px;">
+                        <span style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; font-weight: bold; font-family: monospace; padding: 2px 6px; border-radius: 4px; font-size: 11px;">
+                            GSTIN: @hdr.HeaderLine5
+                        </span>
+                    </div>
+                }
+            </td>
+            <td style="vertical-align: top; width: 40%; text-align: right;">
+                <div style="color: #174204; font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">
+                    @(isNonGst ? "BILL OF SUPPLY" : "TAX INVOICE")
+                </div>
+                <div style="font-size: 9.5px; font-weight: bold; color: #64748b; letter-spacing: 1px; margin-bottom: 6px;">
+                    ORIGINAL FOR RECIPIENT
+                </div>
+                <table style="border: 1px solid #cbd5e1; border-radius: 4px; border-collapse: collapse; margin-left: auto; font-size: 11px;">
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 3px 8px; color: #64748b; text-align: left;">Invoice No:</td>
+                        <td style="padding: 3px 8px; font-weight: bold; text-align: right;">#@invoiceNo</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 3px 8px; color: #64748b; text-align: left;">Invoice Date:</td>
+                        <td style="padding: 3px 8px; text-align: right;">@inv.SalesDate</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 3px 8px; color: #64748b; text-align: left;">Payment Mode:</td>
+                        <td style="padding: 3px 8px; text-align: right; font-weight: bold;">@inv.PaymentMode</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Billed To Customer -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+        <tr>
+            <td style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; background: #f8fafc;">
+                <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px; margin-bottom: 4px;">
+                    Billed To (Customer Details)
+                </div>
+                <div style="font-weight: bold; font-size: 13px; color: #0f172a;">
+                    @(string.IsNullOrWhiteSpace(inv.PartyName) ? "Walk-in / Cash Customer" : inv.PartyName)
+                </div>
+                @if (!string.IsNullOrWhiteSpace(inv.Address))
+                {
+                    <div style="font-size: 11px; color: #475569;">@inv.Address</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(inv.Mobile))
+                {
+                    <div style="font-size: 11px; color: #475569;">Contact: @inv.Mobile</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(inv.Gstin))
+                {
+                    <div style="font-size: 11px; font-weight: bold; color: #166534;">GSTIN: @inv.Gstin</div>
+                }
+            </td>
+        </tr>
+    </table>
+
+    <!-- Line Items Table -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 12px; border: 1px solid #cbd5e1;">
+        <thead>
+            <tr style="background: #f1f5f9; color: #334155; font-size: 10px; text-transform: uppercase; border-bottom: 1px solid #cbd5e1;">
+                <th style="padding: 6px 8px; text-align: center; width: 30px; border-right: 1px solid #e2e8f0;">#</th>
+                <th style="padding: 6px 8px; text-align: left; border-right: 1px solid #e2e8f0;">Item Description</th>
+                <th style="padding: 6px 8px; text-align: center; width: 70px; border-right: 1px solid #e2e8f0;">HSN/SAC</th>
+                <th style="padding: 6px 8px; text-align: center; width: 45px; border-right: 1px solid #e2e8f0;">Qty</th>
+                <th style="padding: 6px 8px; text-align: right; width: 65px; border-right: 1px solid #e2e8f0;">Rate</th>
+                <th style="padding: 6px 8px; text-align: right; width: 75px; border-right: 1px solid #e2e8f0;">Taxable</th>
+                @if (!isNonGst)
+                {
+                    if (isInterState)
+                    {
+                        <th style="padding: 6px 8px; text-align: right; width: 70px; border-right: 1px solid #e2e8f0;">IGST</th>
+                    }
+                    else
+                    {
+                        <th style="padding: 6px 8px; text-align: right; width: 60px; border-right: 1px solid #e2e8f0;">CGST</th>
+                        <th style="padding: 6px 8px; text-align: right; width: 60px; border-right: 1px solid #e2e8f0;">SGST</th>
+                    }
+                }
+                <th style="padding: 6px 8px; text-align: right; width: 85px;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int sno = 1; }
+            @foreach (var item in inv.SalesItems)
+            {
+                <tr style="border-bottom: 1px solid #f1f5f9; background: @(sno % 2 == 0 ? "#fafbfc" : "#ffffff");">
+                    <td style="padding: 5px 8px; text-align: center; border-right: 1px solid #f1f5f9;">@sno</td>
+                    <td style="padding: 5px 8px; border-right: 1px solid #f1f5f9; font-weight: 500;">@item.ItemName</td>
+                    <td style="padding: 5px 8px; text-align: center; border-right: 1px solid #f1f5f9; color: #64748b;">@item.HsnCode</td>
+                    <td style="padding: 5px 8px; text-align: center; border-right: 1px solid #f1f5f9;">@item.Quantity</td>
+                    <td style="padding: 5px 8px; text-align: right; border-right: 1px solid #f1f5f9;">₹ @item.Rate.ToString("0.00")</td>
+                    <td style="padding: 5px 8px; text-align: right; border-right: 1px solid #f1f5f9;">₹ @item.TaxableAmount.ToString("0.00")</td>
+                    @if (!isNonGst)
+                    {
+                        if (isInterState)
+                        {
+                            <td style="padding: 5px 8px; text-align: right; border-right: 1px solid #f1f5f9;">
+                                <div>₹ @item.IgstRs.ToString("0.00")</div>
+                                <div style="font-size: 9px; color: #64748b;">(@item.IgstPer%)</div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="padding: 5px 8px; text-align: right; border-right: 1px solid #f1f5f9;">
+                                <div>₹ @item.CgstRs.ToString("0.00")</div>
+                                <div style="font-size: 9px; color: #64748b;">(@item.CgstPer%)</div>
+                            </td>
+                            <td style="padding: 5px 8px; text-align: right; border-right: 1px solid #f1f5f9;">
+                                <div>₹ @item.SgstRs.ToString("0.00")</div>
+                                <div style="font-size: 9px; color: #64748b;">(@item.SgstPer%)</div>
+                            </td>
+                        }
+                    }
+                    <td style="padding: 5px 8px; text-align: right; font-weight: bold;">₹ @item.TotalAmount.ToString("0.00")</td>
+                </tr>
+                sno++;
+            }
+        </tbody>
+    </table>
+
+    <!-- Amount in Words & Totals -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+        <tr>
+            <td style="vertical-align: top; width: 55%; padding-right: 12px;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 8px; margin-bottom: 8px;">
+                    <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b;">Amount in Words:</div>
+                    <div style="font-weight: 600; color: #0f172a; margin-top: 2px;">@Model.AmountInWords</div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Settings.BankDetails))
+                {
+                    <div style="border: 1px solid #e2e8f0; border-radius: 4px; padding: 8px; font-size: 10.5px; background: #fff;">
+                        <div style="font-weight: bold; color: #174204; margin-bottom: 2px;">Bank & Payment Details:</div>
+                        <div>@Model.Settings.BankDetails</div>
+                        @if (!string.IsNullOrWhiteSpace(Model.Settings.BankAccountNumber)) { <div>A/C No: @Model.Settings.BankAccountNumber</div> }
+                        @if (!string.IsNullOrWhiteSpace(Model.Settings.BankIfscCode)) { <div>IFSC: @Model.Settings.BankIfscCode</div> }
+                    </div>
+                }
+            </td>
+            <td style="vertical-align: top; width: 45%;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 4px 8px; color: #64748b;">Total Taxable Amount:</td>
+                        <td style="padding: 4px 8px; text-align: right;">₹ @inv.TotalTaxableAmount.ToString("N2")</td>
+                    </tr>
+                    @if (inv.TotalCgst > 0)
+                    {
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 4px 8px; color: #64748b;">Total CGST:</td>
+                            <td style="padding: 4px 8px; text-align: right;">₹ @inv.TotalCgst.ToString("N2")</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 4px 8px; color: #64748b;">Total SGST:</td>
+                            <td style="padding: 4px 8px; text-align: right;">₹ @inv.TotalSgst.ToString("N2")</td>
+                        </tr>
+                    }
+                    @if (inv.TotalIgst > 0)
+                    {
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 4px 8px; color: #64748b;">Total IGST:</td>
+                            <td style="padding: 4px 8px; text-align: right;">₹ @inv.TotalIgst.ToString("N2")</td>
+                        </tr>
+                    }
+                    @if ((inv.TotalDiscount + inv.TotalSavings) > 0)
+                    {
+                        <tr style="border-bottom: 1px solid #e2e8f0; color: #dc2626;">
+                            <td style="padding: 4px 8px;">Discount / Savings:</td>
+                            <td style="padding: 4px 8px; text-align: right;">- ₹ @((inv.TotalDiscount + inv.TotalSavings).ToString("N2"))</td>
+                        </tr>
+                    }
+                    @if (inv.PointsDiscount > 0)
+                    {
+                        <tr style="border-bottom: 1px solid #e2e8f0; color: #16a34a;">
+                            <td style="padding: 4px 8px;">Rewards Redeemed:</td>
+                            <td style="padding: 4px 8px; text-align: right;">- ₹ @inv.PointsDiscount.ToString("N2")</td>
+                        </tr>
+                    }
+                    <tr style="background: #f1f5f9; font-weight: 800; font-size: 13px; color: #174204; border-bottom: 1px solid #cbd5e1;">
+                        <td style="padding: 6px 8px;">GRAND TOTAL:</td>
+                        <td style="padding: 6px 8px; text-align: right;">₹ @inv.TotalInvoiceAmount.ToString("N2")</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 4px 8px; color: #64748b;">Amount Received:</td>
+                        <td style="padding: 4px 8px; text-align: right;">₹ @inv.ReceivedAmount.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 8px; color: #64748b; font-weight: bold;">Balance Due:</td>
+                        <td style="padding: 4px 8px; text-align: right; font-weight: bold;">₹ @inv.BalanceAmount.ToString("N2")</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Signatory Box & Footer -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+        <tr>
+            <td style="vertical-align: bottom; width: 60%; font-size: 10px; color: #64748b;">
+                @if (!string.IsNullOrWhiteSpace(hdr.FooterLine1)) { <div>@hdr.FooterLine1</div> }
+                @if (!string.IsNullOrWhiteSpace(hdr.FooterLine2)) { <div>@hdr.FooterLine2</div> }
+                @foreach (var cl in Model.CustomLines)
+                {
+                    <div style="font-weight: @(cl.IsBold ? "bold" : "normal"); font-style: @(cl.IsItalic ? "italic" : "normal");">@cl.LineText</div>
+                }
+                <div style="margin-top: 4px; font-style: italic;">Computer Generated Invoice | Thank you for your business!</div>
+            </td>
+            <td style="vertical-align: bottom; width: 40%; text-align: right;">
+                <div style="font-weight: bold; font-size: 11px;">For @hdr.HeaderLine1</div>
+                <div style="height: 45px;"></div>
+                <div style="font-size: 10px; color: #64748b;">Authorized Signatory</div>
+            </td>
+        </tr>
+    </table>
+</div>
+

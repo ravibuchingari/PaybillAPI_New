@@ -1,0 +1,169 @@
+@model Paybill.ViewModel.SalesPrintViewModel
+@{
+    var inv = Model.Invoice;
+    var raw = Model.RawInvoice;
+    var hdr = Model.Header;
+    string invoiceNo = !string.IsNullOrWhiteSpace(inv.InvoiceNo) ? inv.InvoiceNo : (raw?.InvoiceNumber ?? inv.SalesId.ToString());
+    string upiUri = !string.IsNullOrWhiteSpace(Model.Settings.UPIId)
+        ? $"upi://pay?pa={Model.Settings.UPIId}&pn={Uri.EscapeDataString(hdr.HeaderLine1)}&am={inv.TotalInvoiceAmount:F2}&cu=INR"
+        : "";
+}
+
+<div class="receipt-80mm" style="width: 72mm; max-width: 72mm; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace, sans-serif; font-size: 12px; line-height: 1.3; color: #000; background: #fff;">
+    <!-- Store Header -->
+    <div style="text-align: center; margin-bottom: 6px;">
+        <div style="font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.2px;">@hdr.HeaderLine1</div>
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine2)) { <div style="font-size: 11px;">@hdr.HeaderLine2</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine3)) { <div style="font-size: 11px;">@hdr.HeaderLine3</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine4)) { <div style="font-size: 11px;">Phone: @hdr.HeaderLine4</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5))
+        {
+            <div style="font-size: 11.5px; font-weight: bold; margin-top: 2px;">GSTIN: @hdr.HeaderLine5</div>
+        }
+        <div style="font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 4px; border: 1px solid #000; display: inline-block; padding: 1px 8px;">
+            @(string.Equals(inv.SalesType, "Non-GST", StringComparison.OrdinalIgnoreCase) ? "BILL OF SUPPLY" : "TAX INVOICE")
+        </div>
+    </div>
+
+    <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+
+    <!-- Metadata Section -->
+    <div style="font-size: 11px; display: flex; justify-content: space-between;">
+        <div>
+            <div><strong>Invoice No:</strong> #@invoiceNo</div>
+            <div><strong>Date:</strong> @inv.SalesDate @(!string.IsNullOrWhiteSpace(inv.SalesTime) ? $"({inv.SalesTime})" : "")</div>
+        </div>
+        <div style="text-align: right;">
+            <div><strong>Mode:</strong> @inv.PaymentMode</div>
+            <div><strong>User:</strong> @(string.IsNullOrWhiteSpace(inv.CreatedBy) ? "Cashier" : inv.CreatedBy)</div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(inv.PartyName))
+    {
+        <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+        <div style="font-size: 11px;">
+            <div><strong>Customer:</strong> @inv.PartyName</div>
+            @if (!string.IsNullOrWhiteSpace(inv.Mobile)) { <div><strong>Mobile:</strong> @inv.Mobile</div> }
+            @if (!string.IsNullOrWhiteSpace(inv.Address)) { <div><strong>Address:</strong> @inv.Address</div> }
+        </div>
+    }
+
+    <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+
+    <!-- Item Details Table -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+        <thead>
+            <tr style="border-bottom: 1px dashed #000;">
+                <th style="text-align: left; padding: 2px 0;">Item Description</th>
+                <th style="text-align: center; padding: 2px 0;">Qty</th>
+                <th style="text-align: right; padding: 2px 0;">Rate</th>
+                <th style="text-align: right; padding: 2px 0;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in inv.SalesItems)
+            {
+                <tr>
+                    <td colspan="4" style="padding-top: 3px; font-weight: 600;">@item.ItemName</td>
+                </tr>
+                <tr style="font-size: 10px; color: #333;">
+                    <td style="padding-bottom: 2px;">HSN: @item.HsnCode</td>
+                    <td style="text-align: center;">@item.Quantity</td>
+                    <td style="text-align: right;">₹ @item.Rate.ToString("0.00")</td>
+                    <td style="text-align: right; font-weight: bold; color: #000;">₹ @item.TotalAmount.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+
+    <!-- Financial Breakup -->
+    <div style="font-size: 11.5px;">
+        <div style="display: flex; justify-content: space-between;">
+            <span>Taxable Value:</span>
+            <span>₹ @inv.TotalTaxableAmount.ToString("N2")</span>
+        </div>
+        @if (inv.TotalCgst > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>CGST:</span>
+                <span>₹ @inv.TotalCgst.ToString("N2")</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>SGST:</span>
+                <span>₹ @inv.TotalSgst.ToString("N2")</span>
+            </div>
+        }
+        @if (inv.TotalIgst > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>IGST:</span>
+                <span>₹ @inv.TotalIgst.ToString("N2")</span>
+            </div>
+        }
+        @if ((inv.TotalDiscount + inv.TotalSavings) > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>Discount / Total Savings:</span>
+                <span>- ₹ @((inv.TotalDiscount + inv.TotalSavings).ToString("N2"))</span>
+            </div>
+        }
+        @if (inv.PointsDiscount > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>Reward Points Redeemed (@inv.PointsRedeemed):</span>
+                <span>- ₹ @inv.PointsDiscount.ToString("N2")</span>
+            </div>
+        }
+
+        <div style="border-top: 2px solid #000; margin: 4px 0;"></div>
+
+        <!-- Net Payable Grand Total -->
+        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
+            <span>NET AMOUNT PAYABLE:</span>
+            <span>₹ @inv.TotalInvoiceAmount.ToString("N2")</span>
+        </div>
+
+        <div style="border-top: 1px solid #000; margin: 4px 0;"></div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span>Amount Received:</span>
+            <span>₹ @inv.ReceivedAmount.ToString("N2")</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+            <span>@(inv.BalanceAmount <= 0 ? "Change / Balance:" : "Balance Due:")</span>
+            <span>₹ @inv.BalanceAmount.ToString("N2")</span>
+        </div>
+
+        @if (inv.PointsEarned > 0)
+        {
+            <div style="text-align: center; font-weight: bold; margin-top: 3px; font-size: 10px;">
+                ★ Points Earned: @inv.PointsEarned | Balance Pts: @inv.AvailablePoints ★
+            </div>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(upiUri) && Model.Settings.PrintQrCode)
+    {
+        <div style="border-top: 1px dashed #000; margin: 5px 0;"></div>
+        <div style="text-align: center; margin: 4px 0;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=115x115&data=@Uri.EscapeDataString(upiUri)" alt="UPI QR" style="width: 90px; height: 90px;" />
+            <div style="font-size: 9.5px; font-weight: 700; margin-top: 2px;">SCAN TO PAY VIA UPI</div>
+        </div>
+    }
+
+    <!-- Custom Footer & Notices -->
+    <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+    <div style="text-align: center; font-size: 10px;">
+        @if (!string.IsNullOrWhiteSpace(hdr.FooterLine1)) { <div>@hdr.FooterLine1</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.FooterLine2)) { <div>@hdr.FooterLine2</div> }
+        @foreach (var cl in Model.CustomLines)
+        {
+            <div style="font-weight: @(cl.IsBold ? "bold" : "normal"); font-style: @(cl.IsItalic ? "italic" : "normal");">@cl.LineText</div>
+        }
+        <div style="margin-top: 3px; font-weight: bold;">Thank You For Your Business!</div>
+    </div>
+</div>
+

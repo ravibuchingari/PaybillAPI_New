@@ -1,0 +1,117 @@
+@model Paybill.ViewModel.SalesPrintViewModel
+@{
+    var inv = Model.Invoice;
+    var raw = Model.RawInvoice;
+    var hdr = Model.Header;
+    string invoiceNo = !string.IsNullOrWhiteSpace(inv.InvoiceNo) ? inv.InvoiceNo : (raw?.InvoiceNumber ?? inv.SalesId.ToString());
+}
+
+<div class="insurance-invoice-a4" style="width: 100%; max-width: 210mm; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #0f172a; background: #fff; padding: 12px;">
+    <div style="text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px;">
+        <h2 style="margin: 0; font-size: 20px; font-weight: 800; text-transform: uppercase;">@hdr.HeaderLine1</h2>
+        <div style="font-size: 11px; color: #475569;">@hdr.HeaderLine2 | @hdr.HeaderLine3 | Ph: @hdr.HeaderLine4</div>
+        <div style="font-size: 11.5px; font-weight: bold; margin-top: 3px;">GSTIN: @hdr.HeaderLine5</div>
+        <div style="margin-top: 6px; font-weight: 800; font-size: 14px; text-decoration: underline; letter-spacing: 0.5px;">
+            INSURANCE CLAIM / SERVICE TAX INVOICE
+        </div>
+    </div>
+
+    <!-- Metadata Grid -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; border: 1px solid #cbd5e1;">
+        <tr>
+            <td style="padding: 6px 10px; width: 50%; border-right: 1px solid #cbd5e1; vertical-align: top;">
+                <div><strong>Claim / Invoice No:</strong> #@invoiceNo</div>
+                <div><strong>Date of Loss / Service:</strong> @inv.SalesDate</div>
+                <div><strong>Customer Name:</strong> @(string.IsNullOrWhiteSpace(inv.PartyName) ? "Claimant" : inv.PartyName)</div>
+                <div><strong>Contact:</strong> @inv.Mobile</div>
+                <div><strong>Address:</strong> @inv.Address</div>
+            </td>
+            <td style="padding: 6px 10px; width: 50%; vertical-align: top;">
+                <div><strong>Policy / Claim Ref:</strong> @(!string.IsNullOrWhiteSpace(inv.Remarks) ? inv.Remarks : "N/A")</div>
+                <div><strong>Payment Status:</strong> @inv.PaymentMode</div>
+                <div><strong>Billed By:</strong> @(string.IsNullOrWhiteSpace(inv.CreatedBy) ? "Authorized Dealer" : inv.CreatedBy)</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Items Table -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; margin-bottom: 12px; border: 1px solid #cbd5e1;">
+        <thead>
+            <tr style="background: #f1f5f9; text-transform: uppercase;">
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">#</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: left;">Part / Service Description</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">HSN</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: center;">Qty</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right;">Unit Price</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right;">Taxable</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right;">GST Amt</th>
+                <th style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: right;">Total (INR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int sno = 1; }
+            @foreach (var item in inv.SalesItems)
+            {
+                <tr>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: center;">@sno</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; font-weight: 500;">@item.ItemName</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: center;">@item.HsnCode</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: center;">@item.Quantity</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: right;">₹ @item.Rate.ToString("0.00")</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: right;">₹ @item.TaxableAmount.ToString("0.00")</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: right;">₹ @item.GstAmount.ToString("0.00")</td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: right; font-weight: bold;">₹ @item.TotalAmount.ToString("0.00")</td>
+                </tr>
+                sno++;
+            }
+        </tbody>
+    </table>
+
+    <!-- Totals & Certification -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px;">
+        <tr>
+            <td style="width: 60%; vertical-align: top; padding-right: 12px;">
+                <div style="font-size: 10.5px; border: 1px solid #cbd5e1; padding: 8px; border-radius: 4px;">
+                    <strong>Amount in Words:</strong>
+                    <div>@Model.AmountInWords</div>
+                    <div style="margin-top: 8px; font-size: 10px; color: #475569;">
+                        We hereby certify that the parts replaced and labor supplied above are genuine and required for restoring the equipment/vehicle.
+                    </div>
+                </div>
+            </td>
+            <td style="width: 40%; vertical-align: top;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; font-size: 11px;">
+                    <tr style="border-bottom: 1px solid #cbd5e1;">
+                        <td style="padding: 4px 8px;">Total Taxable:</td>
+                        <td style="padding: 4px 8px; text-align: right;">₹ @inv.TotalTaxableAmount.ToString("N2")</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #cbd5e1;">
+                        <td style="padding: 4px 8px;">Total GST:</td>
+                        <td style="padding: 4px 8px; text-align: right;">₹ @(inv.TotalCgst + inv.TotalSgst + inv.TotalIgst).ToString("N2")</td>
+                    </tr>
+                    <tr style="background: #f1f5f9; font-weight: bold; font-size: 12px;">
+                        <td style="padding: 5px 8px;">Claim Total:</td>
+                        <td style="padding: 5px 8px; text-align: right;">₹ @inv.TotalInvoiceAmount.ToString("N2")</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Signatures -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 25px;">
+        <tr>
+            <td style="width: 50%; text-align: center; vertical-align: bottom;">
+                <div style="border-top: 1px dashed #64748b; width: 60%; margin: 0 auto; padding-top: 4px;">
+                    Customer / Claimant Signature
+                </div>
+            </td>
+            <td style="width: 50%; text-align: center; vertical-align: bottom;">
+                <div style="border-top: 1px dashed #64748b; width: 60%; margin: 0 auto; padding-top: 4px;">
+                    Authorized Workshop / Dealer Stamp
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+

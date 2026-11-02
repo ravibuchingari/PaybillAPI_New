@@ -1,0 +1,143 @@
+@model Paybill.ViewModel.SalesPrintViewModel
+@{
+    var inv = Model.Invoice;
+    var raw = Model.RawInvoice;
+    var hdr = Model.Header;
+    string invoiceNo = !string.IsNullOrWhiteSpace(inv.InvoiceNo) ? inv.InvoiceNo : (raw?.InvoiceNumber ?? inv.SalesId.ToString());
+    string upiUri = !string.IsNullOrWhiteSpace(Model.Settings.UPIId)
+        ? $"upi://pay?pa={Model.Settings.UPIId}&pn={Uri.EscapeDataString(hdr.HeaderLine1)}&am={inv.TotalInvoiceAmount:F2}&cu=INR"
+        : "";
+}
+
+<div class="receipt-58mm" style="width: 48mm; max-width: 48mm; margin: 0 auto; font-family: monospace, sans-serif; font-size: 11px; line-height: 1.25; color: #000; background: #fff;">
+    <!-- Store Header -->
+    <div style="text-align: center; margin-bottom: 4px;">
+        <div style="font-size: 14px; font-weight: bold; text-transform: uppercase;">@hdr.HeaderLine1</div>
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine2)) { <div>@hdr.HeaderLine2</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine3)) { <div>@hdr.HeaderLine3</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine4)) { <div>Ph: @hdr.HeaderLine4</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.HeaderLine5)) { <div style="font-weight: bold;">GSTIN: @hdr.HeaderLine5</div> }
+    </div>
+
+    <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+
+    <!-- Invoice Meta -->
+    <div>
+        <div><strong>Inv #:</strong> @invoiceNo</div>
+        <div><strong>Date:</strong> @inv.SalesDate @(!string.IsNullOrWhiteSpace(inv.SalesTime) ? inv.SalesTime : "")</div>
+        @if (!string.IsNullOrWhiteSpace(inv.PartyName))
+        {
+            <div><strong>Cust:</strong> @inv.PartyName</div>
+            @if (!string.IsNullOrWhiteSpace(inv.Mobile)) { <div><strong>Mob:</strong> @inv.Mobile</div> }
+        }
+        <div><strong>Pay Mode:</strong> @inv.PaymentMode</div>
+    </div>
+
+    <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+
+    <!-- Items Table -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 10.5px;">
+        <thead>
+            <tr style="border-bottom: 1px dashed #000;">
+                <th style="text-align: left; padding: 1px 0;">Item</th>
+                <th style="text-align: center; padding: 1px 0;">Qty</th>
+                <th style="text-align: right; padding: 1px 0;">Rate</th>
+                <th style="text-align: right; padding: 1px 0;">Amt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in inv.SalesItems)
+            {
+                <tr>
+                    <td colspan="4" style="padding-top: 2px; font-weight: 600;">@item.ItemName</td>
+                </tr>
+                <tr>
+                    <td style="color: #444; font-size: 9.5px;">@item.HsnCode</td>
+                    <td style="text-align: center;">@item.Quantity</td>
+                    <td style="text-align: right;">@item.Rate.ToString("0.00")</td>
+                    <td style="text-align: right; font-weight: bold;">@item.TotalAmount.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+
+    <!-- Totals -->
+    <div style="font-size: 11px;">
+        <div style="display: flex; justify-content: space-between;">
+            <span>Sub Total:</span>
+            <span>₹ @inv.TotalTaxableAmount.ToString("N2")</span>
+        </div>
+        @if (inv.TotalCgst > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>CGST:</span>
+                <span>₹ @inv.TotalCgst.ToString("N2")</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>SGST:</span>
+                <span>₹ @inv.TotalSgst.ToString("N2")</span>
+            </div>
+        }
+        @if (inv.TotalIgst > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>IGST:</span>
+                <span>₹ @inv.TotalIgst.ToString("N2")</span>
+            </div>
+        }
+        @if ((inv.TotalDiscount + inv.TotalSavings) > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>Discount/Savings:</span>
+                <span>- ₹ @((inv.TotalDiscount + inv.TotalSavings).ToString("N2"))</span>
+            </div>
+        }
+        @if (inv.PointsDiscount > 0)
+        {
+            <div style="display: flex; justify-content: space-between;">
+                <span>Pts Redeemed:</span>
+                <span>- ₹ @inv.PointsDiscount.ToString("N2")</span>
+            </div>
+        }
+
+        <div style="border-top: 1px solid #000; margin: 2px 0;"></div>
+
+        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;">
+            <span>TOTAL:</span>
+            <span>₹ @inv.TotalInvoiceAmount.ToString("N2")</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span>Received:</span>
+            <span>₹ @inv.ReceivedAmount.ToString("N2")</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+            <span>Balance Due:</span>
+            <span>₹ @inv.BalanceAmount.ToString("N2")</span>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(upiUri) && Model.Settings.PrintQrCode)
+    {
+        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+        <div style="text-align: center; margin: 4px 0;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=@Uri.EscapeDataString(upiUri)" alt="UPI QR" style="width: 80px; height: 80px;" />
+            <div style="font-size: 9px; font-weight: bold; margin-top: 2px;">SCAN TO PAY VIA UPI</div>
+        </div>
+    }
+
+    <!-- Footer -->
+    <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+    <div style="text-align: center; font-size: 9.5px;">
+        @if (!string.IsNullOrWhiteSpace(hdr.FooterLine1)) { <div>@hdr.FooterLine1</div> }
+        @if (!string.IsNullOrWhiteSpace(hdr.FooterLine2)) { <div>@hdr.FooterLine2</div> }
+        @foreach (var cl in Model.CustomLines)
+        {
+            <div style="font-weight: @(cl.IsBold ? "bold" : "normal"); font-style: @(cl.IsItalic ? "italic" : "normal");">@cl.LineText</div>
+        }
+        <div style="margin-top: 3px; font-weight: bold;">Thank You! Visit Again!</div>
+    </div>
+</div>
+
