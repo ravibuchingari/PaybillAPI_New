@@ -1,0 +1,196 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFramework = net10.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.EntryPointFilePath = 
+build_property.RootNamespace = PaybillAPI
+build_property.RootNamespace = PaybillAPI
+build_property.ProjectDir = F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 10.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xBY2NvdW50XEFjY2Vzc0RlbmllZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xBY2NvdW50XExvZ2luLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Account/Setup.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xBY2NvdW50XFNldHVwLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Dashboard/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xEYXNoYm9hcmRcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xEYXNoYm9hcmRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Inventory/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xJbnZlbnRvcnlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Inventory/PrintBarcodes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xJbnZlbnRvcnlcUHJpbnRCYXJjb2Rlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/JobCard/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xKb2JDYXJkXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/JobCard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xKb2JDYXJkXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/JobCard/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xKb2JDYXJkXFByaW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Party/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQYXJ0eVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Party/Ledger.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQYXJ0eVxMZWRnZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/PurchaseOrder/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQdXJjaGFzZU9yZGVyXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/PurchaseOrder/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQdXJjaGFzZU9yZGVyXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/PurchaseOrder/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQdXJjaGFzZU9yZGVyXFByaW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Purchase/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQdXJjaGFzZVxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Purchase/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQdXJjaGFzZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Purchase/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xQdXJjaGFzZVxQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/AgedInventory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcQWdlZEludmVudG9yeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/AuditDeletedItems.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcQXVkaXREZWxldGVkSXRlbXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/BalanceSheet.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcQmFsYW5jZVNoZWV0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/Daybook.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcRGF5Ym9vay5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/GstReturns.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcR3N0UmV0dXJucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/InventoryValuation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcSW52ZW50b3J5VmFsdWF0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/OrderReadiness.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcT3JkZXJSZWFkaW5lc3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/ProductMovement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcUHJvZHVjdE1vdmVtZW50LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/PurchaseReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcUHVyY2hhc2VSZXBvcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/SalesDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcU2FsZXNEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Report/SalesSummary.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXBvcnRcU2FsZXNTdW1tYXJ5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Reward/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xSZXdhcmRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Sales/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xTYWxlc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Sales/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xTYWxlc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Sales/Print.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xTYWxlc1xQcmludC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Settings/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xTZXR0aW5nc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xTaGFyZWRcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Shared/_PrintLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xTaGFyZWRcX1ByaW50TGF5b3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Transaction/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xUcmFuc2FjdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/Transaction/PrintVoucher.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xUcmFuc2FjdGlvblxQcmludFZvdWNoZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xfVmlld0ltcG9ydHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/Geva Projects/Web Projects/PaybillAPI/PaybillAPI/Areas/Paybill/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUGF5YmlsbFxWaWV3c1xfVmlld1N0YXJ0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 

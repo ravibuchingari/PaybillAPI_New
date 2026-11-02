@@ -1,0 +1,109 @@
+{
+  "Files": [
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\DbScript\\script.sql",
+      "PackagePath": "staticwebassets\\DbScript\\script.sql"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241030.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241030.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241031.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241031.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241101.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241101.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241103.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241103.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241104.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241104.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241105.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241105.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241106.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241106.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241112.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241112.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241113.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241113.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241115.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241115.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241116.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241116.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241121.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241121.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241127.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241127.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241204.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241204.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241211.log",
+      "PackagePath": "staticwebassets\\applog\\log_20241211.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250106.log",
+      "PackagePath": "staticwebassets\\applog\\log_20250106.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250107.log",
+      "PackagePath": "staticwebassets\\applog\\log_20250107.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250129.log",
+      "PackagePath": "staticwebassets\\applog\\log_20250129.log"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\images\\logo.png",
+      "PackagePath": "staticwebassets\\images\\logo.png"
+    },
+    {
+      "Id": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\paybill_template.xlsx",
+      "PackagePath": "staticwebassets\\paybill_template.xlsx"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.PaybillAPI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.PaybillAPI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.PaybillAPI.props",
+      "PackagePath": "build\\PaybillAPI.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.PaybillAPI.props",
+      "PackagePath": "buildMultiTargeting\\PaybillAPI.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.PaybillAPI.props",
+      "PackagePath": "buildTransitive\\PaybillAPI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

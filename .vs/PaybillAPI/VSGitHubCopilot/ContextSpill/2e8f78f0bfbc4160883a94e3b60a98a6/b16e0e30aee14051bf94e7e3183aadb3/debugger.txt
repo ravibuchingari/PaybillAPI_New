@@ -1,0 +1,218 @@
+﻿## PROCESSES
+Currently debugging:
+- Paybill.exe (PID: 15800)
+
+## EXCEPTION
+Exception Type: System.InvalidOperationException
+Exception Message: The JSON property name for 'Paybill.ViewModel.SettingVM.upiId' collides with another property.
+Piece of code that has the exception:
+```csharp F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\Services\PaybillApiService.cs
+85:         private async Task<T?> PostJsonAsync<T>(string relativeUrl, object? payload = null, string? overrideJwt = null)
+86:         {
+87:             try
+88:             {
+89:                 using var client = CreateClient(overrideJwt);
+90:                 HttpContent content = payload != null
+91:                     ? new StringContent(JsonSerializer.Serialize(payload, JsonOptions), Encoding.UTF8, "application/json")
+92:                     : new StringContent("{}", Encoding.UTF8, "application/json");
+93: 
+94:                 var response = await client.PostAsync(relativeUrl, content);
+95:                 string body = await response.Content.ReadAsStringAsync();
+96: 
+97:                 if (!response.IsSuccessStatusCode)
+98:                 {
+99:                     logger.LogWarning("POST {Url} returned {StatusCode}: {Body}", relativeUrl, response.StatusCode, body);
+100:                     if (typeof(T) == typeof(ResponseMessage))
+101:                     {
+102:                         return (T)(object)new ResponseMessage
+103:                         {
+104:                             IsSuccess = false,
+105:                             Message = ExtractErrorMessage(body, response.ReasonPhrase ?? "Request failed")
+106:                         };
+107:                     }
+108:                     if (typeof(T) == typeof(AuthResponseVM))
+109:                     {
+110:                         return (T)(object)new AuthResponseVM
+111:                         {
+112:                             IsSuccess = false,
+113:                             Message = ExtractErrorMessage(body, "Authentication failed")
+114:                         };
+115:                     }
+116:                     return default;
+117:                 }
+118: 
+119:                 if (string.IsNullOrWhiteSpace(body)) return default;
+120:                 return JsonSerializer.Deserialize<T>(body, JsonOptions);
+121:             }
+122:             catch (Exception ex)
+123:             {
+124:                 logger.LogError(ex, "Error calling POST {Url}", relativeUrl);
+125:                 if (typeof(T) == typeof(ResponseMessage))
+126:                 {
+127:                     return (T)(object)new ResponseMessage { IsSuccess = false, Message = ex.Message };
+128:                 }
+129:                 if (typeof(T) == typeof(AuthResponseVM))
+130:                 {
+131:                     return (T)(object)new AuthResponseVM { IsSuccess = false, Message = ex.Message };
+132:                 }
+133:                 return default;
+134:             }
+135:         }
+```
+Exception is on line 122
+This exception was originally thrown at this call stack:
+[1] System.Text.Json.ThrowHelper.ThrowInvalidOperationException_SerializerPropertyNameConflict(System.Type, string)
+[2] System.Text.Json.Serialization.Metadata.JsonTypeInfo.JsonPropertyInfoList.AddPropertyWithConflictResolution(System.Text.Json.Serialization.Metadata.JsonPropertyInfo, ref System.Text.Json.Serialization.Metadata.JsonTypeInfo.PropertyHierarchyResolutionState)
+[3] System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver.AddMembersDeclaredBySuperType(System.Text.Json.Serialization.Metadata.JsonTypeInfo, System.Type, System.Reflection.NullabilityInfoContext, bool, ref System.Text.Json.Serialization.Metadata.JsonTypeInfo.PropertyHierarchyResolutionState)
+[4] System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver.PopulateProperties(System.Text.Json.Serialization.Metadata.JsonTypeInfo, System.Reflection.NullabilityInfoContext)
+[5] System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver.CreateTypeInfoCore(System.Type, System.Text.Json.Serialization.JsonConverter, System.Text.Json.JsonSerializerOptions)
+[6] System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver.GetTypeInfo(System.Type, System.Text.Json.JsonSerializerOptions)
+[7] System.Text.Json.JsonSerializerOptions.GetTypeInfoNoCaching(System.Type)
+[8] System.Text.Json.JsonSerializerOptions.CachingContext.CreateCacheEntry(System.Type, System.Text.Json.JsonSerializerOptions.CachingContext)
+[9] System.Text.Json.JsonSerializerOptions.CachingContext.GetOrAddTypeInfo(System.Type, bool)
+[10] System.Text.Json.Serialization.Metadata.JsonPropertyInfo.Configure()
+........1 more stack frames omitted.
+The callstack context, if included, corresponds to the thread where this exception occurred. There is no need to identify this thread by other means.
+The top most frame in the callstack context should correspond to the place the exception message was thrown from. Code may or may not have been provided for it but can be requested.
+
+## CALLSTACK
+Thread ID: 25736
+[1] Paybill.dll!Paybill.Services.PaybillApiService.PostJsonAsync<Paybill.Models.ResponseMessage>
+This is the current user focused stack frame. The provided locals context corresponds to this stack frame, but you may evaluate expressions and retrieve code for any frame.
+Code for the stack frame:
+```csharp PaybillAPI\Services\PaybillApiService.cs
+85:         private async Task<T?> PostJsonAsync<T>(string relativeUrl, object? payload = null, string? overrideJwt = null)
+86:         {
+87:             try
+88:             {
+89:                 using var client = CreateClient(overrideJwt);
+90:                 HttpContent content = payload != null
+91:                     ? new StringContent(JsonSerializer.Serialize(payload, JsonOptions), Encoding.UTF8, "application/json")
+92:                     : new StringContent("{}", Encoding.UTF8, "application/json");
+93: 
+94:                 var response = await client.PostAsync(relativeUrl, content);
+95:                 string body = await response.Content.ReadAsStringAsync();
+96: 
+97:                 if (!response.IsSuccessStatusCode)
+98:                 {
+99:                     logger.LogWarning("POST {Url} returned {StatusCode}: {Body}", relativeUrl, response.StatusCode, body);
+100:                     if (typeof(T) == typeof(ResponseMessage))
+101:                     {
+102:                         return (T)(object)new ResponseMessage
+103:                         {
+104:                             IsSuccess = false,
+105:                             Message = ExtractErrorMessage(body, response.ReasonPhrase ?? "Request failed")
+106:                         };
+107:                     }
+108:                     if (typeof(T) == typeof(AuthResponseVM))
+109:                     {
+110:                         return (T)(object)new AuthResponseVM
+111:                         {
+112:                             IsSuccess = false,
+113:                             Message = ExtractErrorMessage(body, "Authentication failed")
+114:                         };
+115:                     }
+116:                     return default;
+117:                 }
+118: 
+119:                 if (string.IsNullOrWhiteSpace(body)) return default;
+120:                 return JsonSerializer.Deserialize<T>(body, JsonOptions);
+121:             }
+122:             catch (Exception ex)
+123:             {
+124:                 logger.LogError(ex, "Error calling POST {Url}", relativeUrl);
+125:                 if (typeof(T) == typeof(ResponseMessage))
+126:                 {
+127:                     return (T)(object)new ResponseMessage { IsSuccess = false, Message = ex.Message };
+128:                 }
+129:                 if (typeof(T) == typeof(AuthResponseVM))
+130:                 {
+131:                     return (T)(object)new AuthResponseVM { IsSuccess = false, Message = ex.Message };
+132:                 }
+133:                 return default;
+134:             }
+135:         }
+```
+Current statement: line 122
+[2] Paybill.dll!Paybill.Services.PaybillApiService.UpsertCategoryAsync
+Code for the stack frame:
+```csharp PaybillAPI\Services\PaybillApiService.cs
+368:         public async Task<ResponseMessage> UpsertCategoryAsync(CategoryVM category)
+369:         {
+370:             var param = GetCurrentUserParam();
+371:             param.CategoryModel = category;
+372:             return await PostJsonAsync<ResponseMessage>("api/item/category/upsert", param)
+373:                    ?? new ResponseMessage { IsSuccess = false, Message = "Failed to save category." };
+374:         }
+```
+Current statement: lines 372-373
+[3] Paybill.dll!Paybill.Areas.Paybill.Controllers.MasterController.SaveCategory
+Code for the stack frame:
+```csharp PaybillAPI\Areas\Paybill\Controllers\MasterController.cs
+87:         [HttpPost]
+88:         [ValidateAntiForgeryToken]
+89:         public async Task<IActionResult> SaveCategory(int categoryId, string categoryName)
+90:         {
+91:             if (string.IsNullOrWhiteSpace(categoryName))
+92:             {
+93:                 TempData["ErrorMessage"] = "Category name is required.";
+94:                 return RedirectToAction(nameof(Categories));
+95:             }
+96: 
+97:             var res = await apiService.UpsertCategoryAsync(new CategoryVM
+98:             {
+99:                 CategoryId = categoryId,
+100:                 CategoryName = categoryName.Trim()
+101:             });
+102: 
+103:             if (res.IsSuccess)
+104:                 TempData["SuccessMessage"] = res.Message ?? (categoryId == 0 ? "Category registered successfully." : "Category updated successfully.");
+105:             else
+106:                 TempData["ErrorMessage"] = res.Message ?? "Failed to save category.";
+107: 
+108:             return RedirectToAction(nameof(Categories));
+109:         }
+```
+Current statement: lines 97-101
+[4] [External Code]
+[20] Paybill.dll!Paybill.Middlewares.GlobalExceptionMiddleware.InvokeAsync
+Code for the stack frame:
+```csharp PaybillAPI\Middlewares\GlobalExceptionMiddleware.cs
+8:         public async Task InvokeAsync(HttpContext context)
+9:         {
+10:             try
+11:             {
+12:                 context.Response.Headers.Server = "no-server";
+13:                 await next(context);
+14:             }
+15:             catch (Exception ex)
+16:             {
+17:                 logger.LogError(ex, "Error during executing {Path}", context.Request.Path.Value);
+18:                 if (context.Request.Path.StartsWithSegments("/api") ||
+19:                     context.Request.Headers.Accept.ToString().Contains("application/json", StringComparison.OrdinalIgnoreCase))
+20:                 {
+21:                     await HandleExceptionAsync(context, ex);
+22:                 }
+23:                 else
+24:                 {
+25:                     throw;
+26:                 }
+27:             }
+28:         }
+```
+Current statement: line 13
+[21] [External Code]
+
+## LOCALS
+| Name | Type | Value |
+| --- | --- | --- |
+| this | Paybill.Services.PaybillApiService | {Paybill.Services.PaybillApiService} |
+| relativeUrl | string | "api/item/category/upsert" |
+| payload | object {Paybill.Models.UserParam} | {Paybill.Models.UserParam} |
+| overrideJwt | string | null |
+| ex | System.Exception | null |
+| httpClientFactory | System.Net.Http.IHttpClientFactory {Microsoft.Extensions.Http.DefaultHttpClientFactory} | {Microsoft.Extensions.Http.DefaultHttpClientFactory} |
+| httpContextAccessor | Microsoft.AspNetCore.Http.IHttpContextAccessor {Microsoft.AspNetCore.Http.HttpContextAccessor} | HttpContext = Cannot evaluate expression. Unknown error 0x8000ffff from .NET debugging services. |
+| logger | Microsoft.Extensions.Logging.ILogger<Paybill.Services.PaybillApiService> {Microsoft.Extensions.Logging.Logger<Paybill.Services.PaybillApiService>} | <Internal Error evaluating expression> |
+| Type variables |  |  |
+

@@ -1,0 +1,1271 @@
+﻿@model SalesInvoicePageViewModel
+@using System.Text.Json
+@{
+    bool isEdit = Model.Invoice.SalesId > 0;
+    bool isLocked = Model.Invoice.IsLocked;
+    ViewData["Title"] = isEdit ? $"Sales Invoice #{Model.Invoice.InvoiceNumber ?? Model.Invoice.SalesId.ToString()}" : "New Sales Invoice (POS)";
+}
+
+@if (isLocked)
+{
+    <div class="alert alert-warning d-flex justify-content-between align-items-center mb-3 shadow-sm">
+        <div>
+            <i class="bi bi-lock-fill me-2"></i>
+            <strong>This invoice is locked.</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.PendingUnlockMessage))
+            {
+                <span class="ms-2 badge bg-info text-dark">@Model.PendingUnlockMessage</span>
+            }
+            else
+            {
+                <span>Line item deletions require an approved Unlock Request.</span>
+            }
+        </div>
+        <div class="d-flex gap-2">
+            @if (Model.IsAdmin)
+            {
+                <a href="@Url.Action("Index", "Settings", new { tab = "unlocks" })" class="btn btn-sm btn-primary">Manage Unlock Requests</a>
+            }
+            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#reqUnlockModal">
+                <i class="bi bi-unlock me-1"></i>Request Unlock
+            </button>
+        </div>
+    </div>
+}
+
+<div class="pos-grid">
+    <!-- LEFT COLUMN: Item Search & Invoice Line Items -->
+    <div>
+        <div class="pb-card mb-3">
+            <div class="pb-card-body py-3">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5 position-relative">
+                        <label class="form-label mb-1"><i class="bi bi-upc-scan me-1 text-success"></i>Scan Barcode or Search Item <kbd class="small">F2</kbd></label>
+                        <input type="text" id="barcodeSearchInput" class="form-control" placeholder="Scan barcode, item code, or type name..." autocomplete="off" autofocus />
+                        <div id="itemAutocompleteList" class="autocomplete-dropdown d-none"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1">Quick Select Product</label>
+                        <select id="quickItemSelect" class="form-select" onchange="onQuickItemChosen(this.value)">
+                            <option value="">-- Choose Item (@Model.InitialItems.Count) --</option>
+                            @foreach (var item in Model.InitialItems)
+                            {
+                                <option value="@item.ItemId">@item.ItemName (@item.ItemCode) — ₹@item.SalesPrice</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label mb-1">Add Service</label>
+                        <select id="quickServiceSelect" class="form-select" onchange="onQuickServiceChosen(this.value)">
+                            <option value="">-- Service --</option>
+                            @foreach (var st in Model.ServiceTypes)
+                            {
+                                <option value="@st.ServiceTypeId">@st.ServiceTypeName (₹@st.Rate)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="button" class="btn btn-outline-paybill" onclick="openWeightCalcModal()">
+                            <i class="bi bi-calculator me-1"></i>Weight Calc
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Line Items Table -->
+        <div class="pb-card">
+            <div class="pb-card-header py-2">
+                <div class="d-flex align-items-center gap-3">
+                    <h6 class="pb-card-title mb-0"><i class="bi bi-cart3 me-2 text-success"></i>Invoice Items (<span id="itemCountBadge">0</span>)</h6>
+                    <span class="badge bg-primary-subtle text-primary" id="gstSupplyModeBadge">Intra-State (CGST + SGST)</span>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <select id="SalesType" class="form-select form-select-sm" style="width: 140px;" onchange="recalculateAll()">
+                        <option value="GST" selected="@(Model.Invoice.SalesType != "Non-GST")">GST Invoice</option>
+                        <option value="Non-GST" selected="@(Model.Invoice.SalesType == "Non-GST")">Non-GST / Bill</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive" style="min-height: 360px; max-height: 520px; overflow-y: auto;">
+                <table class="table pb-table align-middle mb-0" id="invoiceItemsTable">
+                    <thead class="sticky-top">
+                        <tr>
+                            <th style="width: 32px;" class="text-center">#</th>
+                            <th>Item / Service Description</th>
+                            <th style="width: 78px;" class="text-center">Qty</th>
+                            <th style="width: 90px;" class="text-end">Rate (₹)</th>
+                            <th style="width: 75px;" class="text-end">Disc (₹)</th>
+                            <th style="width: 58px;" class="text-center">GST %</th>
+                            <th style="width: 82px;" class="text-end text-nowrap">Tax (₹)</th>
+                            <th style="width: 98px;" class="text-end text-nowrap">Total (₹)</th>
+                            <th style="width: 38px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItemsBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Customer, Rewards, Payment & Totals -->
+    <div>
+        <div class="pb-card pos-summary-panel">
+            <div class="pb-card-body">
+                <!-- Invoice Header Info -->
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label mb-1">Invoice No.</label>
+                        <input type="text" id="InvoiceNumber" class="form-control form-control-sm bg-light fw-bold" value="@(string.IsNullOrWhiteSpace(Model.Invoice.InvoiceNumber) ? "AUTO" : Model.Invoice.InvoiceNumber)" readonly />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Invoice Date</label>
+                        <input type="date" id="SalesDate" class="form-control form-control-sm" value="@Model.Invoice.SalesDate" />
+                    </div>
+                </div>
+
+                <!-- Customer Selection -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label mb-0 fw-semibold">
+                            Customer
+                            <span id="customerRequiredBadge" class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1 d-none" style="font-size: 0.72rem;">* Mandatory for Credit</span>
+                        </label>
+                        <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="openQuickCustomerModal()">
+                            <i class="bi bi-person-plus me-1"></i>New Customer
+                        </button>
+                    </div>
+                    <select id="PartyId" class="form-select" onchange="onCustomerChanged()">
+                        <option value="0" data-gstin="" data-mobile="">Walk-in / Cash Customer</option>
+                        @foreach (var c in Model.Customers)
+                        {
+                            <option value="@c.PartyId"
+                                    data-gstin="@c.Gstin"
+                                    data-mobile="@c.Mobile"
+                                    selected="@(Model.Invoice.PartyId == c.PartyId)">
+                                @c.PartyName (@c.Mobile) @(string.IsNullOrWhiteSpace(c.Gstin) ? "" : $"[{c.Gstin}]")
+                            </option>
+                        }
+                    </select>
+                    <div id="customerValidationFeedback" class="text-danger small mt-1 d-none">
+                        <i class="bi bi-exclamation-circle me-1"></i>Customer selection is mandatory for Credit invoices.
+                    </div>
+                    <div id="customerGstinInfo" class="small text-muted mt-1 d-none"></div>
+                </div>
+
+                <!-- Loyalty & Rewards Box -->
+                @if (Model.Settings.EnableCustomerRewards)
+                {
+                    <div id="rewardsPanel" class="p-2.5 rounded-3 mb-3 border border-success-subtle bg-success-subtle bg-opacity-10 d-none" style="padding: 0.75rem;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-bold text-success"><i class="bi bi-gift-fill me-1"></i>Customer Loyalty Points</span>
+                            <span class="badge bg-success" id="availPointsBadge">0 pts</span>
+                        </div>
+                        <div class="small text-muted mb-2" id="pointsConversionHint">
+                            1 Pt = ₹@Model.Settings.RewardPointValue | Earn @Model.Settings.RewardPointsPerHundredRupees pts / ₹100
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Redeem Pts</span>
+                            <input type="number" step="1" min="0" id="PointsRedeemedInput" class="form-control" value="@Model.Invoice.PointsRedeemed" oninput="recalculateAll()" />
+                            <span class="input-group-text text-success fw-bold" id="PointsDiscountDisplay">-₹0.00</span>
+                        </div>
+                        <div class="small text-success mt-1 fw-medium">
+                            Points Earned on this Bill: <strong id="PointsEarnedPreview">0</strong> pts
+                        </div>
+                    </div>
+                }
+
+                <!-- Totals Breakdown -->
+                <div class="border-top pt-2 mb-3">
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Taxable Value:</span>
+                        <span class="fw-semibold" id="lblTaxableTotal">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1" id="rowCgstSgst">
+                        <span class="text-muted">CGST + SGST:</span>
+                        <span class="fw-semibold"><span id="lblCgstTotal">₹ 0.00</span> + <span id="lblSgstTotal">₹ 0.00</span></span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1 d-none" id="rowIgst">
+                        <span class="text-muted">IGST (Inter-State):</span>
+                        <span class="fw-semibold" id="lblIgstTotal">₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Item Discounts:</span>
+                        <span class="text-danger" id="lblItemDiscountTotal">- ₹ 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center small py-1">
+                        <span class="text-muted">Extra Bill Discount (₹):</span>
+                        <input type="number" step="0.01" min="0" id="TotalSavings" class="form-control form-control-sm text-end" style="width: 110px;" value="@Model.Invoice.TotalSavings" oninput="recalculateAll()" />
+                    </div>
+                    <div class="d-flex justify-content-between small py-1">
+                        <span class="text-muted">Round Off:</span>
+                        <span id="lblRoundOff">₹ 0.00</span>
+                    </div>
+                </div>
+
+                <!-- Grand Total Box -->
+                <div class="pos-total-box mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small opacity-75 text-uppercase fw-bold">Net Payable</div>
+                            <div class="pos-grand-total" id="lblGrandTotal">₹ 0.00</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-white text-dark" id="lblTotalQtyBadge">0 Qty</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Mode & Settlement -->
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label mb-1">Payment Mode</label>
+                        <select id="PaymentMode" class="form-select form-select-sm fw-semibold" onchange="onPaymentModeChanged()">
+                            <option value="Cash" selected="@(Model.Invoice.PaymentMode == "Cash")">Cash</option>
+                            <option value="UPI" selected="@(Model.Invoice.PaymentMode == "UPI")">UPI / QR</option>
+                            <option value="Card" selected="@(Model.Invoice.PaymentMode == "Card")">Card</option>
+                            <option value="Credit" selected="@(Model.Invoice.PaymentMode == "Credit")">Credit (Account Due)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Amount Received (₹)</label>
+                        <input type="number" step="0.01" id="ReceivedAmount" class="form-control form-control-sm fw-bold text-success" value="@Model.Invoice.ReceivedAmount" oninput="updateBalanceAndChange()" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Cash Tendered (Calc)</label>
+                        <input type="number" step="0.01" id="CashTenderedInput" class="form-control form-control-sm" placeholder="Given by customer" oninput="updateBalanceAndChange()" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label mb-1">Balance / Change</label>
+                        <div class="form-control form-control-sm bg-light fw-bold" id="lblBalanceOrChange">₹ 0.00</div>
+                    </div>
+                    <div class="col-12">
+                        <input type="text" id="Remarks" class="form-control form-control-sm" placeholder="Bill Remarks / UPI Reference / Vehicle No." value="@Model.Invoice.Remarks" />
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                    <div class="row g-2">
+                        <div class="col-6 d-grid">
+                            <button type="button" class="btn btn-paybill py-2" id="btnSavePrint" onclick="saveInvoice(true)" title="Shortcut: F8 or Ctrl+S" accesskey="s">
+                                <i class="bi bi-printer-fill me-1"></i>Save & Print <span class="badge bg-white bg-opacity-25 ms-1 fw-normal" style="font-size: 0.7rem;">F8</span>
+                            </button>
+                        </div>
+                        <div class="col-6 d-grid">
+                            <button type="button" class="btn btn-outline-paybill py-2" id="btnSaveOnly" onclick="saveInvoice(false)" title="Shortcut: F9">
+                                <i class="bi bi-check2-circle me-1"></i>Save Only <span class="badge bg-secondary bg-opacity-25 ms-1 fw-normal" style="font-size: 0.7rem;">F9</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center px-1">
+                        <span class="text-muted" style="font-size: 0.78rem;"><i class="bi bi-printer me-1"></i>Print Format:</span>
+                        <select id="directPrintFormatSelect" class="form-select form-select-sm" style="width: 145px; font-size: 0.78rem; padding: 3px 8px;" onchange="savePreferredPrintFormat(this.value)">
+                            <option value="A4">A4 Tax Invoice</option>
+                            <option value="A4_NONGST">A4 Bill of Supply</option>
+                            <option value="POS80">80mm Thermal POS</option>
+                            <option value="POS58">58mm Thermal POS</option>
+                        </select>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.Settings.UPIId))
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="showUpiQrModal()">
+                            <i class="bi bi-qr-code-scan me-1"></i>Show UPI Payment QR (@Model.Settings.UPIId)
+                        </button>
+                    }
+                    @if (isEdit)
+                    {
+                        <div class="btn-group btn-group-sm">
+                            <a href="@Url.Action("Print", new { id = Model.Invoice.SalesId, format = "A4" })" target="_blank" class="btn btn-outline-secondary">Print A4</a>
+                            <a href="@Url.Action("Print", new { id = Model.Invoice.SalesId, format = "POS80" })" target="_blank" class="btn btn-outline-secondary">Print 80mm</a>
+                            <a href="@Url.Action("Print", new { id = Model.Invoice.SalesId, format = "POS58" })" target="_blank" class="btn btn-outline-secondary">Print 58mm</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weight / Price Calculator Modal -->
+<div class="modal fade" id="weightCalcModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold"><i class="bi bi-calculator me-2 text-success"></i>Weight / Loose Item Calculator</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Select Item</label>
+                    <select id="wcItemSelect" class="form-select" onchange="onWcItemChanged()">
+                        <option value="">-- Select Item --</option>
+                        @foreach (var item in Model.InitialItems)
+                        {
+                            <option value="@item.ItemId" data-price="@item.SalesPrice">@item.ItemName (₹@item.SalesPrice / @item.Measure)</option>
+                        }
+                    </select>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Rate per Kg/Unit (₹)</label>
+                        <input type="number" step="0.01" id="wcRate" class="form-control" oninput="onWcWeightChanged()" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Weight (in Grams / Qty)</label>
+                        <input type="number" step="1" id="wcGrams" class="form-control" placeholder="e.g. 250 for 250g" oninput="onWcGramsChanged()" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">OR Target Amount (₹)</label>
+                        <input type="number" step="0.01" id="wcAmount" class="form-control" placeholder="e.g. 100" oninput="onWcAmountChanged()" />
+                    </div>
+                </div>
+                <div class="alert alert-light border mt-3 mb-0">
+                    Computed Quantity: <strong id="wcFinalQty">0</strong> | Line Amount: <strong id="wcFinalAmt">₹ 0.00</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-paybill" onclick="addWcItemToBill()">Add to Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add Customer Modal -->
+<div class="modal fade" id="quickCustomerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Quick Add Customer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Customer Name *</label>
+                        <input type="text" id="qcName" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Mobile Number *</label>
+                        <input type="text" id="qcMobile" class="form-control" maxlength="15" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">GSTIN (Optional)</label>
+                        <input type="text" id="qcGstin" class="form-control text-uppercase" maxlength="15" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <input type="text" id="qcAddress" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-paybill" onclick="saveQuickCustomer()">Save & Select</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- UPI QR Modal -->
+<div class="modal fade" id="upiQrModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h6 class="modal-title fw-bold">Scan to Pay via UPI</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="fw-bold fs-4 text-success mb-2" id="upiQrAmountText">₹ 0.00</div>
+                <img id="upiQrImg" src="" alt="UPI QR" class="img-fluid border rounded p-2 mb-2" style="max-width: 220px;" />
+                <div class="small text-muted">@Model.Settings.UPIId</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (isLocked)
+{
+    <div class="modal fade" id="reqUnlockModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-action="RequestUnlock" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="salesId" value="@Model.Invoice.SalesId" />
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Request Invoice Unlock</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label class="form-label">Reason for Unlocking *</label>
+                        <textarea name="remarks" class="form-control" rows="3" required placeholder="Specify why this invoice needs to be edited"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Invoice Saved & Direct Print Modal -->
+<div class="modal fade" id="invoiceSavedModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <span class="badge bg-success-subtle text-success p-3 rounded-circle" style="font-size: 2.2rem;">
+                        <i class="bi bi-printer-fill"></i>
+                    </span>
+                </div>
+                <h4 class="fw-bold text-success mb-1">Invoice Saved Successfully!</h4>
+                <p class="text-muted small mb-3">Direct print command has been sent to your printer.</p>
+
+                <div class="card bg-light border-0 p-3 mb-3 text-start">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted small">Invoice Number:</span>
+                        <strong id="savedModalInvNo" class="text-dark">#0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted small">Grand Total:</span>
+                        <strong id="savedModalAmount" class="text-success fs-6">₹ 0.00</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted small">Customer:</span>
+                        <span id="savedModalCustomer" class="fw-semibold text-secondary">Walk-in</span>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="button" id="buttonNewInvoice" class="btn btn-paybill py-2 fw-bold" onclick="window.location.href='@Url.Action("Create")'">
+                        <i class="bi bi-plus-circle me-1"></i>New Invoice / Next Customer
+                    </button>
+                    <div class="row g-2">
+                        <div class="col-6 d-grid">
+                            <button type="button" class="btn btn-outline-secondary btn-sm py-2" onclick="reprintSavedInvoice()">
+                                <i class="bi bi-printer me-1"></i>Print Again
+                            </button>
+                        </div>
+                        <div class="col-6 d-grid">
+                            <button type="button" class="btn btn-outline-primary btn-sm py-2" onclick="viewSavedInvoice()">
+                                <i class="bi bi-eye me-1"></i>View / Change
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm text-muted text-decoration-none mt-1" onclick="window.location.href='@Url.Action("Index")'">
+                        <i class="bi bi-list-ul me-1"></i>Go to Invoice List
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const catalogItems = @Html.Raw(JsonSerializer.Serialize(Model.InitialItems));
+        const serviceTypes = @Html.Raw(JsonSerializer.Serialize(Model.ServiceTypes));
+        const existingItems = @Html.Raw(JsonSerializer.Serialize(Model.Invoice.SalesItems));
+        const companyGstin = '@(Model.CompanyGstin ?? "")';
+        const salesId = @Model.Invoice.SalesId;
+        const isLocked = @(isLocked ? "true" : "false");
+
+        const rewardsConfig = {
+            enabled: @(Model.Settings.EnableCustomerRewards ? "true" : "false"),
+            ptsPer100: @Model.Settings.RewardPointsPerHundredRupees,
+            ptValue: @Model.Settings.RewardPointValue,
+            minInvoiceAmt: @Model.Settings.RewardMinInvoiceAmount
+        };
+
+        let lineItems = [];
+        let customerAvailablePoints = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (existingItems && existingItems.length > 0) {
+                lineItems = existingItems.map(x => ({
+                    salesItemId: x.SalesItemId || 0,
+                    itemId: x.ItemId,
+                    serviceTypeId: x.ServiceTypeId,
+                    itemCode: x.Item?.ItemCode || (x.ServiceTypeId ? 'SERVICE' : ''),
+                    itemName: x.Item?.ItemName || x.ServiceType?.ServiceTypeName || 'Item',
+                    measure: x.Item?.Measure || 'NOS',
+                    hsnCode: x.Item?.HsnCode || '',
+                    quantity: x.Quantity || 1,
+                    salesPrice: x.SalesPrice || 0,
+                    mrp: x.Mrp || x.SalesPrice || 0,
+                    discountPer: x.DiscountPer || 0,
+                    discountRs: x.DiscountRs || 0,
+                    gstId: x.GstId || x.Item?.GstId || 1,
+                    gstPer: (x.CgstPer || 0) + (x.SgstPer || 0) + (x.IgstPer || 0),
+                    cgstPer: x.CgstPer || 0,
+                    sgstPer: x.SgstPer || 0,
+                    igstPer: x.IgstPer || 0,
+                    isGstInclusive: x.Item ? !!x.Item.IsGstInclusive : false
+                }));
+            }
+            onCustomerChanged();
+            updateCreditRequirements();
+            recalculateAll();
+            setupBarcodeSearch();
+
+            const savedFmt = localStorage.getItem('paybill_direct_print_format');
+            if (savedFmt && document.getElementById('directPrintFormatSelect')) {
+                document.getElementById('directPrintFormatSelect').value = savedFmt;
+            }
+        });
+
+        function updateCreditRequirements() {
+            const mode = document.getElementById('PaymentMode')?.value;
+            const isCredit = mode === 'Credit' || document.getElementById('SalesType')?.value === 'Credit';
+            const reqBadge = document.getElementById('customerRequiredBadge');
+            const partySel = document.getElementById('PartyId');
+            const partyId = parseInt(partySel?.value || '0');
+            const feedback = document.getElementById('customerValidationFeedback');
+
+            if (isCredit) {
+                if (reqBadge) reqBadge.classList.remove('d-none');
+                if (partyId <= 0) {
+                    partySel?.classList.add('is-invalid');
+                    if (feedback) feedback.classList.remove('d-none');
+                } else {
+                    partySel?.classList.remove('is-invalid');
+                    if (feedback) feedback.classList.add('d-none');
+                }
+            } else {
+                if (reqBadge) reqBadge.classList.add('d-none');
+                partySel?.classList.remove('is-invalid');
+                if (feedback) feedback.classList.add('d-none');
+            }
+        }
+
+        function isInterStateSupply() {
+            const sel = document.getElementById('PartyId');
+            const opt = sel.options[sel.selectedIndex];
+            const custGstin = (opt?.getAttribute('data-gstin') || '').trim();
+            if (companyGstin.length >= 2 && custGstin.length >= 2) {
+                return companyGstin.substring(0, 2) !== custGstin.substring(0, 2);
+            }
+            return false;
+        }
+
+        async function onCustomerChanged() {
+            const sel = document.getElementById('PartyId');
+            const partyId = parseInt(sel.value || '0');
+            const opt = sel.options[sel.selectedIndex];
+            const gstin = (opt?.getAttribute('data-gstin') || '').trim();
+            const infoEl = document.getElementById('customerGstinInfo');
+
+            updateCreditRequirements();
+
+            if (gstin) {
+                infoEl.classList.remove('d-none');
+                infoEl.innerText = `GSTIN: ${gstin} (${isInterStateSupply() ? 'Inter-State IGST' : 'Intra-State CGST+SGST'})`;
+            } else {
+                infoEl.classList.add('d-none');
+            }
+
+            const badge = document.getElementById('gstSupplyModeBadge');
+            if (isInterStateSupply()) {
+                badge.className = 'badge bg-warning-subtle text-warning';
+                badge.innerText = 'Inter-State (IGST)';
+            } else {
+                badge.className = 'badge bg-primary-subtle text-primary';
+                badge.innerText = 'Intra-State (CGST + SGST)';
+            }
+
+            if (rewardsConfig.enabled) {
+                const panel = document.getElementById('rewardsPanel');
+                if (partyId > 0) {
+                    panel?.classList.remove('d-none');
+                    try {
+                        const res = await fetch(`@Url.Action("GetCustomerRewardInfoJson")?partyId=${partyId}`);
+                        const data = await res.json();
+                        customerAvailablePoints = data.availablePoints || 0;
+                        document.getElementById('availPointsBadge').innerText = `${customerAvailablePoints.toFixed(0)} pts`;
+                    } catch { }
+                } else {
+                    panel?.classList.add('d-none');
+                    customerAvailablePoints = 0;
+                }
+            }
+            recalculateAll();
+        }
+
+        function setupBarcodeSearch() {
+            const input = document.getElementById('barcodeSearchInput');
+            const dropdown = document.getElementById('itemAutocompleteList');
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const q = input.value.trim().toLowerCase();
+                    if (!q) return;
+                    const exact = catalogItems.find(i =>
+                        (i.Barcode && i.Barcode.toLowerCase() === q) ||
+                        (i.ItemCode && i.ItemCode.toLowerCase() === q));
+                    if (exact) {
+                        addCatalogItem(exact, 1);
+                        input.value = '';
+                        dropdown.classList.add('d-none');
+                        return;
+                    }
+                    const matches = catalogItems.filter(i =>
+                        i.ItemName.toLowerCase().includes(q) ||
+                        (i.ItemCode && i.ItemCode.toLowerCase().includes(q)) ||
+                        (i.Barcode && i.Barcode.toLowerCase().includes(q)));
+                    if (matches.length === 1) {
+                        addCatalogItem(matches[0], 1);
+                        input.value = '';
+                        dropdown.classList.add('d-none');
+                    }
+                }
+            });
+
+            input.addEventListener('input', () => {
+                const q = input.value.trim().toLowerCase();
+                if (!q) {
+                    dropdown.classList.add('d-none');
+                    return;
+                }
+                const matches = catalogItems.filter(i =>
+                    i.ItemName.toLowerCase().includes(q) ||
+                    (i.ItemCode && i.ItemCode.toLowerCase().includes(q)) ||
+                    (i.Barcode && i.Barcode.toLowerCase().includes(q))).slice(0, 12);
+
+                if (matches.length === 0) {
+                    dropdown.classList.add('d-none');
+                    return;
+                }
+
+                dropdown.innerHTML = matches.map(m => `
+                    <div class="autocomplete-item d-flex justify-content-between align-items-center" onclick="selectAutocompleteItem(${m.ItemId})">
+                        <div>
+                            <div class="fw-semibold">${m.ItemName}</div>
+                            <div class="small text-muted">Code: ${m.ItemCode} | Stock: ${m.Stock} ${m.Measure}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold text-success">₹ ${Number(m.SalesPrice).toFixed(2)}</div>
+                            <div class="small text-muted">MRP: ₹${Number(m.Mrp).toFixed(2)}</div>
+                        </div>
+                    </div>
+                `).join('');
+                dropdown.classList.remove('d-none');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('d-none');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                // F2: Focus Barcode / Item Search
+                if (e.key === 'F2') {
+                    e.preventDefault();
+                    input.focus();
+                    input.select();
+                    return;
+                }
+
+                // F8, Ctrl+S, or Ctrl+Enter: Trigger Save & Print (btnSavePrint)
+                const isSaveAndPrint = (e.key === 'F8') ||
+                                       ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S') && !e.altKey) ||
+                                       ((e.ctrlKey || e.metaKey) && e.key === 'Enter');
+
+                if (isSaveAndPrint) {
+                    const savedModal = document.getElementById('invoiceSavedModal');
+                    if (savedModal && savedModal.classList.contains('show')) {
+                        e.preventDefault();
+                        window.location.href = '@Url.Action("Create")';
+                        return;
+                    }
+
+                    const otherModal = document.querySelector('.modal.show');
+                    if (otherModal && otherModal.id !== 'invoiceSavedModal') {
+                        return;
+                    }
+
+                    e.preventDefault();
+                    const btnSavePrint = document.getElementById('btnSavePrint');
+                    if (btnSavePrint && !btnSavePrint.disabled) {
+                        btnSavePrint.click();
+                    }
+                    return;
+                }
+
+                // F9: Save Only (btnSaveOnly)
+                if (e.key === 'F9') {
+                    const activeModal = document.querySelector('.modal.show');
+                    if (activeModal) return;
+
+                    e.preventDefault();
+                    const btnSaveOnly = document.getElementById('btnSaveOnly');
+                    if (btnSaveOnly && !btnSaveOnly.disabled) {
+                        btnSaveOnly.click();
+                    }
+                    return;
+                }
+            });
+        }
+
+        function selectAutocompleteItem(itemId) {
+            const item = catalogItems.find(i => i.ItemId === itemId);
+            if (item) addCatalogItem(item, 1);
+            document.getElementById('barcodeSearchInput').value = '';
+            document.getElementById('itemAutocompleteList').classList.add('d-none');
+            document.getElementById('barcodeSearchInput').focus();
+        }
+
+        function onQuickItemChosen(itemIdStr) {
+            if (!itemIdStr) return;
+            const item = catalogItems.find(i => i.ItemId === parseInt(itemIdStr));
+            if (item) addCatalogItem(item, 1);
+            document.getElementById('quickItemSelect').value = '';
+        }
+
+        function onQuickServiceChosen(serviceIdStr) {
+            if (!serviceIdStr) return;
+            const st = serviceTypes.find(s => s.ServiceTypeId === parseInt(serviceIdStr));
+            if (st) {
+                const gstPer = (st.Gst?.CgstPer || 0) + (st.Gst?.SgstPer || 0);
+                lineItems.push({
+                    salesItemId: 0,
+                    itemId: null,
+                    serviceTypeId: st.ServiceTypeId,
+                    itemCode: 'SERVICE',
+                    itemName: st.ServiceTypeName,
+                    measure: 'JOB',
+                    hsnCode: '',
+                    quantity: 1,
+                    salesPrice: st.Rate || 0,
+                    mrp: st.Rate || 0,
+                    discountPer: 0,
+                    discountRs: 0,
+                    gstId: st.GstId || 1,
+                    gstPer: gstPer,
+                    isGstInclusive: false
+                });
+                recalculateAll();
+            }
+            document.getElementById('quickServiceSelect').value = '';
+        }
+
+        function addCatalogItem(item, qty, customRate = null) {
+            const existing = lineItems.find(x => x.itemId === item.ItemId && customRate === null);
+            if (existing) {
+                existing.quantity = Number((existing.quantity + qty).toFixed(3));
+            } else {
+                const gstPer = (item.Gst?.CgstPer || 0) + (item.Gst?.SgstPer || 0);
+                const price = customRate !== null ? customRate : item.SalesPrice;
+                const discRs = item.DiscountPer > 0 ? Number(((price * qty * item.DiscountPer) / 100).toFixed(2)) : (item.DiscountRs || 0);
+                lineItems.push({
+                    salesItemId: 0,
+                    itemId: item.ItemId,
+                    serviceTypeId: null,
+                    itemCode: item.ItemCode,
+                    itemName: item.ItemName,
+                    measure: item.Measure || 'NOS',
+                    hsnCode: item.HsnCode || '',
+                    quantity: qty,
+                    salesPrice: price,
+                    mrp: item.Mrp || price,
+                    discountPer: item.DiscountPer || 0,
+                    discountRs: discRs,
+                    gstId: item.GstId || 1,
+                    gstPer: gstPer,
+                    isGstInclusive: !!item.IsGstInclusive
+                });
+            }
+            recalculateAll();
+        }
+
+        function updateLineQty(idx, val) {
+            const q = parseFloat(val);
+            if (q > 0) {
+                lineItems[idx].quantity = q;
+                recalculateAll();
+            }
+        }
+
+        function updateLineRate(idx, val) {
+            const r = parseFloat(val);
+            if (r >= 0) {
+                lineItems[idx].salesPrice = r;
+                recalculateAll();
+            }
+        }
+
+        function updateLineDiscount(idx, val) {
+            const d = parseFloat(val);
+            lineItems[idx].discountRs = isNaN(d) || d < 0 ? 0 : d;
+            recalculateAll();
+        }
+
+        async function removeLineItem(idx) {
+            const row = lineItems[idx];
+            if (row.salesItemId > 0) {
+                if (isLocked) {
+                    PaybillUI.showToast('This invoice is locked. Please request an unlock before deleting saved items.', 'warning');
+                    return;
+                }
+                const remarks = prompt('Enter mandatory audit reason for deleting this saved invoice item:');
+                if (!remarks || !remarks.trim()) return;
+
+                const fd = new URLSearchParams({ salesItemId: row.salesItemId, remarks: remarks.trim() });
+                const res = await fetch('@Url.Action("DeleteItem")', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (!data.isSuccess) {
+                    PaybillUI.showToast(data.message || 'Could not delete item.', 'danger');
+                    return;
+                }
+                PaybillUI.showToast('Saved line item removed.', 'success');
+            }
+            lineItems.splice(idx, 1);
+            recalculateAll();
+        }
+
+        function recalculateAll() {
+            const isGstBill = document.getElementById('SalesType').value === 'GST';
+            const interState = isInterStateSupply();
+            const tbody = document.getElementById('invoiceItemsBody');
+
+            let totalTaxable = 0;
+            let totalCgst = 0;
+            let totalSgst = 0;
+            let totalIgst = 0;
+            let totalItemDisc = 0;
+            let totalQty = 0;
+
+            if (lineItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted"><i class="bi bi-upc-scan fs-2 d-block mb-2"></i>Scan a barcode or search an item above to start billing.</td></tr>`;
+            } else {
+                tbody.innerHTML = lineItems.map((item, idx) => {
+                    const gross = item.quantity * item.salesPrice;
+                    const disc = item.discountRs || 0;
+                    const netBeforeOrWithTax = Math.max(0, gross - disc);
+                    const effGstPer = isGstBill ? (item.gstPer || 0) : 0;
+
+                    let taxable = netBeforeOrWithTax;
+                    let taxAmt = 0;
+                    if (effGstPer > 0) {
+                        if (item.isGstInclusive) {
+                            taxable = netBeforeOrWithTax / (1 + effGstPer / 100);
+                            taxAmt = netBeforeOrWithTax - taxable;
+                        } else {
+                            taxable = netBeforeOrWithTax;
+                            taxAmt = (taxable * effGstPer) / 100;
+                        }
+                    }
+
+                    const lineTotal = taxable + taxAmt;
+                    item.taxableAmount = Number(taxable.toFixed(2));
+                    if (interState) {
+                        item.cgstPer = 0; item.sgstPer = 0; item.igstPer = effGstPer;
+                        item.cgstAmount = 0; item.sgstAmount = 0; item.igstAmount = Number(taxAmt.toFixed(2));
+                    } else {
+                        item.cgstPer = effGstPer / 2; item.sgstPer = effGstPer / 2; item.igstPer = 0;
+                        item.cgstAmount = Number((taxAmt / 2).toFixed(2));
+                        item.sgstAmount = Number((taxAmt / 2).toFixed(2));
+                        item.igstAmount = 0;
+                    }
+                    item.totalAmount = Number(lineTotal.toFixed(2));
+
+                    totalTaxable += item.taxableAmount;
+                    totalCgst += item.cgstAmount;
+                    totalSgst += item.sgstAmount;
+                    totalIgst += item.igstAmount;
+                    totalItemDisc += disc;
+                    totalQty += item.quantity;
+
+                    return `
+                        <tr>
+                            <td class="text-muted text-center" style="width: 32px;">${idx + 1}</td>
+                            <td>
+                                <div class="fw-semibold text-truncate" style="max-width: 220px;" title="${item.itemName}">${item.itemName}</div>
+                                <div class="small text-muted">${item.itemCode} ${item.hsnCode ? '| HSN: ' + item.hsnCode : ''} ${item.measure ? '| ' + item.measure : ''}</div>
+                            </td>
+                            <td class="text-center" style="width: 78px;">
+                                <input type="number" step="any" min="0.001" class="form-control form-control-sm pos-input-qty" value="${item.quantity}" onchange="updateLineQty(${idx}, this.value)" />
+                            </td>
+                            <td class="text-end" style="width: 90px;">
+                                <input type="number" step="0.01" min="0" class="form-control form-control-sm pos-input-rate" value="${item.salesPrice}" onchange="updateLineRate(${idx}, this.value)" />
+                            </td>
+                            <td class="text-end" style="width: 75px;">
+                                <input type="number" step="0.01" min="0" class="form-control form-control-sm pos-input-disc" value="${item.discountRs}" onchange="updateLineDiscount(${idx}, this.value)" />
+                            </td>
+                            <td class="text-center" style="width: 58px;"><span class="badge bg-light text-dark border">${effGstPer}%</span></td>
+                            <td class="text-end text-nowrap" style="width: 82px; font-size: 0.88rem;">₹ ${(item.cgstAmount + item.sgstAmount + item.igstAmount).toFixed(2)}</td>
+                            <td class="text-end text-nowrap fw-bold" style="width: 98px;">₹ ${item.totalAmount.toFixed(2)}</td>
+                            <td class="text-center" style="width: 38px;">
+                                <button type="button" class="btn btn-sm btn-outline-danger p-1" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" onclick="removeLineItem(${idx})" title="Remove"><i class="bi bi-x-lg"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('itemCountBadge').innerText = lineItems.length;
+            document.getElementById('lblTotalQtyBadge').innerText = `${totalQty.toFixed(2)} Qty`;
+            document.getElementById('lblTaxableTotal').innerText = `₹ ${totalTaxable.toFixed(2)}`;
+            document.getElementById('lblCgstTotal').innerText = `₹ ${totalCgst.toFixed(2)}`;
+            document.getElementById('lblSgstTotal').innerText = `₹ ${totalSgst.toFixed(2)}`;
+            document.getElementById('lblIgstTotal').innerText = `₹ ${totalIgst.toFixed(2)}`;
+            document.getElementById('lblItemDiscountTotal').innerText = `- ₹ ${totalItemDisc.toFixed(2)}`;
+
+            document.getElementById('rowCgstSgst').classList.toggle('d-none', interState);
+            document.getElementById('rowIgst').classList.toggle('d-none', !interState);
+
+            const extraDisc = parseFloat(document.getElementById('TotalSavings')?.value || '0') || 0;
+
+            let pointsRedeemed = 0;
+            let pointsDiscount = 0;
+            if (rewardsConfig.enabled && document.getElementById('PointsRedeemedInput')) {
+                pointsRedeemed = parseFloat(document.getElementById('PointsRedeemedInput').value || '0') || 0;
+                if (pointsRedeemed > customerAvailablePoints && salesId === 0) {
+                    pointsRedeemed = customerAvailablePoints;
+                    document.getElementById('PointsRedeemedInput').value = pointsRedeemed;
+                }
+                pointsDiscount = Number((pointsRedeemed * rewardsConfig.ptValue).toFixed(2));
+                document.getElementById('PointsDiscountDisplay').innerText = `-₹${pointsDiscount.toFixed(2)}`;
+            }
+
+            const rawGrandTotal = Math.max(0, totalTaxable + totalCgst + totalSgst + totalIgst - extraDisc - pointsDiscount);
+            const roundedGrandTotal = Math.round(rawGrandTotal);
+            const roundOff = Number((roundedGrandTotal - rawGrandTotal).toFixed(2));
+
+            document.getElementById('lblRoundOff').innerText = `${roundOff >= 0 ? '+' : ''}₹ ${roundOff.toFixed(2)}`;
+            document.getElementById('lblGrandTotal').innerText = `₹ ${roundedGrandTotal.toFixed(2)}`;
+
+            // Points earned preview
+            if (rewardsConfig.enabled && document.getElementById('PointsEarnedPreview')) {
+                let earned = 0;
+                const partyId = parseInt(document.getElementById('PartyId').value || '0');
+                if (partyId > 0 && roundedGrandTotal >= rewardsConfig.minInvoiceAmt) {
+                    earned = Math.floor((roundedGrandTotal / 100.0) * rewardsConfig.ptsPer100);
+                }
+                document.getElementById('PointsEarnedPreview').innerText = earned;
+            }
+
+            const mode = document.getElementById('PaymentMode').value;
+            if (mode !== 'Credit' && salesId === 0) {
+                document.getElementById('ReceivedAmount').value = roundedGrandTotal.toFixed(2);
+            } else if (mode === 'Credit' && salesId === 0) {
+                document.getElementById('ReceivedAmount').value = '0.00';
+            }
+
+            updateBalanceAndChange();
+        }
+
+        function onPaymentModeChanged() {
+            const mode = document.getElementById('PaymentMode').value;
+            const grandTotal = parseFloat(document.getElementById('lblGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const partySel = document.getElementById('PartyId');
+            const partyId = parseInt(partySel?.value || '0');
+
+            updateCreditRequirements();
+
+            if (mode === 'Credit') {
+                if (partyId === 0) {
+                    PaybillUI.showToast('Customer selection is mandatory for Credit invoices. Please select a registered customer.', 'warning');
+                    partySel?.focus();
+                }
+                document.getElementById('ReceivedAmount').value = '0.00';
+            } else {
+                document.getElementById('ReceivedAmount').value = grandTotal.toFixed(2);
+            }
+            updateBalanceAndChange();
+        }
+
+        function updateBalanceAndChange() {
+            const grandTotal = parseFloat(document.getElementById('lblGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const received = parseFloat(document.getElementById('ReceivedAmount').value || '0') || 0;
+            const tendered = parseFloat(document.getElementById('CashTenderedInput').value || '0') || 0;
+            const el = document.getElementById('lblBalanceOrChange');
+
+            if (tendered > grandTotal) {
+                el.className = 'form-control form-control-sm bg-success-subtle text-success fw-bold';
+                el.innerText = `Change: ₹ ${(tendered - grandTotal).toFixed(2)}`;
+            } else {
+                const bal = Math.max(0, grandTotal - received);
+                el.className = `form-control form-control-sm bg-light fw-bold ${bal > 0 ? 'text-danger' : 'text-success'}`;
+                el.innerText = `Bal: ₹ ${bal.toFixed(2)}`;
+            }
+        }
+
+        // Weight Calculator functions
+        function openWeightCalcModal() {
+            new bootstrap.Modal(document.getElementById('weightCalcModal')).show();
+        }
+        function onWcItemChanged() {
+            const sel = document.getElementById('wcItemSelect');
+            const price = parseFloat(sel.options[sel.selectedIndex]?.getAttribute('data-price') || '0');
+            document.getElementById('wcRate').value = price;
+            onWcGramsChanged();
+        }
+        function onWcGramsChanged() {
+            const rate = parseFloat(document.getElementById('wcRate').value || '0');
+            const grams = parseFloat(document.getElementById('wcGrams').value || '0');
+            const qty = Number((grams / 1000).toFixed(3));
+            const amt = Number((qty * rate).toFixed(2));
+            document.getElementById('wcAmount').value = amt;
+            document.getElementById('wcFinalQty').innerText = qty;
+            document.getElementById('wcFinalAmt').innerText = `₹ ${amt.toFixed(2)}`;
+        }
+        function onWcAmountChanged() {
+            const rate = parseFloat(document.getElementById('wcRate').value || '0');
+            const amt = parseFloat(document.getElementById('wcAmount').value || '0');
+            if (rate > 0) {
+                const qty = Number((amt / rate).toFixed(3));
+                document.getElementById('wcGrams').value = Math.round(qty * 1000);
+                document.getElementById('wcFinalQty').innerText = qty;
+                document.getElementById('wcFinalAmt').innerText = `₹ ${amt.toFixed(2)}`;
+            }
+        }
+        function addWcItemToBill() {
+            const itemId = parseInt(document.getElementById('wcItemSelect').value || '0');
+            const item = catalogItems.find(i => i.ItemId === itemId);
+            const qty = parseFloat(document.getElementById('wcFinalQty').innerText || '0');
+            const rate = parseFloat(document.getElementById('wcRate').value || '0');
+            if (!item || qty <= 0) {
+                PaybillUI.showToast('Please select an item and enter weight/amount.', 'warning');
+                return;
+            }
+            addCatalogItem(item, qty, rate);
+            bootstrap.Modal.getInstance(document.getElementById('weightCalcModal')).hide();
+        }
+
+        // Quick Add Customer
+        function openQuickCustomerModal() {
+            new bootstrap.Modal(document.getElementById('quickCustomerModal')).show();
+        }
+        async function saveQuickCustomer() {
+            const name = document.getElementById('qcName').value.trim();
+            const mobile = document.getElementById('qcMobile').value.trim();
+            const gstin = document.getElementById('qcGstin').value.trim();
+            const address = document.getElementById('qcAddress').value.trim();
+            if (!name || !mobile) {
+                PaybillUI.showToast('Customer Name and Mobile Number are required.', 'warning');
+                return;
+            }
+            const res = await fetch('@Url.Action("SavePartyJson", "Party")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ PartyId: 0, PartyName: name, Mobile: mobile, Gstin: gstin, Address: address, IsVendor: false, IsActive: true })
+            });
+            const data = await res.json();
+            if (data.isSuccess) {
+                const sel = document.getElementById('PartyId');
+                const opt = document.createElement('option');
+                opt.value = data.partyId;
+                opt.setAttribute('data-gstin', gstin);
+                opt.setAttribute('data-mobile', mobile);
+                opt.text = `${name} (${mobile}) ${gstin ? '[' + gstin + ']' : ''}`;
+                opt.selected = true;
+                sel.appendChild(opt);
+                bootstrap.Modal.getInstance(document.getElementById('quickCustomerModal')).hide();
+                onCustomerChanged();
+                PaybillUI.showToast('Customer created and selected!', 'success');
+            } else {
+                PaybillUI.showToast(data.message || 'Failed to create customer.', 'danger');
+            }
+        }
+
+        function showUpiQrModal() {
+            const grandTotal = parseFloat(document.getElementById('lblGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const upiId = '@Model.Settings.UPIId';
+            const company = encodeURIComponent('@(Model.Settings.ReceiptHeaderLine1 ?? "PayBill")');
+            const upiUri = `upi://pay?pa=${upiId}&pn=${company}&am=${grandTotal.toFixed(2)}&cu=INR`;
+            document.getElementById('upiQrAmountText').innerText = `₹ ${grandTotal.toFixed(2)}`;
+            document.getElementById('upiQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUri)}`;
+            new bootstrap.Modal(document.getElementById('upiQrModal')).show();
+        }
+
+        async function saveInvoice(printAfter) {
+            if (lineItems.length === 0) {
+                PaybillUI.showToast('Please add at least one item to the invoice.', 'warning');
+                return;
+            }
+            const partySel = document.getElementById('PartyId');
+            const partyId = parseInt(partySel?.value || '0');
+            const paymentMode = document.getElementById('PaymentMode')?.value;
+            const isCredit = paymentMode === 'Credit' || document.getElementById('SalesType')?.value === 'Credit';
+
+            if (isCredit && partyId <= 0) {
+                updateCreditRequirements();
+                partySel?.focus();
+                PaybillUI.showToast('Customer selection is mandatory for Credit invoices. Please select a registered customer.', 'danger');
+                return;
+            }
+
+            const grandTotal = parseFloat(document.getElementById('lblGrandTotal').innerText.replace('₹', '').trim()) || 0;
+            const received = parseFloat(document.getElementById('ReceivedAmount').value || '0') || 0;
+            const balance = Math.max(0, grandTotal - received);
+            const roundOff = parseFloat(document.getElementById('lblRoundOff').innerText.replace('₹', '').replace('+', '').trim()) || 0;
+            const extraDisc = parseFloat(document.getElementById('TotalSavings')?.value || '0') || 0;
+            const ptsRedeemed = parseFloat(document.getElementById('PointsRedeemedInput')?.value || '0') || 0;
+            const ptsDiscount = Number((ptsRedeemed * rewardsConfig.ptValue).toFixed(2));
+            const ptsEarned = parseFloat(document.getElementById('PointsEarnedPreview')?.innerText || '0') || 0;
+
+            const payload = {
+                SalesId: salesId,
+                InvoiceNumber: '@Model.Invoice.InvoiceNumber',
+                SalesDate: document.getElementById('SalesDate').value,
+                SalesType: document.getElementById('SalesType').value,
+                PaymentMode: paymentMode,
+                IsCashSales: paymentMode !== 'Credit',
+                PartyId: partyId > 0 ? partyId : null,
+                TotalTaxableAmount: lineItems.reduce((s, i) => s + i.taxableAmount, 0),
+                TotalCgst: lineItems.reduce((s, i) => s + i.cgstAmount, 0),
+                TotalSgst: lineItems.reduce((s, i) => s + i.sgstAmount, 0),
+                TotalIgst: lineItems.reduce((s, i) => s + i.igstAmount, 0),
+                TotalDiscount: lineItems.reduce((s, i) => s + (i.discountRs || 0), 0),
+                TotalSavings: extraDisc,
+                RoundOff: roundOff,
+                TotalInvoiceAmount: grandTotal,
+                ReceivedAmount: received,
+                BalanceAmount: balance,
+                Remarks: document.getElementById('Remarks').value,
+                PointsEarned: ptsEarned,
+                PointsRedeemed: ptsRedeemed,
+                PointsDiscount: ptsDiscount,
+                SalesItems: lineItems.map(i => ({
+                    SalesItemId: i.salesItemId,
+                    SalesId: salesId,
+                    ItemId: i.itemId,
+                    ServiceTypeId: i.serviceTypeId,
+                    Quantity: i.quantity,
+                    Mrp: i.mrp,
+                    SalesPrice: i.salesPrice,
+                    TaxableAmount: i.taxableAmount,
+                    GstId: i.gstId,
+                    CgstPer: i.cgstPer,
+                    SgstPer: i.sgstPer,
+                    IgstPer: i.igstPer,
+                    CgstAmount: i.cgstAmount,
+                    SgstAmount: i.sgstAmount,
+                    IgstAmount: i.igstAmount,
+                    DiscountPer: i.discountPer,
+                    DiscountRs: i.discountRs,
+                    TotalAmount: i.totalAmount
+                }))
+            };
+
+            const btnSavePrint = document.getElementById('btnSavePrint');
+            const btnSaveOnly = document.getElementById('btnSaveOnly');
+            if (btnSavePrint) btnSavePrint.disabled = true;
+            if (btnSaveOnly) btnSaveOnly.disabled = true;
+
+            try {
+                const res = await fetch('@Url.Action("SaveInvoice")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.isSuccess) {
+                    PaybillUI.showToast(data.message || 'Sales invoice saved successfully!', 'success');
+                    const finalId = data.salesId || data.SalesId || (parseInt(data.data || data.Data || '0')) || salesId;
+
+                    if (printAfter && finalId > 0) {
+                        const salesTypeVal = document.getElementById('SalesType')?.value || 'GST';
+                        const selectedFormat = document.getElementById('directPrintFormatSelect')?.value || (salesTypeVal === 'Non-GST' ? 'A4_NONGST' : 'A4');
+
+                        // 1. Direct print without preview via hidden background iframe
+                        directPrintInvoice(finalId, selectedFormat);
+
+                        // 2. Populate and display post-save success modal on billing screen
+                        document.getElementById('savedModalInvNo').innerText = `#${finalId}`;
+                        document.getElementById('savedModalAmount').innerText = document.getElementById('lblGrandTotal')?.innerText || '₹ 0.00';
+
+                        const custSel = document.getElementById('PartyId');
+                        const custText = custSel?.options[custSel.selectedIndex]?.text || 'Walk-in / Cash Customer';
+                        document.getElementById('savedModalCustomer').innerText = custText.split('(')[0].trim();
+
+                        const savedModalElement = document.getElementById('invoiceSavedModal');
+                        const savedModal = new bootstrap.Modal(savedModalElement);
+
+                        // Auto-focus the "New Invoice" button when modal is fully shown
+                        savedModalElement.addEventListener('shown.bs.modal', function focusButton() {
+                            document.getElementById('buttonNewInvoice')?.focus();
+                        }, { once: true });
+
+                        savedModal.show();
+
+                        if (btnSavePrint) btnSavePrint.disabled = false;
+                        if (btnSaveOnly) btnSaveOnly.disabled = false;
+                    } else {
+                        window.location.href = '@Url.Action("Index")';
+                    }
+                } else {
+                    PaybillUI.showToast(data.message || 'Failed to save invoice.', 'danger');
+                    if (btnSavePrint) btnSavePrint.disabled = false;
+                    if (btnSaveOnly) btnSaveOnly.disabled = false;
+                }
+            } catch (err) {
+                PaybillUI.showToast('Network error saving invoice.', 'danger');
+                if (btnSavePrint) btnSavePrint.disabled = false;
+                if (btnSaveOnly) btnSaveOnly.disabled = false;
+            }
+        }
+
+        let lastSavedInvoiceId = 0;
+        let lastSavedInvoiceFormat = 'A4';
+
+        function directPrintInvoice(salesId, format) {
+            lastSavedInvoiceId = salesId;
+            lastSavedInvoiceFormat = format;
+
+            let iframe = document.getElementById('directPrintIframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'directPrintIframe';
+                iframe.name = 'directPrintIframe';
+                iframe.style.position = 'fixed';
+                iframe.style.right = '0';
+                iframe.style.bottom = '0';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                iframe.style.border = '0';
+                iframe.style.visibility = 'hidden';
+                document.body.appendChild(iframe);
+            }
+
+            const printUrl = `@Url.Action("Print")?id=${salesId}&format=${format}&autoprint=1`;
+
+            let hasPrinted = false;
+            iframe.onload = function () {
+                if (hasPrinted) return;
+                hasPrinted = true;
+                setTimeout(function () {
+                    try {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                    } catch (e) {
+                        console.warn('Direct iframe print error:', e);
+                    }
+                }, 250);
+            };
+
+            iframe.src = printUrl;
+        }
+
+        function reprintSavedInvoice() {
+            if (lastSavedInvoiceId > 0) {
+                directPrintInvoice(lastSavedInvoiceId, lastSavedInvoiceFormat);
+            }
+        }
+
+        function viewSavedInvoice() {
+            if (lastSavedInvoiceId > 0) {
+                window.open(`@Url.Action("Print")?id=${lastSavedInvoiceId}&format=${lastSavedInvoiceFormat}`, '_blank');
+            }
+        }
+
+        function savePreferredPrintFormat(fmt) {
+            localStorage.setItem('paybill_direct_print_format', fmt);
+        }
+    </script>
+}
+

@@ -1,0 +1,1688 @@
+[
+  {
+    "ContainingType": "PaybillAPI.Controllers.AdminController",
+    "Method": "UpdateSettings",
+    "RelativePath": "api/Admin/settings/update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.AdminController",
+    "Method": "GetSettings",
+    "RelativePath": "api/Admin/settings/view",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "UpdateProfile",
+    "RelativePath": "api/Common/client/profile/update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "client",
+        "Type": "PaybillAPI.ViewModel.ClientVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "CreateUserIfNotExists",
+    "RelativePath": "api/Common/create/user",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "user",
+        "Type": "PaybillAPI.ViewModel.UserVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "DeleteMessage",
+    "RelativePath": "api/Common/message/{messageId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "messageId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "InsUnlockRequest",
+    "RelativePath": "api/Common/message/insert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "messageId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "messageDescription",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "GetMessages",
+    "RelativePath": "api/Common/message/list",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "GetPrintHeader",
+    "RelativePath": "api/Common/print/header",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "GetMaxServerBackups",
+    "RelativePath": "api/Common/sever/backups/max",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "InsUnlockRequest",
+    "RelativePath": "api/Common/unlock/request/insert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "PaybillAPI.ViewModel.UnlockRequestVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "GetUnlockRequests",
+    "RelativePath": "api/Common/unlock/request/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "UpdateUnlockRequest",
+    "RelativePath": "api/Common/unlock/request/update/{unlockRequestId}/{isApproved}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "unlockRequestId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "isApproved",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "DeleteUser",
+    "RelativePath": "api/Common/user/{userRowId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "userRowId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "GetUsers",
+    "RelativePath": "api/Common/user/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/Common/user/password/change/{oldPassword}/{newPassword}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "oldPassword",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "newPassword",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.CommonController",
+    "Method": "UpsertUser",
+    "RelativePath": "api/Common/user/upset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.HomeController",
+    "Method": "Authenticate",
+    "RelativePath": "api/Home/authenticate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "authRequest",
+        "Type": "PaybillAPI.ViewModel.AuthRequestVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.HomeController",
+    "Method": "AuthenticateBiometric",
+    "RelativePath": "api/Home/authenticate/biometric",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "biometricAuthKey",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.HomeController",
+    "Method": "CreateAccountIfNotExists",
+    "RelativePath": "api/Home/create/account",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "client",
+        "Type": "PaybillAPI.ViewModel.ClientVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.HomeController",
+    "Method": "Test",
+    "RelativePath": "api/Home/server/test",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.HomeController",
+    "Method": "Start",
+    "RelativePath": "api/Home/start",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "DeleteCategory",
+    "RelativePath": "api/Item/category/{categoryId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "categoryId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetCategoryDetails",
+    "RelativePath": "api/Item/category/{categoryId}/details",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoryId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "CreateCategoryIfNotExists",
+    "RelativePath": "api/Item/category/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetCategories",
+    "RelativePath": "api/Item/category/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetCategoriesWithItemCount",
+    "RelativePath": "api/Item/category/report",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "UpsertCategory",
+    "RelativePath": "api/Item/category/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "DeleteGST",
+    "RelativePath": "api/Item/gst/{gstId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "gstId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetGstDetails",
+    "RelativePath": "api/Item/gst/{gstId}/details",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "gstId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "CreateGstIfNotExists",
+    "RelativePath": "api/Item/gst/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetGsts",
+    "RelativePath": "api/Item/gst/list/{isActive}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "isActive",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "UpsertGst",
+    "RelativePath": "api/Item/gst/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetItems",
+    "RelativePath": "api/Item/item/{categoryId}/list",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoryId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "filter",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "DeleteItem",
+    "RelativePath": "api/Item/item/{itemId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "itemId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetItemDetails",
+    "RelativePath": "api/Item/item/{itemId}/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "itemId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "SearchItems",
+    "RelativePath": "api/Item/item/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "filter",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "UploadItems",
+    "RelativePath": "api/Item/item/upload/{userRowId}/{securityKey}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "items",
+        "Type": "System.Collections.Generic.List\u00601[[PaybillAPI.ViewModel.ItemVM, PaybillAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      },
+      {
+        "Name": "userRowId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "securityKey",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "UpsertItem",
+    "RelativePath": "api/Item/item/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetItemsOnCode",
+    "RelativePath": "api/Item/items/code/{itemCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "itemCode",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetItemsForOffline",
+    "RelativePath": "api/Item/items/for/offline/{isAllItems}/{lastUpdatedTime}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isAllItems",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      },
+      {
+        "Name": "lastUpdatedTime",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "ResetStock",
+    "RelativePath": "api/Item/items/reset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetMinStockItems",
+    "RelativePath": "api/Item/min/stock/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "DeleteServiceType",
+    "RelativePath": "api/Item/service/{serviceTypeId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "serviceTypeId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetServiceTypeDetails",
+    "RelativePath": "api/Item/service/{serviceTypeId}/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "serviceTypeId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "GetServiceTypes",
+    "RelativePath": "api/Item/service/list/{isAll}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isAll",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ItemController",
+    "Method": "UpsertServiceType",
+    "RelativePath": "api/Item/service/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PartyController",
+    "Method": "DeleteParty",
+    "RelativePath": "api/Party/party/{partyId}/delete/{isVendor}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "partyId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "isVendor",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PartyController",
+    "Method": "GetPartyDetails",
+    "RelativePath": "api/Party/party/{partyId}/details",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "partyId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PartyController",
+    "Method": "GetActiveParties",
+    "RelativePath": "api/Party/party/active/list/{isVendor}/{isAll}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isVendor",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      },
+      {
+        "Name": "isAll",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PartyController",
+    "Method": "GetParties",
+    "RelativePath": "api/Party/party/list/{isVendor}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "isVendor",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PartyController",
+    "Method": "UpsertParty",
+    "RelativePath": "api/Party/party/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseController",
+    "Method": "DeletePurchaseInvoice",
+    "RelativePath": "api/Purchase/purchase/invoice/{purchaseId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "purchaseId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseController",
+    "Method": "GetPurchaseInvoiceDetails",
+    "RelativePath": "api/Purchase/purchase/invoice/details/{purchaseId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "purchaseId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseController",
+    "Method": "GetPurchaseInvoices",
+    "RelativePath": "api/Purchase/purchase/invoice/list/{fromDate}/{toDate}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseController",
+    "Method": "DeletePurchaseItem",
+    "RelativePath": "api/Purchase/purchase/item/{purchaseItemId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "purchaseItemId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseController",
+    "Method": "GetPurchaseOrderItems",
+    "RelativePath": "api/Purchase/purchase/order/items/{purchaseOrderId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "purchaseOrderId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseController",
+    "Method": "UpsertPurchase",
+    "RelativePath": "api/Purchase/purchase/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseOrderController",
+    "Method": "DeletePurchaseOrder",
+    "RelativePath": "api/PurchaseOrder/purchase/order/{purchaseOrderId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "purchaseOrderId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseOrderController",
+    "Method": "GetPurchaseOrderActiveList",
+    "RelativePath": "api/PurchaseOrder/purchase/order/active/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseOrderController",
+    "Method": "GetPurchaseOrderDetails",
+    "RelativePath": "api/PurchaseOrder/purchase/order/details/{purchaseOrderId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "purchaseOrderId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseOrderController",
+    "Method": "DeletePurchaseOrderItem",
+    "RelativePath": "api/PurchaseOrder/purchase/order/item/{purchaseOrderItemId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "purchaseOrderItemId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseOrderController",
+    "Method": "GetPurchaseOrderItems",
+    "RelativePath": "api/PurchaseOrder/purchase/order/items/{purchaseOrderId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "purchaseOrderId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.PurchaseOrderController",
+    "Method": "UpsertPurchaseOrder",
+    "RelativePath": "api/PurchaseOrder/purchase/order/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetAgedInventory",
+    "RelativePath": "api/Report/inventory/age",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "inventoryAge",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetInventoryValuation",
+    "RelativePath": "api/Report/inventory/valuation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "filter",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetBalanceSheet",
+    "RelativePath": "api/Report/party/balance/sheet",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetPartyLedger",
+    "RelativePath": "api/Report/party/ledger",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reportParam",
+        "Type": "PaybillAPI.Models.ReportParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetPurchaseDetails",
+    "RelativePath": "api/Report/purchase/details",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reportParam",
+        "Type": "PaybillAPI.Models.ReportParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetDeletedPurchaseItems",
+    "RelativePath": "api/Report/purchase/items/deleted",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetPurchaseOrderList",
+    "RelativePath": "api/Report/purchase/order/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetDayWiseSalesSummary",
+    "RelativePath": "api/Report/sales/day/wise/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetSalesDetails",
+    "RelativePath": "api/Report/sales/details",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reportParam",
+        "Type": "PaybillAPI.Models.ReportParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetSalesDetailsDownload",
+    "RelativePath": "api/Report/sales/details/download",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reportParam",
+        "Type": "PaybillAPI.Models.ReportParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetGSTHSNSummary",
+    "RelativePath": "api/Report/sales/gst/hsn/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetGSTReturnDetailed",
+    "RelativePath": "api/Report/sales/gst/return/detailed",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetGSTSACSummary",
+    "RelativePath": "api/Report/sales/gst/sac/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetItemWiseSalesSummary",
+    "RelativePath": "api/Report/sales/item/wise/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetDeletedSalesItems",
+    "RelativePath": "api/Report/sales/items/deleted",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetMonthWiseSalesSummary",
+    "RelativePath": "api/Report/sales/month/wise/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetSalesPaymentModeSummary",
+    "RelativePath": "api/Report/sales/payment/mode/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetSalesSummary",
+    "RelativePath": "api/Report/sales/summary",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reportParam",
+        "Type": "PaybillAPI.Models.ReportParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetSalesSummaryDownload",
+    "RelativePath": "api/Report/sales/summary/download",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reportParam",
+        "Type": "PaybillAPI.Models.ReportParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.ReportController",
+    "Method": "GetDaybook",
+    "RelativePath": "api/Report/trans/daybook/{fromDate}/{toDate}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.SalesController",
+    "Method": "DeleteSalesInvoice",
+    "RelativePath": "api/Sales/sales/invoice/{salesId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "salesId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.SalesController",
+    "Method": "GetSalesInvoiceToPrint",
+    "RelativePath": "api/Sales/sales/invoice/{salesId}/print",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "salesId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.SalesController",
+    "Method": "GetSalesInvoiceDetails",
+    "RelativePath": "api/Sales/sales/invoice/details/{salesId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "salesId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.SalesController",
+    "Method": "GetSalesInvoices",
+    "RelativePath": "api/Sales/sales/invoice/list/{fromDate}/{toDate}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.SalesController",
+    "Method": "SaveSalesInvoice",
+    "RelativePath": "api/Sales/sales/invoice/save",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.SalesController",
+    "Method": "DeleteSalesItem",
+    "RelativePath": "api/Sales/sales/item/{salesItemId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "salesItemId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.TransactionController",
+    "Method": "DeleteTransaction",
+    "RelativePath": "api/Transaction/trans/{transactionId}/delete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "transactionId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.TransactionController",
+    "Method": "InsertTransaction",
+    "RelativePath": "api/Transaction/trans/insert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.TransactionController",
+    "Method": "GetTransactions",
+    "RelativePath": "api/Transaction/trans/list/today/{fromDate}/{toDate}/{isPayment}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "isPayment",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PaybillAPI.Controllers.TransactionController",
+    "Method": "GetTodayTransactions",
+    "RelativePath": "api/Transaction/trans/list/today/{isPayment}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userParam",
+        "Type": "PaybillAPI.Models.UserParam",
+        "IsRequired": true
+      },
+      {
+        "Name": "isPayment",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

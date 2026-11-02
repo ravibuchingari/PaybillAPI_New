@@ -1,0 +1,13 @@
+22:17:23.174 +05:30 [Error] Error when dispatching '"OnConnectedAsync"' on hub.
+System.InvalidOperationException: Cannot generate proxy implementation for 'TambolaApi.Repositories.IMessengerHubClient.OnDeviceConnectedSuccess'. All client proxy methods must return 'System.Threading.Tasks.Task' or 'System.Threading.Tasks.Task<T>'.
+   at Microsoft.AspNetCore.SignalR.Internal.TypedClientBuilder`1.VerifyMethod(MethodInfo interfaceMethod)
+   at Microsoft.AspNetCore.SignalR.Internal.TypedClientBuilder`1.VerifyInterface(Type interfaceType)
+   at Microsoft.AspNetCore.SignalR.Internal.TypedClientBuilder`1.GenerateClientBuilder()
+   at System.Lazy`1.ViaFactory(LazyThreadSafetyMode mode)
+   at System.Lazy`1.ExecutionAndPublication(LazyHelper executionAndPublication, Boolean useDefaultConstructor)
+   at System.Lazy`1.CreateValue()
+   at Microsoft.AspNetCore.SignalR.Internal.TypedClientBuilder`1.Build(IClientProxy proxy)
+   at TambolaApi.MessengerHub.OnConnectedAsync() in F:\Geva Projects\Tambola\TambolaApi\MessengerHub.cs:line 21
+   at Microsoft.AspNetCore.SignalR.Internal.DefaultHubDispatcher`1.OnConnectedAsync(HubConnectionContext connection)
+   at Microsoft.AspNetCore.SignalR.Internal.DefaultHubDispatcher`1.OnConnectedAsync(HubConnectionContext connection)
+   at Microsoft.AspNetCore.SignalR.HubConnectionHandler`1.RunHubAsync(HubConnectionContext connection)

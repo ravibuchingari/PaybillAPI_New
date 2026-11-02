@@ -1,0 +1,11 @@
+wwwroot\css\paybill.css
+wwwroot\DbScript\20261101_sync_dto_schema.sql
+wwwroot\DbScript\script.sql
+wwwroot\DbScript\script_update.sql
+wwwroot\images\logo.png
+wwwroot\js\paybill-print-service.js
+wwwroot\js\paybill.js
+wwwroot\paybill_template.xlsx
+F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\wwwroot\css\paybill.css
+F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\wwwroot\js\paybill.js
+F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\wwwroot\js\paybill-print-service.js

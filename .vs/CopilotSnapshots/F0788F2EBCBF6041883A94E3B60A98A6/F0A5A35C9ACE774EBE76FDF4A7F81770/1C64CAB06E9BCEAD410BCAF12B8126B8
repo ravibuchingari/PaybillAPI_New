@@ -1,0 +1,89 @@
+﻿using iText.Html2pdf;
+using iText.Kernel.Pdf;
+
+namespace Paybill.Services
+{
+    /// <summary>
+    /// Service for converting HTML content to PDF using iText7
+    /// </summary>
+    public class HtmlToPdfService
+    {
+        private readonly ILogger<HtmlToPdfService> _logger;
+
+        public HtmlToPdfService(ILogger<HtmlToPdfService> logger)
+        {
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Convert HTML string to PDF bytes
+        /// </summary>
+        /// <param name="htmlContent">HTML content to convert</param>
+        /// <param name="baseUrl">Base URL for resolving relative paths (images, CSS, etc.)</param>
+        /// <returns>PDF as byte array</returns>
+        public async Task<byte[]> ConvertHtmlToPdfAsync(string htmlContent, string? baseUrl = null)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(htmlContent))
+                {
+                    throw new ArgumentException("HTML content cannot be empty", nameof(htmlContent));
+                }
+
+                return await Task.Run(() =>
+                {
+                    using (var pdfStream = new MemoryStream())
+                    {
+                        var writerProperties = new WriterProperties();
+                        using (var pdfWriter = new PdfWriter(pdfStream, writerProperties))
+                        {
+                            var converterProperties = new ConverterProperties();
+
+                            // Set base URL for resolving relative resources (images, stylesheets, etc.)
+                            if (!string.IsNullOrWhiteSpace(baseUrl))
+                            {
+                                converterProperties.SetBaseUri(baseUrl);
+                            }
+
+                            // Convert HTML to PDF
+                            HtmlConverter.ConvertToPdf(htmlContent, pdfWriter, converterProperties);
+                        }
+
+                        return pdfStream.ToArray();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error converting HTML to PDF");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Convert HTML file to PDF bytes
+        /// </summary>
+        /// <param name="htmlFilePath">Path to HTML file</param>
+        /// <returns>PDF as byte array</returns>
+        public async Task<byte[]> ConvertHtmlFileToPdfAsync(string htmlFilePath)
+        {
+            try
+            {
+                if (!File.Exists(htmlFilePath))
+                {
+                    throw new FileNotFoundException($"HTML file not found: {htmlFilePath}");
+                }
+
+                var htmlContent = await File.ReadAllTextAsync(htmlFilePath);
+                var baseUrl = Path.GetDirectoryName(htmlFilePath) ?? Directory.GetCurrentDirectory();
+
+                return await ConvertHtmlToPdfAsync(htmlContent, baseUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error converting HTML file {FilePath} to PDF", htmlFilePath);
+                throw;
+            }
+        }
+    }
+}

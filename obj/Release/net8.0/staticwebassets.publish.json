@@ -1,0 +1,2185 @@
+{
+  "Version": 1,
+  "Hash": "7cOul2ypw9fepD32k7SjcfQ2lUT3sft3gar/7u0L010=",
+  "Source": "PaybillAPI",
+  "BasePath": "_content/PaybillAPI",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "PaybillAPI\\wwwroot",
+      "Source": "PaybillAPI",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241030.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241030#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "shv5hqw0lc",
+      "Integrity": "sIfj0xwEj81sZURdlI0oFUbE+8+O1mYJC1rXdSytj10=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241030.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241031.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241031#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "bwzg05y9fc",
+      "Integrity": "u61AlNEQ5y4XVBFnEEUJz6kVvqgRNIz57DhSUca2uQ8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241031.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241101.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241101#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "c4b571h70j",
+      "Integrity": "jKIR13K1rIxx3E/LKoL3ECj5gx0lExBiny5CkSzFMOo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241101.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241103.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241103#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9kbkvrrsir",
+      "Integrity": "dw00c37YPG7/zcduSv54WHazN7HRynWL1rUovb+eqUA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241103.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241104.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241104#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "0hafc6rqmh",
+      "Integrity": "xHaBuBeUh8wJQB8tolLUu3HD7t+5cEmip6swi6QKaE4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241104.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241105.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241105#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "xx6cnchk3k",
+      "Integrity": "2xrKuti19jaN5QvaxceLW+zyu92nHOKXlUfAcvkYZ+c=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241105.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241106.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241106#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "wutt1xfrqd",
+      "Integrity": "mE7xl5+UbqDM6yYjhuEYhfFJxGeLWYcYmbhZAY2ihf0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241106.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241112.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241112#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "f34wz79luo",
+      "Integrity": "uyuD2ZUcsCdEmWVS2hDooxcV5t2V7q0irvZJqmxWxlI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241112.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241113.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241113#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ag7y6z4i9g",
+      "Integrity": "Okxcbx4SiyBarsnGR1M77yFsvdiXxRhTuL4vjlMWuX0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241113.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241115.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241115#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "s24ymjakym",
+      "Integrity": "3BRMrno04Vbkz7a04CF+S6IkSZm1S8Bx/hPd7e0YC/U=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241115.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241116.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241116#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "96uiveoohs",
+      "Integrity": "QWDt+YQRwWwT2aWeSzaHNQaqS/T1CFtEKF6Nl3QSZo8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241116.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241121.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241121#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "0zcyjpdamt",
+      "Integrity": "1EKqMuXnMYWpiRPUsLIqZMulq/a1mQs7O0uUSrSNtXw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241121.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241127.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241127#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "29zd9hwv3x",
+      "Integrity": "Sr/n1Wgjp/rSYhLmXjFOAeW6VfPuC6BhwXFU9F4Uz+A=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241127.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241204.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241204#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "gn87n83bwb",
+      "Integrity": "dFGC0Bo5uPW9qEwkQelyQJn8myceLgDS+hKYgNRiL90=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241204.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241211.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20241211#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "hhhjrw93ni",
+      "Integrity": "Raon4WpoD7kivmMbsWOXgpNzUjwhUjIKFMc11a3Yn7Y=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20241211.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250106.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20250106#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "iyjc6zb64j",
+      "Integrity": "ClJiVGZwKVQ44hcI6T8xO7amWI4etUDVlgXR7u2zMeQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20250106.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250107.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20250107#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "p7zrrva08z",
+      "Integrity": "BWIcReYozY1G/Ao9dzCYsJkXDsOFuk1IboeJDqu9VLY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20250107.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250129.log",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "applog/log_20250129#[.{fingerprint}]?.log",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "1rkaqlsznq",
+      "Integrity": "cyoXE83ErLHyx+wzpTK+n7vJMCt9UPgX8r8voy3VJaI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\applog\\log_20250129.log"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\DbScript\\script.sql",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "DbScript/script#[.{fingerprint}]?.sql",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "rp07amcv8q",
+      "Integrity": "X+ENsy5R77h7WWMpCBzIgvg933761cnKUCmWmSj54FI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\DbScript\\script.sql"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\images\\logo.png",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "images/logo#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ebzg8tvbwl",
+      "Integrity": "Np2OSJf96KfNmLAhAiWOf6FC2xD2VHd9GlvwSOcWJ3s=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logo.png"
+    },
+    {
+      "Identity": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\paybill_template.xlsx",
+      "SourceId": "PaybillAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\",
+      "BasePath": "_content/PaybillAPI",
+      "RelativePath": "paybill_template#[.{fingerprint}]?.xlsx",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "fkqcq7jzlc",
+      "Integrity": "gSiM/vRalKeCAnbJlvEmOAakinPgw3Yx33rn+JYqpkg=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\paybill_template.xlsx"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "applog/log_20241030.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241030.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "15780"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sIfj0xwEj81sZURdlI0oFUbE+8+O1mYJC1rXdSytj10=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 30 Oct 2024 12:45:40 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sIfj0xwEj81sZURdlI0oFUbE+8+O1mYJC1rXdSytj10="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241030.shv5hqw0lc.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241030.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "15780"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sIfj0xwEj81sZURdlI0oFUbE+8+O1mYJC1rXdSytj10=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 30 Oct 2024 12:45:40 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "shv5hqw0lc"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241030.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sIfj0xwEj81sZURdlI0oFUbE+8+O1mYJC1rXdSytj10="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241031.bwzg05y9fc.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241031.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "124140"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"u61AlNEQ5y4XVBFnEEUJz6kVvqgRNIz57DhSUca2uQ8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 31 Oct 2024 13:19:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "bwzg05y9fc"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241031.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-u61AlNEQ5y4XVBFnEEUJz6kVvqgRNIz57DhSUca2uQ8="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241031.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241031.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "124140"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"u61AlNEQ5y4XVBFnEEUJz6kVvqgRNIz57DhSUca2uQ8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 31 Oct 2024 13:19:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-u61AlNEQ5y4XVBFnEEUJz6kVvqgRNIz57DhSUca2uQ8="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241101.c4b571h70j.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241101.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "139043"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"jKIR13K1rIxx3E/LKoL3ECj5gx0lExBiny5CkSzFMOo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 01 Nov 2024 13:42:10 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "c4b571h70j"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241101.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-jKIR13K1rIxx3E/LKoL3ECj5gx0lExBiny5CkSzFMOo="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241101.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241101.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "139043"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"jKIR13K1rIxx3E/LKoL3ECj5gx0lExBiny5CkSzFMOo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 01 Nov 2024 13:42:10 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-jKIR13K1rIxx3E/LKoL3ECj5gx0lExBiny5CkSzFMOo="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241103.9kbkvrrsir.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241103.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "71680"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dw00c37YPG7/zcduSv54WHazN7HRynWL1rUovb+eqUA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 03 Nov 2024 10:30:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9kbkvrrsir"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241103.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-dw00c37YPG7/zcduSv54WHazN7HRynWL1rUovb+eqUA="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241103.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241103.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "71680"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dw00c37YPG7/zcduSv54WHazN7HRynWL1rUovb+eqUA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 03 Nov 2024 10:30:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-dw00c37YPG7/zcduSv54WHazN7HRynWL1rUovb+eqUA="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241104.0hafc6rqmh.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241104.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2726"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"xHaBuBeUh8wJQB8tolLUu3HD7t+5cEmip6swi6QKaE4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 04 Nov 2024 13:01:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "0hafc6rqmh"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241104.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-xHaBuBeUh8wJQB8tolLUu3HD7t+5cEmip6swi6QKaE4="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241104.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241104.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2726"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"xHaBuBeUh8wJQB8tolLUu3HD7t+5cEmip6swi6QKaE4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 04 Nov 2024 13:01:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-xHaBuBeUh8wJQB8tolLUu3HD7t+5cEmip6swi6QKaE4="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241105.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241105.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "16043"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2xrKuti19jaN5QvaxceLW+zyu92nHOKXlUfAcvkYZ+c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 05 Nov 2024 05:25:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-2xrKuti19jaN5QvaxceLW+zyu92nHOKXlUfAcvkYZ+c="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241105.xx6cnchk3k.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241105.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "16043"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2xrKuti19jaN5QvaxceLW+zyu92nHOKXlUfAcvkYZ+c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 05 Nov 2024 05:25:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xx6cnchk3k"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241105.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-2xrKuti19jaN5QvaxceLW+zyu92nHOKXlUfAcvkYZ+c="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241106.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241106.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "13592"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mE7xl5+UbqDM6yYjhuEYhfFJxGeLWYcYmbhZAY2ihf0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 06 Nov 2024 02:39:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-mE7xl5+UbqDM6yYjhuEYhfFJxGeLWYcYmbhZAY2ihf0="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241106.wutt1xfrqd.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241106.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "13592"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"mE7xl5+UbqDM6yYjhuEYhfFJxGeLWYcYmbhZAY2ihf0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 06 Nov 2024 02:39:22 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "wutt1xfrqd"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241106.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-mE7xl5+UbqDM6yYjhuEYhfFJxGeLWYcYmbhZAY2ihf0="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241112.f34wz79luo.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241112.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4082"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"uyuD2ZUcsCdEmWVS2hDooxcV5t2V7q0irvZJqmxWxlI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 12 Nov 2024 07:56:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "f34wz79luo"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241112.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-uyuD2ZUcsCdEmWVS2hDooxcV5t2V7q0irvZJqmxWxlI="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241112.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241112.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4082"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"uyuD2ZUcsCdEmWVS2hDooxcV5t2V7q0irvZJqmxWxlI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 12 Nov 2024 07:56:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-uyuD2ZUcsCdEmWVS2hDooxcV5t2V7q0irvZJqmxWxlI="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241113.ag7y6z4i9g.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241113.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11610"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Okxcbx4SiyBarsnGR1M77yFsvdiXxRhTuL4vjlMWuX0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 13 Nov 2024 03:01:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ag7y6z4i9g"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241113.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Okxcbx4SiyBarsnGR1M77yFsvdiXxRhTuL4vjlMWuX0="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241113.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241113.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11610"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Okxcbx4SiyBarsnGR1M77yFsvdiXxRhTuL4vjlMWuX0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 13 Nov 2024 03:01:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Okxcbx4SiyBarsnGR1M77yFsvdiXxRhTuL4vjlMWuX0="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241115.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241115.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11515"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3BRMrno04Vbkz7a04CF+S6IkSZm1S8Bx/hPd7e0YC/U=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 15 Nov 2024 15:36:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-3BRMrno04Vbkz7a04CF+S6IkSZm1S8Bx/hPd7e0YC/U="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241115.s24ymjakym.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241115.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11515"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3BRMrno04Vbkz7a04CF+S6IkSZm1S8Bx/hPd7e0YC/U=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 15 Nov 2024 15:36:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "s24ymjakym"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241115.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-3BRMrno04Vbkz7a04CF+S6IkSZm1S8Bx/hPd7e0YC/U="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241116.96uiveoohs.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241116.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10329"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QWDt+YQRwWwT2aWeSzaHNQaqS/T1CFtEKF6Nl3QSZo8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 16 Nov 2024 04:41:56 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "96uiveoohs"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241116.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-QWDt+YQRwWwT2aWeSzaHNQaqS/T1CFtEKF6Nl3QSZo8="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241116.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241116.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10329"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QWDt+YQRwWwT2aWeSzaHNQaqS/T1CFtEKF6Nl3QSZo8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 16 Nov 2024 04:41:56 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-QWDt+YQRwWwT2aWeSzaHNQaqS/T1CFtEKF6Nl3QSZo8="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241121.0zcyjpdamt.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241121.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "25463"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1EKqMuXnMYWpiRPUsLIqZMulq/a1mQs7O0uUSrSNtXw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 21 Nov 2024 13:59:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "0zcyjpdamt"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241121.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-1EKqMuXnMYWpiRPUsLIqZMulq/a1mQs7O0uUSrSNtXw="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241121.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241121.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "25463"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1EKqMuXnMYWpiRPUsLIqZMulq/a1mQs7O0uUSrSNtXw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 21 Nov 2024 13:59:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-1EKqMuXnMYWpiRPUsLIqZMulq/a1mQs7O0uUSrSNtXw="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241127.29zd9hwv3x.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241127.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "92909"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Sr/n1Wgjp/rSYhLmXjFOAeW6VfPuC6BhwXFU9F4Uz+A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 27 Nov 2024 00:48:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "29zd9hwv3x"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241127.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Sr/n1Wgjp/rSYhLmXjFOAeW6VfPuC6BhwXFU9F4Uz+A="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241127.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241127.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "92909"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Sr/n1Wgjp/rSYhLmXjFOAeW6VfPuC6BhwXFU9F4Uz+A=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 27 Nov 2024 00:48:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Sr/n1Wgjp/rSYhLmXjFOAeW6VfPuC6BhwXFU9F4Uz+A="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241204.gn87n83bwb.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241204.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11322"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dFGC0Bo5uPW9qEwkQelyQJn8myceLgDS+hKYgNRiL90=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 04 Dec 2024 14:56:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gn87n83bwb"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241204.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-dFGC0Bo5uPW9qEwkQelyQJn8myceLgDS+hKYgNRiL90="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241204.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241204.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "11322"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dFGC0Bo5uPW9qEwkQelyQJn8myceLgDS+hKYgNRiL90=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 04 Dec 2024 14:56:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-dFGC0Bo5uPW9qEwkQelyQJn8myceLgDS+hKYgNRiL90="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241211.hhhjrw93ni.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241211.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "33915"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Raon4WpoD7kivmMbsWOXgpNzUjwhUjIKFMc11a3Yn7Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Dec 2024 07:20:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "hhhjrw93ni"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20241211.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Raon4WpoD7kivmMbsWOXgpNzUjwhUjIKFMc11a3Yn7Y="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20241211.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20241211.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "33915"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Raon4WpoD7kivmMbsWOXgpNzUjwhUjIKFMc11a3Yn7Y=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Dec 2024 07:20:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Raon4WpoD7kivmMbsWOXgpNzUjwhUjIKFMc11a3Yn7Y="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20250106.iyjc6zb64j.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250106.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5440"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ClJiVGZwKVQ44hcI6T8xO7amWI4etUDVlgXR7u2zMeQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Jan 2025 15:12:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "iyjc6zb64j"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20250106.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ClJiVGZwKVQ44hcI6T8xO7amWI4etUDVlgXR7u2zMeQ="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20250106.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250106.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5440"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ClJiVGZwKVQ44hcI6T8xO7amWI4etUDVlgXR7u2zMeQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Jan 2025 15:12:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ClJiVGZwKVQ44hcI6T8xO7amWI4etUDVlgXR7u2zMeQ="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20250107.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250107.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "118763"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"BWIcReYozY1G/Ao9dzCYsJkXDsOFuk1IboeJDqu9VLY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 07 Jan 2025 02:11:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-BWIcReYozY1G/Ao9dzCYsJkXDsOFuk1IboeJDqu9VLY="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20250107.p7zrrva08z.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250107.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "118763"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"BWIcReYozY1G/Ao9dzCYsJkXDsOFuk1IboeJDqu9VLY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 07 Jan 2025 02:11:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "p7zrrva08z"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20250107.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-BWIcReYozY1G/Ao9dzCYsJkXDsOFuk1IboeJDqu9VLY="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20250129.1rkaqlsznq.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250129.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10858"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cyoXE83ErLHyx+wzpTK+n7vJMCt9UPgX8r8voy3VJaI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 29 Jan 2025 00:47:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "1rkaqlsznq"
+        },
+        {
+          "Name": "label",
+          "Value": "applog/log_20250129.log"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-cyoXE83ErLHyx+wzpTK+n7vJMCt9UPgX8r8voy3VJaI="
+        }
+      ]
+    },
+    {
+      "Route": "applog/log_20250129.log",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\applog\\log_20250129.log",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10858"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cyoXE83ErLHyx+wzpTK+n7vJMCt9UPgX8r8voy3VJaI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 29 Jan 2025 00:47:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-cyoXE83ErLHyx+wzpTK+n7vJMCt9UPgX8r8voy3VJaI="
+        }
+      ]
+    },
+    {
+      "Route": "DbScript/script.rp07amcv8q.sql",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\DbScript\\script.sql",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "39751"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"X+ENsy5R77h7WWMpCBzIgvg933761cnKUCmWmSj54FI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 29 Jan 2025 05:29:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "rp07amcv8q"
+        },
+        {
+          "Name": "label",
+          "Value": "DbScript/script.sql"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-X+ENsy5R77h7WWMpCBzIgvg933761cnKUCmWmSj54FI="
+        }
+      ]
+    },
+    {
+      "Route": "DbScript/script.sql",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\DbScript\\script.sql",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "39751"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"X+ENsy5R77h7WWMpCBzIgvg933761cnKUCmWmSj54FI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 29 Jan 2025 05:29:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-X+ENsy5R77h7WWMpCBzIgvg933761cnKUCmWmSj54FI="
+        }
+      ]
+    },
+    {
+      "Route": "images/logo.ebzg8tvbwl.png",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\images\\logo.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "99953"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Np2OSJf96KfNmLAhAiWOf6FC2xD2VHd9GlvwSOcWJ3s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 07 Apr 2022 10:45:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ebzg8tvbwl"
+        },
+        {
+          "Name": "label",
+          "Value": "images/logo.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Np2OSJf96KfNmLAhAiWOf6FC2xD2VHd9GlvwSOcWJ3s="
+        }
+      ]
+    },
+    {
+      "Route": "images/logo.png",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\images\\logo.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "99953"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Np2OSJf96KfNmLAhAiWOf6FC2xD2VHd9GlvwSOcWJ3s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 07 Apr 2022 10:45:20 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Np2OSJf96KfNmLAhAiWOf6FC2xD2VHd9GlvwSOcWJ3s="
+        }
+      ]
+    },
+    {
+      "Route": "paybill_template.fkqcq7jzlc.xlsx",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\paybill_template.xlsx",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10780"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gSiM/vRalKeCAnbJlvEmOAakinPgw3Yx33rn+JYqpkg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 30 Sep 2024 06:13:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fkqcq7jzlc"
+        },
+        {
+          "Name": "label",
+          "Value": "paybill_template.xlsx"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-gSiM/vRalKeCAnbJlvEmOAakinPgw3Yx33rn+JYqpkg="
+        }
+      ]
+    },
+    {
+      "Route": "paybill_template.xlsx",
+      "AssetFile": "F:\\Geva Projects\\Web Projects\\PaybillAPI\\PaybillAPI\\wwwroot\\paybill_template.xlsx",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10780"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"gSiM/vRalKeCAnbJlvEmOAakinPgw3Yx33rn+JYqpkg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 30 Sep 2024 06:13:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-gSiM/vRalKeCAnbJlvEmOAakinPgw3Yx33rn+JYqpkg="
+        }
+      ]
+    }
+  ]
+}

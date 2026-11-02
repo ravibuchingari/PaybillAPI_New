@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/PaybillAPI/PaybillAPI.csproj"
+        "${workspaceFolder}/PaybillAPI.csproj"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -17,7 +17,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/PaybillWebApp/PaybillWebApp.csproj"
+        "${workspaceFolder}/../PaybillWebApp/PaybillWebApp.csproj"
       ],
       "problemMatcher": "$msCompile"
     }

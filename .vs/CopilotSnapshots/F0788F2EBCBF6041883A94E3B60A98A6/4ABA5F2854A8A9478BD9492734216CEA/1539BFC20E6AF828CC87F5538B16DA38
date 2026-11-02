@@ -1,0 +1,335 @@
+﻿
+/**
+ * PayBill Print Service Integration
+ * File: wwwroot/js/paybill-print-service.js
+ *
+ * PayBill MVC:
+ *   http://localhost:5111/Paybill
+ *
+ * PayBill Print Service:
+ *   http://localhost:61399
+ */
+
+class PayBillPrintService {
+
+    constructor(options = {}) {
+        this.baseUrl = (
+            options.baseUrl || "http://localhost:61399"
+        ).replace(/\/+$/, "");
+
+        // Supply a token provider rather than hardcoding a token.
+        // The current sample service requires X-Print-Token.
+        this.getToken = options.getToken || (() => null);
+
+        this.timeout = options.timeout || 15000;
+
+        // Cache for default printer name
+        this.defaultPrinterName = null;
+    }
+
+    /**
+     * Build request headers.
+     */
+    async getHeaders(extraHeaders = {}) {
+        const headers = {
+            ...extraHeaders
+        };
+
+        const token = await this.getToken();
+
+        if (token) {
+            headers["X-Print-Token"] = token;
+        }
+
+        return headers;
+    }
+
+    /**
+     * Common HTTP request handler.
+     */
+    async request(endpoint, options = {}) {
+
+        const controller = new AbortController();
+
+        const timeoutId = setTimeout(
+            () => controller.abort(),
+            options.timeout || this.timeout
+        );
+
+        try {
+            const headers = await this.getHeaders(
+                options.headers || {}
+            );
+
+            const response = await fetch(
+                `${this.baseUrl}${endpoint}`,
+                {
+                    ...options,
+                    headers,
+                    signal: controller.signal
+                }
+            );
+
+            const responseText = await response.text();
+
+            let result = {};
+
+            try {
+                result = responseText
+                    ? JSON.parse(responseText)
+                    : {};
+            } catch {
+                result = {
+                    message: responseText
+                };
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error ||
+                    result.message ||
+                    `Print Service error: HTTP ${response.status}`
+                );
+            }
+
+            return result;
+
+        } catch (error) {
+
+            if (error.name === "AbortError") {
+                throw new Error(
+                    "Print Service request timed out."
+                );
+            }
+
+            if (
+                error instanceof TypeError
+            ) {
+                throw new Error(
+                    "Cannot connect to PayBill Print Service. " +
+                    "Check whether the service is running and its HTTPS certificate is trusted."
+                );
+            }
+
+            throw error;
+
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    }
+
+    /**
+     * Check Print Service health.
+     * GET /api/health
+     */
+    async checkHealth() {
+        return await this.request(
+            "/api/health",
+            {
+                method: "GET"
+            }
+        );
+    }
+
+    /**
+     * Discover installed printers.
+     * GET /api/printers
+     */
+    async getPrinters() {
+        return await this.request(
+            "/api/printers",
+            {
+                method: "GET"
+            }
+        );
+    }
+
+    /**
+     * Get printer details.
+     */
+    async getPrinterDetails(printerName) {
+
+        if (!printerName) {
+            throw new Error("Printer name is required.");
+        }
+
+        return await this.request(
+            `/api/printers/${encodeURIComponent(printerName)}`,
+            {
+                method: "GET"
+            }
+        );
+    }
+
+    /**
+     * Get printer status.
+     */
+    async getPrinterStatus(printerName) {
+
+        if (!printerName) {
+            throw new Error("Printer name is required.");
+        }
+
+        return await this.request(
+            `/api/printers/${encodeURIComponent(printerName)}/status`,
+            {
+                method: "GET"
+            }
+        );
+    }
+
+    /**
+     * Submit ESC/POS print request.
+     *
+     * IMPORTANT:
+     * Pass the exact JSON structure expected by
+     * your Print Service API.
+     * 
+     * @param {object} printData - The ESC/POS print data
+     * @param {string} printerName - Optional printer name. If null/undefined, uses default printer
+     */
+    async printEscPos(printData, printerName = "default") {
+
+        if (!printData) {
+            throw new Error("Print data is required.");
+        }
+
+        // Use provided printer name or default
+        const effectivePrinterName = printerName || "default";
+
+        return await this.request(
+            `/api/print/escpos?printerName=${encodeURIComponent(effectivePrinterName)}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(printData)
+            }
+        );
+    }
+
+    /**
+     * Submit HTML print request.
+     *
+     * Requires the HTML endpoint to be implemented
+     * in PayBill.PrintService.
+     */
+    async printHtml(printData, printerName) {
+
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (printerName) {
+            headers["X-Printer-Name"] = printerName;
+        }
+
+        return await this.request(
+            "/api/print/html",
+            {
+                method: "POST",
+                headers,
+                body: JSON.stringify(printData)
+            }
+        );
+    }
+
+    /**
+     * Submit PDF print request.
+     *
+     * Requires the PDF endpoint to be implemented
+     * in PayBill.PrintService.
+     * 
+     * @param {Blob} pdfBlob - The PDF file blob to print
+     * @param {string} printerName - Optional printer name. If null/undefined, uses default printer
+     */
+    async printPdf(pdfBlob, printerName = "default") {
+
+        if (!(pdfBlob instanceof Blob)) {
+            throw new Error("A valid PDF Blob is required.");
+        }
+
+        // Use provided printer name or default
+        const effectivePrinterName = printerName || "default";
+
+        return await this.request(
+            `/api/print/pdf?printerName=${encodeURIComponent(effectivePrinterName)}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/pdf"
+                },
+                body: pdfBlob
+            }
+        );
+    }
+
+    /**
+     * Print a saved invoice.
+     *
+     * printType: escpos | html | pdf
+     */
+    async printInvoice(printType, printData) {
+
+        switch (printType.toLowerCase()) {
+
+            case "escpos":
+                return await this.printEscPos(printData);
+
+            case "html":
+                return await this.printHtml(printData);
+
+            case "pdf":
+                return await this.printPdf(
+                    printData.pdfBlob,
+                    printData.printerName
+                );
+
+            default:
+                throw new Error(
+                    `Unsupported print type: ${printType}`
+                );
+        }
+    }
+
+    /**
+     * Optional: retrieve print job history.
+     * Requires the jobs endpoints to exist.
+     */
+    async getPrintJobs() {
+        return await this.request(
+            "/api/jobs",
+            {
+                method: "GET"
+            }
+        );
+    }
+
+    /**
+     * Retrieve individual print job status.
+     */
+    async getPrintJob(jobId) {
+
+        if (!jobId) {
+            throw new Error("Print job ID is required.");
+        }
+
+        return await this.request(
+            `/api/jobs/${encodeURIComponent(jobId)}`,
+            {
+                method: "GET"
+            }
+        );
+    }
+}
+
+// Create a reusable global instance.
+// Configure the authentication provider before production use.
+window.PayBillPrint = new PayBillPrintService({
+    baseUrl: "http://localhost:61399",
+    getToken: async () => {
+        // Return the X-Print-Token value
+        return "12345678";
+    }
+});

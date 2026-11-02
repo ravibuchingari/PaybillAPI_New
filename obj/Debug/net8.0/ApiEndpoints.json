@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "PaybillAPI.Controllers.HomeController",
+    "Method": "Test",
+    "RelativePath": "api/Home",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
