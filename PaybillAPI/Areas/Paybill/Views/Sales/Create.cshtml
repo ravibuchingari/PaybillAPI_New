@@ -463,7 +463,14 @@
     </div>
 </div>
 
+<button type="button"
+        class="btn btn-primary"
+        onclick="testPayBillPrinter()">
+    Test Print Service Connection
+</button>
+
 @section Scripts {
+    <script src="~/js/paybill-print-service.js" asp-append-version="true"></script>
     <script>
         const catalogItems = @Html.Raw(JsonSerializer.Serialize(Model.InitialItems));
         const serviceTypes = @Html.Raw(JsonSerializer.Serialize(Model.ServiceTypes));
@@ -1259,6 +1266,32 @@
         function savePreferredPrintFormat(fmt) {
             localStorage.setItem('paybill_direct_print_format', fmt);
         }
+
+        async function testPayBillPrinter() {
+            try {
+                const result = await window.PayBillPrint.checkHealth();
+
+                console.log(result)
+
+                const result2 = await window.PayBillPrint.getPrinters();
+
+                console.log(result2)
+
+                const result3 = await window.PayBillPrint.printEscPos("welcome");
+
+                console.log(result3)
+
+                // alert(
+                //     "Print Service Connected!\n" +
+                //     "Status: " + result.status +
+                //     "\nVersion: " + result.version
+                // );
+
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
     </script>
 }
 
