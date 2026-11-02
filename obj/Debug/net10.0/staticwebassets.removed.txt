@@ -1,3 +1,0 @@
-F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\wwwroot\css\paybill.css
-F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\wwwroot\js\paybill.js
-F:\Geva Projects\Web Projects\PaybillAPI\PaybillAPI\wwwroot\js\paybill-print-service.js
